@@ -5,27 +5,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const modalBody = document.getElementById('modalBody');
     const closeModalBtn = document.getElementById('closeModal');
 
-    // Fungsi untuk menampilkan modal
     function showModal(title, content) {
         modalTitle.textContent = title;
         modalBody.innerHTML = content;
         modalOverlay.classList.add('show');
-        // Attach form submission listener after content is added
         const form = modalBody.querySelector('form');
         if (form) {
             form.addEventListener('submit', handleFormSubmit);
         }
     }
 
-    // Fungsi untuk menyembunyikan modal
     function hideModal() {
         modalOverlay.classList.remove('show');
     }
 
-    // Event listener untuk tombol "Tambah Kuota"
+    //untuk tambah
     document.getElementById('tambahKuota').addEventListener('click', () => {
         const formContent = `
-            <form id="formKuota" action="proses_kuota.php" method="POST">
+            <form id="formKuota" action="kuota_pendakian/proses_kuota.php" method="POST">
                 <input type="hidden" name="action" value="tambah">
                 <div class="form-group">
                     <label for="tanggal_kuota">Tanggal Kuota</label>
@@ -41,18 +38,19 @@ document.addEventListener('DOMContentLoaded', function () {
         showModal('Tambah Kuota Pendakian', formContent);
     });
 
+    //untuk edit
     document.querySelectorAll('.btn-edit').forEach(button => {
         button.addEventListener('click', async function () {
             const id = this.getAttribute('data-id');
 
             try {
-                const response = await fetch(`get_kuota.php?id=${id}`);
+                const response = await fetch(`kuota_pendakian/get_kuota.php?id=${id}`);
                 const result = await response.json();
 
                 if (result.success && result.data) {
                     const data = result.data;
                     const formContent = `
-                        <form id="formKuota" action="proses_kuota.php" method="POST">
+                        <form id="formKuota" action="../proses_kuota.php" method="POST">
                             <input type="hidden" name="action" value="edit">
                             <input type="hidden" name="id_kuota" value="${data.id_kuota}">
                             <div class="form-group">
@@ -76,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Event listener untuk semua tombol "Hapus"
+    // untuk hapus
     document.querySelectorAll('.btn-hapus').forEach(button => {
         button.addEventListener('click', function () {
             const id = this.getAttribute('data-id');
@@ -99,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     formData.append('action', 'hapus');
                     formData.append('id_kuota', id);
 
-                    fetch('proses_kuota.php', {
+                    fetch('kuota_pendakian/proses_kuota.php', {
                         method: 'POST',
                         body: formData
                     })

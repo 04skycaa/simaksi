@@ -140,8 +140,7 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
     <button class="btn green" id="tambahKuota">Tambah Kuota</button>
   </div>
 </div>
-
-//untuk pop up
+<!-- untuk pop up -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-container">
         <div class="modal-header">
