@@ -141,7 +141,7 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
   </div>
 </div>
 
-<!-- Modal -->
+//untuk pop up
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-container">
         <div class="modal-header">
