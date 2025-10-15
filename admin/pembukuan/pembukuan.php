@@ -1,168 +1,158 @@
 <?php
-include __DIR__ . '/../../config/database.php';
+// 1. KONEKSI & PENGAMBILAN DATA
+include __DIR__ . '/../../config/supabase.php';
 
-// Filter tanggal
-$startDate = isset($_GET['start']) ? $_GET['start'] : '';
-$endDate = isset($_GET['end']) ? $_GET['end'] : '';
+$pemasukan_data = supabase_request('GET', 'pemasukan?select=*');
+// PERUBAHAN: Memastikan id_pengeluaran diambil untuk tombol edit
+$pengeluaran_data = supabase_request('GET', 'pengeluaran?select=*,id_pengeluaran');
 
-// Query pemasukan
-$sqlPemasukan = "
-    SELECT 
-        id_pemasukan AS id,
-        NULL AS id_kategori,
-        jumlah,
-        keterangan,
-        tanggal_pemasukan AS tanggal,
-        'Pemasukan' AS jenis,
-        NULL AS nama_kategori
-    FROM pemasukan
-";
-if ($startDate && $endDate) {
-    $sqlPemasukan .= " WHERE tanggal_pemasukan BETWEEN '$startDate' AND '$endDate'";
-}
+$all_transactions = [];
 
-// Query pengeluaran (dengan join kategori)
-$sqlPengeluaran = "
-    SELECT 
-        p.id_pengeluaran AS id,
-        p.id_kategori,
-        p.jumlah,
-        p.keterangan,
-        p.tanggal_pengeluaran AS tanggal,
-        'Pengeluaran' AS jenis,
-        k.nama_kategori
-    FROM pengeluaran p
-    LEFT JOIN kategori_pengeluaran k ON p.id_kategori = k.id_kategori
-";
-if ($startDate && $endDate) {
-    $sqlPengeluaran .= " WHERE p.tanggal_pengeluaran BETWEEN '$startDate' AND '$endDate'";
-}
-
-// Gabung data
-$sql = "($sqlPemasukan) UNION ALL ($sqlPengeluaran) ORDER BY tanggal DESC";
-$result = $conn->query($sql);
-
-// Hitung total
-$data = [];
-$totalPemasukan = 0;
-$totalPengeluaran = 0;
-$totalTransaksi = 0;
-
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
-        if ($row['jenis'] === 'Pemasukan') {
-            $totalPemasukan += $row['jumlah'];
-        } else {
-            $totalPengeluaran += $row['jumlah'];
-        }
-        $totalTransaksi++;
+// Proses data pemasukan
+if ($pemasukan_data && !isset($pemasukan_data['error'])) {
+    foreach ($pemasukan_data as $item) {
+        $all_transactions[] = [
+            'id'        => null, // Pemasukan tidak memiliki aksi edit
+            // PERUBAHAN: Menggunakan kolom 'tanggal_pemasukan'
+            'tanggal'   => $item['tanggal_pemasukan'],
+            'jenis'     => 'Pemasukan',
+            'deskripsi' => $item['keterangan'],
+            'jumlah'    => $item['jumlah']
+        ];
     }
 }
 
-$keuntungan = $totalPemasukan - $totalPengeluaran;
-$conn->close();
-?>
+// Proses data pengeluaran
+if ($pengeluaran_data && !isset($pengeluaran_data['error'])) {
+    foreach ($pengeluaran_data as $item) {
+        $all_transactions[] = [
+            // PERUBAHAN: Menggunakan kolom 'id_pengeluaran'
+            'id'        => $item['id_pengeluaran'],
+            // PERUBAHAN: Menggunakan kolom 'tanggal_pengeluaran'
+            'tanggal'   => $item['tanggal_pengeluaran'],
+            'jenis'     => 'Pengeluaran',
+            'deskripsi' => $item['keterangan'],
+            'jumlah'    => $item['jumlah']
+        ];
+    }
+}
 
+// Urutkan semua transaksi berdasarkan tanggal
+usort($all_transactions, function($a, $b) {
+    return strtotime($b['tanggal']) - strtotime($a['tanggal']);
+});
+
+// 2. LOGIKA FILTER (Tidak ada perubahan di sini)
+$startDate = $_GET['start_date'] ?? '';
+$endDate = $_GET['end_date'] ?? '';
+$jenisTransaksi = $_GET['jenis_transaksi'] ?? 'semua';
+
+$filtered_transactions = array_filter($all_transactions, function($trans) use ($startDate, $endDate, $jenisTransaksi) {
+    $tanggal_transaksi = strtotime($trans['tanggal']);
+    
+    if ($startDate && $tanggal_transaksi < strtotime($startDate)) return false;
+    if ($endDate && $tanggal_transaksi > strtotime($endDate . ' 23:59:59')) return false;
+    if ($jenisTransaksi !== 'semua' && $trans['jenis'] !== $jenisTransaksi) return false;
+    
+    return true;
+});
+
+// 3. KALKULASI TOTAL (Tidak ada perubahan di sini)
+$total_keuntungan = 0;
+$total_pengeluaran = 0;
+foreach ($filtered_transactions as $trans) {
+    if ($trans['jenis'] === 'Pemasukan') {
+        $total_keuntungan += $trans['jumlah'];
+    } else {
+        $total_pengeluaran += $trans['jumlah'];
+    }
+}
+$saldo_akhir = $total_keuntungan - $total_pengeluaran;
+$jumlah_transaksi = count($filtered_transactions);
+
+function format_rupiah($number) {
+    return 'Rp ' . number_format($number, 0, ',', '.');
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pembukuan</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <title>Dashboard Keuangan</title>
+    <link rel="stylesheet" href="/simaksi/assets/css/style.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-<div class="keuangan-container">
-    <div class="keuangan-header">
-        <h2>Keuangan</h2>
-        <div class="right-controls">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Cari transaksi...">
-            </div>
-            <td>
-        <a href="hapus_pengeluaran.php?id=<?= $row['id_pengeluaran'] ?>" class="btn red" onclick="return confirm('Yakin hapus data ini?')">Hapus</a>
-</td>
 
-        </div>
-    </div>
-
+<div class="menu-container">
+    <div class="menu-header"><h2>Keuangan</h2></div>
     <div class="status-bar">
-        <div class="card green">
-            Keuntungan
-            <span>Rp <?= number_format($keuntungan, 0, ',', '.') ?></span>
-        </div>
-        <div class="card red">
-            Pengeluaran
-            <span>Rp <?= number_format($totalPengeluaran, 0, ',', '.') ?></span>
-        </div>
-        <div class="card blue">
-            Pemasukan
-            <span>Rp <?= number_format($totalPemasukan, 0, ',', '.') ?></span>
-        </div>
-        <div class="card dark">
-            Jumlah Transaksi
-            <span><?= $totalTransaksi ?></span>
-        </div>
+        <div class="card green"><span class="icon"><i class="fa-solid fa-arrow-down"></i></span>Keuntungan<span class="value"><?= format_rupiah($total_keuntungan) ?></span></div>
+        <div class="card red"><span class="icon"><i class="fa-solid fa-arrow-up"></i></span>Pengeluaran<span class="value"><?= format_rupiah($total_pengeluaran) ?></span></div>
+        <div class="card blue"><span class="icon"><i class="fa-solid fa-wallet"></i></span>Saldo Akhir<span class="value"><?= format_rupiah($saldo_akhir) ?></span></div>
+        <div class="card soft-green"><span class="icon"><i class="fa-solid fa-list-ol"></i></span>Total Transaksi<span class="value"><?= $jumlah_transaksi ?></span></div>
     </div>
 
-    <!-- Filter tanggal -->
     <div class="filter-section">
-        <form method="GET">
-            <input type="date" name="start" value="<?= $startDate ?>">
-            <input type="date" name="end" value="<?= $endDate ?>">
-            <button type="submit" class="filter-btn">Terapkan</button>
+        <form action="" method="GET" class="filter-form horizontal">
+            <div class="filter-group"><label for="start_date">Dari Tanggal</label><input type="date" name="start_date" id="start_date" value="<?= htmlspecialchars($startDate) ?>"></div>
+            <div class="filter-group"><label for="end_date">Sampai Tanggal</label><input type="date" name="end_date" id="end_date" value="<?= htmlspecialchars($endDate) ?>"></div>
+            <div class="filter-group"><label for="jenis_transaksi">Jenis</label><select name="jenis_transaksi" id="jenis_transaksi"><option value="semua" <?= $jenisTransaksi == 'semua' ? 'selected' : '' ?>>Semua</option><option value="Pemasukan" <?= $jenisTransaksi == 'Pemasukan' ? 'selected' : '' ?>>Pemasukan</option><option value="Pengeluaran" <?= $jenisTransaksi == 'Pengeluaran' ? 'selected' : '' ?>>Pengeluaran</option></select></div>
+            <div class="filter-group-action"><button type="submit" class="btn blue" title="Terapkan Filter"><i class="fa-solid fa-filter"></i> Terapkan</button><a href="?" class="btn gray reset-btn" title="Reset Filter">Reset</a></div>
         </form>
     </div>
 
-    <!-- Tabel data -->
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Pilih</th>
-                <th>Tanggal</th>
-                <th>Jenis</th>
-                <th>Kategori</th>
-                <th>Keterangan</th>
-                <th>Jumlah</th>
-                <th>aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (!empty($data)): ?>
-                <?php foreach ($data as $row): ?>
-                    <tr data-id="<?= $row['id'] ?>" data-type="<?= $row['jenis'] ?>">
-                        <td><input type="checkbox" class="select-row" <?= $row['jenis'] == 'Pemasukan' ? 'disabled' : '' ?>></td>
-                        <td><?= htmlspecialchars($row['tanggal']) ?></td>
-                        <td><?= htmlspecialchars($row['jenis']) ?></td>
-                        <td><?= htmlspecialchars($row['nama_kategori'] ?? '-') ?></td>
-                        <td><?= htmlspecialchars($row['keterangan']) ?></td>
-                        <td>Rp <?= number_format($row['jumlah'], 0, ',', '.') ?></td>
-                        <td><button class="edit-btn btn blue" data-id="<?= $row['id'] ?>">Edit</button></td>
-
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Jenis</th>
+                    <th>Deskripsi</th>
+                    <th style="text-align: right;">Jumlah</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php if (!empty($filtered_transactions)): ?>
+                <?php foreach ($filtered_transactions as $index => $trans): ?>
+                    <tr style="--animation-order: <?= $index + 1 ?>;">
+                        <td><?= date('d M Y', strtotime($trans['tanggal'])) ?></td>
+                        <td><span class="jenis-<?= strtolower($trans['jenis']) ?>"><?= htmlspecialchars($trans['jenis']) ?></span></td>
+                        <td><?= htmlspecialchars($trans['deskripsi']) ?></td>
+                        <td style="text-align: right;"><?= format_rupiah($trans['jumlah']) ?></td>
+                        <td>
+                            <?php if ($trans['jenis'] === 'Pengeluaran'): ?>
+                                <button class="btn blue btn-edit" data-id="<?= $trans['id'] ?>"><i class="fa-solid fa-pencil"></i></button>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
-                <tr><td colspan="6" style="text-align:center;">Tidak ada data</td></tr>
+                <tr><td colspan="5" style="text-align:center;">Tidak ada data yang cocok dengan filter.</td></tr>
             <?php endif; ?>
-        </tbody>
-    </table>
-
-    <!-- Modal -->
-    <div id="modalOverlay" class="modal-overlay" style="display:none;">
-        <div class="modal-content">
-            <span id="closeModal" class="close-btn">&times;</span>
-            <div id="modalBody">Memuat...</div>
-        </div>
+            </tbody>
+        </table>
     </div>
 
-    <!-- Tombol bawah -->
     <div class="action-bar">
-        <button class="btn green" id="addBtn">Tambah Pengeluaran</button>
-        <button class="btn dark" id="excelBtn">Unduh Excel</button>
+        <button class="btn green"><i class="fas fa-download"></i> Unduh Excel</button>
+        <button class="btn blue" id="tambahPengeluaran"><i class="fas fa-plus"></i> Tambah Pengeluaran</button>
     </div>
 </div>
 
-<script src="../assets/js/script.js"></script>
+<div class="modal-overlay" id="pembukuan-modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 id="pembukuan-modal-title">Tambah Pengeluaran Baru</h3>
+            <button class="modal-close-btn" id="pembukuan-modal-close">&times;</button>
+        </div>
+        <div class="modal-body" id="pembukuan-modal-body"></div>
+    </div>
+</div>
+
+<script src="/simaksi/assets/js/pembukuan.js"></script>
 </body>
 </html>

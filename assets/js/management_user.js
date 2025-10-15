@@ -1,136 +1,129 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const modalOverlay = document.getElementById("modalOverlay");
-  const modalBody = document.getElementById("modalBody");
-  const closeModal = document.getElementById("closeModal");
+document.addEventListener("DOMContentLoaded", function () {
+    const modalOverlay = document.getElementById("modalOverlay");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalBody = document.getElementById("modalBody");
+    const closeModal = document.getElementById("closeModal");
 
-  function closeModalNow() {
-    modalOverlay.style.animation = "fadeOut 0.25s ease";
-    setTimeout(() => { modalOverlay.style.display = "none"; modalBody.innerHTML = ""; }, 260);
-  }
+    // Fungsi untuk membuka modal dan memuat konten form
+    const openModal = (url, title) => {
+        modalTitle.innerText = title;
+        modalBody.innerHTML = '<div class="loader">Memuat...</div>'; // Tampilkan loader
+        modalOverlay.classList.add("show");
 
-  // edit
-  document.addEventListener("click", (e) => {
-    if (e.target && e.target.matches(".edit-btn")) {
-      const id = e.target.getAttribute("data-id");
-      modalOverlay.style.display = "flex";
-      modalOverlay.style.animation = "fadeIn 0.25s ease";
-      modalBody.innerHTML = "<p>🔄 Memuat data pengguna...</p>";
-
-      fetch(`/simaksi/admin/management_user/edit_user.php?id=${id}`)
-        .then(res => {
-          if (!res.ok) throw new Error("Gagal memuat edit form");
-          return res.text();
-        })
-        .then(html => {
-          modalBody.innerHTML = html;
-          const form = modalBody.querySelector("#editUserForm");
-          if (form) {
-            form.addEventListener("submit", (ev) => {
-              ev.preventDefault();
-              const formData = new FormData(form);
-              fetch('/simaksi/admin/management_user/update_user.php', { method: 'POST', body: formData })
-                .then(r => r.text())
-                .then(text => {
-                  if (text.trim() === 'success') {
-                    const userId = formData.get('id_pengguna');
-                    updateRowInTable(userId, formData);
-                    closeModalNow();
-                  } else {
-                    alert('Gagal memperbarui: ' + text);
-                  }
-                })
-                .catch(err => {
-                  console.error(err);
-                  alert('Terjadi kesalahan saat mengupdate.');
-                });
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                modalBody.innerHTML = html;
+                const form = modalBody.querySelector("#userForm");
+                if (form) {
+                    handleFormSubmit(form);
+                }
+            })
+            .catch(error => {
+                modalBody.innerHTML = "<p>Gagal memuat konten. Silakan coba lagi.</p>";
+                console.error("Fetch Error:", error);
             });
-          }
-        })
-        .catch(err => {
-          modalBody.innerHTML = `<p style="color:red;">${err.message}</p>`;
+    };
+
+    // Fungsi untuk menangani submit form di dalam modal (AJAX)
+    const handleFormSubmit = (form) => {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload(); // Muat ulang halaman untuk melihat perubahan
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: data.message || 'Terjadi kesalahan.'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error Jaringan',
+                    text: 'Tidak bisa terhubung ke server.'
+                });
+                console.error("Submit Error:", error);
+            });
+        });
+    };
+
+    // Event listener untuk tombol "Tambah Pengguna"
+    const tambahBtn = document.getElementById("tambahUser");
+    if (tambahBtn) {
+        tambahBtn.addEventListener("click", () => {
+            openModal('/simaksi/admin/management_user/form_user.php', 'Tambah Pengguna Baru');
         });
     }
-  });
 
-  // delete
-  document.addEventListener("click", (e) => {
-    if (e.target && e.target.matches(".delete-btn")) {
-      const btn = e.target;
-      const id = btn.getAttribute("data-id");
+    // Event listener untuk semua tombol "Edit"
+    document.querySelectorAll(".btn-edit").forEach(button => {
+        button.addEventListener("click", function () {
+            const userId = this.getAttribute("data-id");
+            openModal(`/simaksi/admin/management_user/form_user.php?id=${userId}`, 'Edit Data Pengguna');
+        });
+    });
 
-      const confirmBox = document.createElement("div");
-      confirmBox.className = "confirm-box show";
-      confirmBox.innerHTML = `
-        <div class="confirm-content">
-          <h3>⚠️ Konfirmasi Hapus</h3>
-          <p>Hapus pengguna ini?</p>
-          <div style="display:flex;gap:12px;justify-content:center;margin-top:8px;">
-            <button class="btn red confirm-yes">Hapus</button>
-            <button class="btn dark confirm-no">Batal</button>
-          </div>
-        </div>`;
-      document.body.appendChild(confirmBox);
+    // Event listener untuk semua tombol "Hapus"
+    document.querySelectorAll(".btn-hapus").forEach(button => {
+        button.addEventListener("click", function () {
+            const userId = this.getAttribute("data-id");
+            
+            Swal.fire({
+                title: 'Anda yakin?',
+                text: "Data pengguna ini akan dihapus secara permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formData = new FormData();
+                    formData.append('action', 'hapus');
+                    formData.append('id', userId);
 
-      confirmBox.querySelector(".confirm-no").addEventListener("click", () => {
-        confirmBox.classList.remove("show");
-        setTimeout(() => confirmBox.remove(), 220);
-      });
+                    fetch('/simaksi/admin/management_user/proses_user.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Dihapus!', data.message, 'success')
+                                .then(() => window.location.reload());
+                        } else {
+                            Swal.fire('Gagal!', data.message || 'Gagal menghapus data.', 'error');
+                        }
+                    })
+                    .catch(error => console.error("Delete Error:", error));
+                }
+            });
+        });
+    });
 
-      confirmBox.querySelector(".confirm-yes").addEventListener("click", () => {
-        fetch(`/simaksi/admin/management_user/hapus_user.php?id=${id}`)
-          .then(r => r.text())
-          .then(text => {
-            if (text.trim() === 'success') {
-              const row = btn.closest("tr");
-              row.style.transition = "all 0.45s ease";
-              row.style.backgroundColor = "#ffdddd";
-              row.style.opacity = "0";
-              setTimeout(() => row.remove(), 420);
-            } else {
-              alert('Gagal menghapus: ' + text);
-            }
-          })
-          .catch(err => {
-            console.error(err);
-            alert('Kesalahan koneksi saat menghapus.');
-          })
-          .finally(() => {
-            confirmBox.classList.remove("show");
-            setTimeout(() => confirmBox.remove(), 220);
-          });
-      });
-    }
-  });
-
-  closeModal.addEventListener("click", () => closeModalNow());
-  window.addEventListener("click", (e) => { if (e.target === modalOverlay) closeModalNow(); });
-
-  function updateRowInTable(id, formData) {
-    const rows = document.querySelectorAll("#userTable tbody tr");
-    for (const r of rows) {
-      if (r.dataset.id === String(id)) {
-        r.cells[1].textContent = formData.get('nama_lengkap') || '';
-        r.cells[2].textContent = formData.get('email') || '';
-        r.cells[3].textContent = formData.get('nomor_telepon') || '';
-        r.cells[4].textContent = formData.get('alamat') || '';
-        r.cells[5].textContent = formData.get('peran') || '';
-        break;
-      }
-    }
-  }
+    // Event listener untuk menutup modal
+    if (closeModal) closeModal.addEventListener("click", () => modalOverlay.classList.remove("show"));
+    modalOverlay.addEventListener("click", e => {
+        if (e.target === modalOverlay) modalOverlay.classList.remove("show");
+    });
 });
-
-document.getElementById('applyFilter').addEventListener('click', function() {
-    const date = document.getElementById('filterDate').value;
-    const name = document.getElementById('filterName').value;
-    const role = document.getElementById('filterRole').value;
-
-    const query = new URLSearchParams({
-        date: date,
-        name: name,
-        role: role
-    }).toString();
-
-     window.location.href = `index.php?page=management_user&date=${encodeURIComponent(date)}&name=${encodeURIComponent(name)}&role=${encodeURIComponent(role)}`;
-});
-

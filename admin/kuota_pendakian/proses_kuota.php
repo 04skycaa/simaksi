@@ -1,104 +1,51 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 require __DIR__ . '/../../config/supabase.php';
 
-header('Content-Type: application/json');
+$is_edit = isset($_GET['id']);
+$kuota_data = null;
+$form_action = 'tambah';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Metode tidak diizinkan.']);
-    exit;
-}
-
-$action = $_POST['action'] ?? null;
-
-switch ($action) {
-    case 'tambah':
-        tambahKuota();
-        break;
-    case 'edit':
-        editKuota();
-        break;
-    case 'hapus':
-        hapusKuota();
-        break;
-    default:
-        echo json_encode(['success' => false, 'message' => 'Aksi tidak valid.']);
-        break;
-}
-
-function tambahKuota() {
-    $tanggal = $_POST['tanggal_kuota'] ?? '';
-    $maksimal = $_POST['kuota_maksimal'] ?? 0;
-
-    if (empty($tanggal) || empty($maksimal)) {
-        echo json_encode(['success' => false, 'message' => 'Semua field wajib diisi.']);
-        return;
-    }
+if ($is_edit) {
+    $id = $_GET['id'];
+    $endpoint = 'kuota_harian?id_kuota=eq.' . $id . '&select=*&limit=1';
+    $data = supabase_request('GET', $endpoint);
     
-    $check = supabase_request('GET', 'kuota_harian?tanggal_kuota=eq.' . $tanggal);
-    if (!empty($check)) {
-        echo json_encode(['success' => false, 'message' => 'Kuota untuk tanggal ' . date('d-m-Y', strtotime($tanggal)) . ' sudah ada.']);
-        return;
-    }
-
-    $data = [
-        'tanggal_kuota' => $tanggal,
-        'kuota_maksimal' => (int)$maksimal,
-        'kuota_terpesan' => 0 
-    ];
-
-    $result = supabase_request('POST', 'kuota_harian', $data);
-
-    if (isset($result['error']) || !$result) {
-        echo json_encode(['success' => false, 'message' => 'Gagal menambahkan kuota ke database.']);
-    } else {
-        echo json_encode(['success' => true, 'message' => 'Kuota berhasil ditambahkan.']);
+    if ($data && !isset($data['error']) && count($data) > 0) {
+        $kuota_data = $data[0];
+        $form_action = 'edit';
     }
 }
+?>
 
-function editKuota() {
-    $id = $_POST['id_kuota'] ?? '';
-    $tanggal = $_POST['tanggal_kuota'] ?? '';
-    $maksimal = $_POST['kuota_maksimal'] ?? 0;
+<div class="form-container">
+    <form id="kuotaForm" action="/simaksi/admin/kuota_pendakian/proses_kuota.php" method="POST">
+        <input type="hidden" name="action" value="<?= $form_action ?>">
+        <?php if ($is_edit): ?>
+            <input type="hidden" name="id_kuota" value="<?= htmlspecialchars($kuota_data['id_kuota'] ?? '') ?>">
+        <?php endif; ?>
 
-    if (empty($id) || empty($tanggal) || empty($maksimal)) {
-        echo json_encode(['success' => false, 'message' => 'Data tidak lengkap.']);
-        return;
-    }
-
-    $data = [
-        'tanggal_kuota' => $tanggal,
-        'kuota_maksimal' => (int)$maksimal
-    ];
-
-    $result = supabase_request('PATCH', 'kuota_harian?id_kuota=eq.' . $id, $data);
-
-    if (!$result || isset($result['error'])) {
-        $errorMessage = 'Gagal mengupdate kuota di database.';
-        if (isset($result['error']['message'])) {
-            $errorMessage = $result['error']['message'];
-        }
-        echo json_encode(['success' => false, 'message' => $errorMessage]);
-    } else {
-        echo json_encode(['success' => true, 'message' => 'Kuota berhasil diperbarui.']);
-    }
-}
-
-function hapusKuota() {
-    $id = $_POST['id_kuota'] ?? '';
-
-    if (empty($id)) {
-        echo json_encode(['success' => false, 'message' => 'ID Kuota tidak ditemukan.']);
-        return;
-    }
-    
-    $result = supabase_request('DELETE', 'kuota_harian?id_kuota=eq.' . $id);
-
-    if (isset($result['error'])) {
-        $errorMessage = isset($result['error']['message']) ? $result['error']['message'] : 'Gagal menghapus kuota.';
-        echo json_encode(['success' => false, 'message' => $errorMessage]);
-    } else {
-        echo json_encode(['success' => true, 'message' => 'Kuota berhasil dihapus.']);
-    }
-}
+        <?php if ($is_edit): ?>
+            <div class="form-group">
+                <label for="tanggal_kuota">Tanggal Kuota</label>
+                <input type="date" id="tanggal_kuota" name="tanggal_kuota" value="<?= htmlspecialchars($kuota_data['tanggal_kuota'] ?? '') ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="kuota_maksimal">Kuota Maksimal</label>
+                <input type="number" id="kuota_maksimal" name="kuota_maksimal" value="<?= htmlspecialchars($kuota_data['kuota_maksimal'] ?? '') ?>" required>
+            </div>
+        <?php else: ?>
+            <div class="input-group">
+                <input type="date" id="tanggal_kuota" name="tanggal_kuota" placeholder=" " required>
+                <label for="tanggal_kuota">Tanggal Kuota</label>
+            </div>
+            <div class="input-group">
+                <input type="number" id="kuota_maksimal" name="kuota_maksimal" placeholder=" " required>
+                <label for="kuota_maksimal">Kuota Maksimal</label>
+            </div>
+        <?php endif; ?>
+        
+        <button type="submit" class="form-submit-btn">
+            <i class="fa-solid fa-save"></i> Simpan
+        </button>
+    </form>
+</div>

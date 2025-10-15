@@ -83,6 +83,8 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
 
   <div class="filter-section">
     <form action="" method="GET" class="filter-form">
+        <input type="hidden" name="page" value="kuota_pendakian"> 
+
         <div class="filter-group">
             <input type="date" name="filter_tanggal" id="filterDate" value="<?= htmlspecialchars($_GET['filter_tanggal'] ?? '') ?>">
             <button type="submit" class="filter-btn-icon" title="Terapkan Filter">
@@ -91,7 +93,7 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
         </div>
 
         <?php if (!empty($_GET['filter_tanggal'])): ?>
-            <a href="kuota_pendakian.php" class="reset-btn">Reset</a>
+            <a href="index.php?page=kuota_pendakian" class="reset-btn">Reset</a>
         <?php endif; ?>
     </form>
 </div>
@@ -141,14 +143,13 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
   </div>
 </div>
 <!-- untuk pop up -->
-<div class="modal-overlay" id="modalOverlay">
+<div class="modal-overlay" id="pembukuan-modal-overlay">
     <div class="modal-container">
         <div class="modal-header">
-            <h3 id="modalTitle">Tambah Kuota Baru</h3>
-            <button class="modal-close-btn" id="closeModal">&times;</button>
+            <h3 id="pembukuan-modal-title">Tambah Pengeluaran Baru</h3>
+            <button class="modal-close-btn" id="pembukuan-modal-close">&times;</button>
         </div>
-        <div class="modal-body" id="modalBody">
-            </div>
+        <div class="modal-body" id="pembukuan-modal-body"></div>
     </div>
 </div>
 
