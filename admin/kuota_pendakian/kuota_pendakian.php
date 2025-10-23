@@ -143,14 +143,13 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
   </div>
 </div>
 <!-- untuk pop up -->
-<div class="modal-overlay" id="pembukuan-modal-overlay">
-    <div class="modal-container">
-        <div class="modal-header">
-            <h3 id="pembukuan-modal-title">Tambah Pengeluaran Baru</h3>
-            <button class="modal-close-btn" id="pembukuan-modal-close">&times;</button>
-        </div>
-        <div class="modal-body" id="pembukuan-modal-body"></div>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3 id="modalTitle">Tambah Pengeluaran Baru</h3> 
+      <button class="modal-close-btn" id="closeModal">&times;</button> 
     </div>
+  <div class="modal-body" id="modalBody"></div></div>
 </div>
 
 <script src="/simaksi/assets/js/kuota_pendakian.js"></script>
