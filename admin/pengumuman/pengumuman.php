@@ -22,11 +22,6 @@ if (!$data || isset($data['error'])) {
 <body>
 
 <div class="menu-container">
-    <div class="menu-header">
-        <h2>Manajemen Pengumuman</h2>
-        <p>Kelola pengumuman yang akan tampil untuk pendaki.</p>
-    </div>
-
     <div class="table-container">
         <table class="data-table">
             <thead>

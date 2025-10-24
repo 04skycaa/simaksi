@@ -57,10 +57,6 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
 <body>
 
 <div class="menu-container">
-  <div class="menu-header">
-    <h2>Manajemen Pengguna</h2>
-  </div>
-
   <div class="status-bar">
     <div class="card blue">
       <span class="icon">

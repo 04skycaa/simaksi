@@ -5,12 +5,12 @@ session_start();
 include '../config/config.php'; 
 $error_message = '';
 
+// ini untuk fungsi login 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $email = $_POST['username'];
     $password = $_POST['password'];
     $auth_url = rtrim($supabaseUrl, '/') . '/auth/v1/token?grant_type=password'; 
-    
     try {
         $authHeaders = [
             'Content-Type: application/json',
@@ -22,48 +22,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'password' => $password
         ];
 
-        // Mempersiapkan cURL untuk proses login Auth
+        // ini untuk request ke supabase auth
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $auth_url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($authDataPayload));
         curl_setopt($ch, CURLOPT_HTTPHEADER, $authHeaders);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Ganti ke true di produksi
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        
+
+        // ini untuk eksekusi curl
         $authResponse = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
-        curl_close($ch);
-        
+        curl_close($ch); 
         if ($curlError) {
             throw new Exception("Kesalahan koneksi: " . $curlError);
         }
         
+        // ini untuk decode response dari supabase auth
         $authData = json_decode($authResponse, true);
-
-        // 2. Cek Respons Otentikasi
         if ($httpCode !== 200 || !isset($authData['user']) || !isset($authData['access_token'])) {
             $errorMessage = $authData['error_description'] ?? $authData['msg'] ?? "Login Gagal. Cek kredensial Anda.";
             throw new Exception($errorMessage);
         }
 
+        // ambil data profile user dari tabel profiles
         $user = $authData['user'];
         $session = $authData;
         $profileEndpoint = 'profiles?select=nama_lengkap,peran&id=eq.' . $user['id'];
         $profileResult = makeSupabaseRequest($profileEndpoint, 'GET');
-
         if (isset($profileResult['error'])) {
             $errorMessage = $profileResult['error'] ?? "Gagal mengambil data profil. Cek RLS atau Kunci API.";
             throw new Exception($errorMessage);
         }
         
+        // ini untuk menyimpan data session
         $profileData = $profileResult['data'];
-        
         if (is_array($profileData) && count($profileData) > 0) {
             $profile = $profileData[0];
-
             $_SESSION['user_id']    = $user['id']; 
             $_SESSION['email']      = $user['email']; 
             $_SESSION['username']   = $profile['nama_lengkap']; 
@@ -80,11 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $error_message = "Data profile Anda tidak ditemukan. Hubungi admin.";
         }
-
+    
+    // ini untuk notifikasi error
     } catch (Exception $e) {
         $raw_message = $e->getMessage();
-        
-        if (str_contains($raw_message, 'Invalid login credentials') || str_contains($raw_message, 'invalid_grant') || str_contains($raw_message, 'Email or password are not valid') || str_contains($raw_message, 'Login Gagal') || str_contains($raw_message, 'Email atau Password yang Anda masukkan salah')) {
+        if (str_contains($raw_message, 'Invalid login credentials') || str_contains($raw_message, 'invalid_grant') || 
+        str_contains($raw_message, 'Email or password are not valid') || str_contains($raw_message, 'Login Gagal') || 
+        str_contains($raw_message, 'Email atau Password yang Anda masukkan salah')) {
              $error_message = "Email atau Password yang Anda masukkan salah.";
         } elseif (str_contains($raw_message, 'Email not confirmed') || str_contains($raw_message, 'email not confirmed')) {
              $error_message = "Email Anda belum terverifikasi. Silakan cek inbox email Anda.";

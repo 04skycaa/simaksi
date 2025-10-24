@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 include __DIR__ . '/../../config/supabase.php';
 
+// ini untuk mengambil data dari request body
 $input = json_decode(file_get_contents('php://input'), true);
 
 if (!$input || !isset($input['action'])) {
@@ -44,6 +45,7 @@ switch ($action) {
         break;
 
     case 'update':
+        // ini untuk memperbarui pengumuman
         $id = $input['id_pengumuman'];
         $data = [
             'judul' => $input['judul'],
@@ -56,8 +58,9 @@ switch ($action) {
             $data['telah_terbit'] = $telah_terbit_value;
         }
 
+        // ini untuk endpoint patch
         $endpoint = 'pengumuman?id_pengumuman=eq.' . $id;
-        
+        // ini untuk request patch
         $result = supabase_request('PATCH', $endpoint, $data);
         if (is_array($result) && isset($result[0]['id_pengumuman'])) {
             $response = ['success' => true, 'message' => 'Pengumuman berhasil diperbarui.'];

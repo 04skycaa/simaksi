@@ -45,10 +45,6 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
 <body>
 
 <div class="menu-container">
-  <div class="menu-header">
-    <h2>Kuota Pendakian</h2>
-  </div>
-
   <div class="status-bar">
     <div class="card green">
       <span class="icon">

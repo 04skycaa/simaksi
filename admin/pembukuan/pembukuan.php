@@ -1,19 +1,15 @@
 <?php
-// 1. KONEKSI & PENGAMBILAN DATA
 include __DIR__ . '/../../config/supabase.php';
 
 $pemasukan_data = supabase_request('GET', 'pemasukan?select=*');
-// PERUBAHAN: Memastikan id_pengeluaran diambil untuk tombol edit
 $pengeluaran_data = supabase_request('GET', 'pengeluaran?select=*,id_pengeluaran');
 
 $all_transactions = [];
 
-// Proses data pemasukan
 if ($pemasukan_data && !isset($pemasukan_data['error'])) {
     foreach ($pemasukan_data as $item) {
         $all_transactions[] = [
-            'id'        => null, // Pemasukan tidak memiliki aksi edit
-            // PERUBAHAN: Menggunakan kolom 'tanggal_pemasukan'
+            'id'        => null, 
             'tanggal'   => $item['tanggal_pemasukan'],
             'jenis'     => 'Pemasukan',
             'deskripsi' => $item['keterangan'],
@@ -26,9 +22,7 @@ if ($pemasukan_data && !isset($pemasukan_data['error'])) {
 if ($pengeluaran_data && !isset($pengeluaran_data['error'])) {
     foreach ($pengeluaran_data as $item) {
         $all_transactions[] = [
-            // PERUBAHAN: Menggunakan kolom 'id_pengeluaran'
             'id'        => $item['id_pengeluaran'],
-            // PERUBAHAN: Menggunakan kolom 'tanggal_pengeluaran'
             'tanggal'   => $item['tanggal_pengeluaran'],
             'jenis'     => 'Pengeluaran',
             'deskripsi' => $item['keterangan'],
@@ -87,7 +81,6 @@ function format_rupiah($number) {
 <body>
 
 <div class="menu-container">
-    <div class="menu-header"><h2>Keuangan</h2></div>
     <div class="status-bar">
         <div class="card green">
             <span class="icon">

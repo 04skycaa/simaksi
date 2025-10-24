@@ -46,10 +46,6 @@ if ($reservasiBulanIni && !isset($reservasiBulanIni['error'])) {
 <body>
 
 <div class="menu-container">
-    <div class="menu-header">
-        <h2>Validasi Reservasi</h2>
-        </div>
-
     <div class="status-bar">
         <div class="card green">
             <span class="icon">

@@ -7,6 +7,7 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
+// ini untuk mengambil data pengumuman berdasarkan id
 $id = $_GET['id'];
 $endpoint = 'pengumuman?id_pengumuman=eq.' . $id . '&limit=1';
 $data = supabase_request('GET', $endpoint);

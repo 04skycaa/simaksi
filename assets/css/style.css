@@ -20,6 +20,10 @@
   --grey-bg: #D9D9D9;
   --blue: #7680EF;
   --red: #E74C3C;
+  --topbar-bg-light: #ffffff; /* Putih Solid */
+  --topbar-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Bayangan yang jelas */
+  --topbar-float-margin: 15px;
+  --time-color: #35542E; /* Hijau gelap untuk keterbacaan di latar terang */
 }
 
 body {
@@ -37,8 +41,8 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 260px;             
-  height: 100vh;           
+  width: 260px;
+  height: 100vh;
   background: var(--sidebar-bg);
   transition: 0.5s;
   overflow: hidden;
@@ -82,8 +86,8 @@ body {
 
 .navigation ul li a {
   position: relative;
-  align-items: center; 
-  gap: 10px;   
+  align-items: center;
+  gap: 10px;
   display: block;
   width: 100%;
   display: flex;
@@ -165,22 +169,19 @@ body {
   pointer-events: none;
 }
 
-.main.active .topbar {
-  left: 80px;
-  width: calc(100% - 80px);
-}
-
+/* Penyesuaian Main Content */
 .main {
   flex: 1;
   position: absolute;
+  padding: 0;
   width: calc(100% - 260px);
   left: 260px;
   min-height: 100vh;
   height: 100vh;
-  background: var(--text-color);
+  background: var(--main-bg); /* Menggunakan --main-bg: #ffffff */
   transition: 0.5s;
-  padding: 15px;
-  overflow-y: auto; 
+  padding: 0; /* Hapus padding agar topbar bisa full width/height */
+  overflow-y: auto;
 }
 
 .main.active {
@@ -188,12 +189,196 @@ body {
   left: 80px;
 }
 
+/* Adjust padding-top on main so content doesn't get hidden under fixed topbar */
+.main .content-area {
+    padding: 15px; /* Pindahkan padding ke area konten utama di bawah topbar */
+}
+
 .toggle {
   font-size: 2rem;
   cursor: pointer;
-
 }
 
+/* tampilan untuk menu*/
+.menu-container {
+  background: #fff;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  animation: fadeIn 0.6s ease-out;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-header h2 {
+  color: var(--hover-text);
+  font-size: 1.5rem;
+}
+
+.right-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.right-controls .btn {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: var(--grey-bg);
+  border-radius: 20px;
+  padding: 5px 10px;
+}
+
+.search-box input {
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  transition: 0.3s;
+}
+.search-box input:focus {
+  border-color: var(--hover-text);
+  box-shadow: 0 0 5px rgba(53,84,46,0.3);
+}
+
+/* ====== TOPBAR KEREN BARU DENGAN ANIMASI ====== */
+.topbar {
+    position: sticky; 
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: var(--topbar-float-margin);
+    margin-bottom: 5px;
+    background: var(--topbar-bg-light); 
+    border-radius: 15px; 
+    box-shadow: var(--topbar-shadow); 
+    padding: 0; 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+
+/* Nama Menu Aktif (Sisi Kiri) */
+.topbar-left {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px; 
+}
+
+.topbar-menu-name {
+    font-size: 1.55em; 
+    font-weight: 700;
+    color: var(--hover-text); 
+}
+
+/* informasi sebelah kanan) */
+.topbar-right {
+    display: flex;
+    align-items: center; 
+    height: auto; 
+    background: transparent; 
+    padding: 0 15px 0 0; 
+    border-radius: 0 15px 15px 0; 
+    gap: 15px; 
+}
+
+/* untuk informasi dari topbar */
+.topbar-info {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: flex-end;
+    padding: 10px 15px; 
+    margin: 0;
+    background: transparent; 
+    font-size: 0.8em; 
+    line-height: 1.3;
+}
+
+/* jam dan tanggal*/
+#current-time {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: var(--time-color); 
+    animation: pulseTime 3s infinite ease-in-out;
+}
+
+/* User BLOCK: Memanjang, Bulat, dan Animasi */
+.topbar-user {
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    justify-content: center;
+    padding: 8px 18px; 
+    height: 40px; 
+    background-color: transparent; 
+    color: var(--user-text-color);
+    font-weight: 600;
+    border-radius: 20px; 
+    border: 2px solid var(--green-pastel); 
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.topbar-user:hover {
+    background-color: var(--green-pastel); 
+    color: white; 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(117, 179, 104, 0.4); 
+}
+
+.topbar-user svg {
+    margin-right: 8px;
+    color: var(--user-text-color); 
+    transition: color 0.3s ease;
+}
+
+.topbar-user:hover svg {
+    color: white;
+}
+
+.btn-logout {
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    
+    padding: 8px 18px; 
+    height: 40px;
+    margin: 0;
+    
+    background-color: var(--red); 
+    color: white;
+    font-weight: 600;
+    border-radius: 20px; 
+    
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-logout:hover {
+    background-color: #c0392b; 
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 15px rgba(231, 76, 60, 0.6); 
+}
+
+.btn-logout svg {
+    margin-right: 8px;
+    transition: transform 0.2s ease;
+}
+
+.btn-logout:hover svg {
+    transform: scale(1.1); 
+}
 /* tampilan untuk menu*/
 .menu-container {
   background: #fff;
