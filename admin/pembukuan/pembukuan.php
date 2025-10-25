@@ -108,7 +108,7 @@ function format_rupiah($number) {
     </div>
 
     <div class="filter-section">
-        <form action="" method="GET" class="filter-form horizontal">
+        <form action="simaksi/admin/pembukuan/pembukuan.php" method="GET" class="filter-form horizontal">
             <div class="filter-group"><label for="start_date">Dari Tanggal</label><input type="date" name="start_date" id="start_date" value="<?= htmlspecialchars($startDate) ?>"></div>
             <div class="filter-group"><label for="end_date">Sampai Tanggal</label><input type="date" name="end_date" id="end_date" value="<?= htmlspecialchars($endDate) ?>"></div>
             <div class="filter-group"><label for="jenis_transaksi">Jenis</label><select name="jenis_transaksi" id="jenis_transaksi"><option value="semua" <?= $jenisTransaksi == 'semua' ? 'selected' : '' ?>>Semua</option><option value="Pemasukan" <?= $jenisTransaksi == 'Pemasukan' ? 'selected' : '' ?>>Pemasukan</option><option value="Pengeluaran" <?= $jenisTransaksi == 'Pengeluaran' ? 'selected' : '' ?>>Pengeluaran</option></select></div>
@@ -116,42 +116,85 @@ function format_rupiah($number) {
         </form>
     </div>
 
-    <div class="table-container">
+    <div class="two-column-details">
+    <div class="details-card">
+        <div class="card-header green">
+            <i class="fa-solid fa-arrow-down"></i>
+            <h3>Rincian Pemasukan</h3>
+        </div>
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Tanggal</th>
-                    <th>Jenis</th>
-                    <th>Deskripsi</th>
-                    <th style="text-align: right;">Jumlah</th>
-                    <th>Aksi</th>
+                    <th style="width: 25%;"><i class="fa-solid fa-calendar-alt"></i> Tanggal</th>
+                    <th style="width: 50%;"><i class="fa-solid fa-info-circle"></i> Keterangan</th>
+                    <th style="width: 25%; text-align: right;"><i class="fa-solid fa-dollar-sign"></i> Jumlah</th>
                 </tr>
             </thead>
             <tbody>
-            <?php if (!empty($filtered_transactions)): ?>
-                <?php foreach ($filtered_transactions as $index => $trans): ?>
-                    <tr style="--animation-order: <?= $index + 1 ?>;">
+                <?php 
+                $pemasukan_found = false;
+                $pemasukan_index = 0;
+                foreach ($filtered_transactions as $trans): 
+                    if ($trans['jenis'] === 'Pemasukan'): 
+                        $pemasukan_found = true;
+                        $pemasukan_index++;
+                ?>
+                    <tr style="--animation-order: <?= $pemasukan_index ?>;">
                         <td><?= date('d M Y', strtotime($trans['tanggal'])) ?></td>
-                        <td><span class="jenis-<?= strtolower($trans['jenis']) ?>"><?= htmlspecialchars($trans['jenis']) ?></span></td>
                         <td><?= htmlspecialchars($trans['deskripsi']) ?></td>
-                        <td style="text-align: right;"><?= format_rupiah($trans['jumlah']) ?></td>
-                        <td>
-                            <?php if ($trans['jenis'] === 'Pengeluaran'): ?>
-                                <button class="btn blue btn-edit" data-id="<?= $trans['id'] ?>"><i class="fa-solid fa-pencil"></i></button>
-                            <?php endif; ?>
-                        </td>
+                        <td class="amount green-text" style="text-align: right;"><?= format_rupiah($trans['jumlah']) ?></td>
                     </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr><td colspan="5" style="text-align:center;">Tidak ada data yang cocok dengan filter.</td></tr>
-            <?php endif; ?>
+                <?php 
+                    endif;
+                endforeach; 
+                if (!$pemasukan_found): 
+                ?>
+                    <tr><td colspan="3" style="text-align:center;">Tidak ada data pemasukan.</td></tr>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
 
-    <div class="action-bar">
-        <button class="btn green"><i class="fas fa-download"></i> Unduh Excel</button>
-        <button class="btn blue" id="tambahPengeluaran"><i class="fas fa-plus"></i> Tambah Pengeluaran</button>
+    <div class="details-card">
+        <div class="card-header red">
+            <i class="fa-solid fa-arrow-up"></i>
+            <h3>Rincian Pengeluaran</h3>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%;"><i class="fa-solid fa-calendar-alt"></i> Tanggal</th>
+                    <th style="width: 50%;"><i class="fa-solid fa-tags"></i> Kategori</th>
+                    <th style="width: 25%; text-align: right;"><i class="fa-solid fa-dollar-sign"></i> Jumlah</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                $pengeluaran_found = false;
+                $pengeluaran_index = 0;
+                foreach ($filtered_transactions as $trans): 
+                    if ($trans['jenis'] === 'Pengeluaran'): 
+                        $pengeluaran_found = true;
+                        $pengeluaran_index++;
+                ?>
+                    <tr style="--animation-order: <?= $pengeluaran_index ?>;">
+                        <td><?= date('d M Y', strtotime($trans['tanggal'])) ?></td>
+                        <td><?= htmlspecialchars($trans['deskripsi']) ?></td> 
+                        <td class="amount red-text" style="text-align: right;"><?= format_rupiah($trans['jumlah']) ?></td>
+                        <td>
+                            <button class="btn btn-icon btn-edit" data-id="<?= $trans['id'] ?>"><i class="fa-solid fa-pencil"></i></button>
+                        </td>
+                    </tr>
+                <?php 
+                    endif;
+                endforeach; 
+                if (!$pengeluaran_found): 
+                ?>
+                    <tr><td colspan="4" style="text-align:center;">Tidak ada data pengeluaran.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
 </div>
 
