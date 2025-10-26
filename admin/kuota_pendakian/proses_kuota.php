@@ -1,20 +1,80 @@
 <?php
 require __DIR__ . '/../../config/supabase.php';
 
-$is_edit = isset($_GET['id']);
-$kuota_data = null;
-$form_action = 'tambah';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json');
 
-if ($is_edit) {
-    $id = $_GET['id'];
-    $endpoint = 'kuota_harian?id_kuota=eq.' . $id . '&select=*&limit=1';
-    $data = supabase_request('GET', $endpoint);
+    $response_data = ['success' => false, 'message' => 'Aksi tidak valid atau data kurang.'];
+    $action = $_POST['action'] ?? '';
     
-    if ($data && !isset($data['error']) && count($data) > 0) {
-        $kuota_data = $data[0];
-        $form_action = 'edit';
+    try {
+        if ($action === 'tambah') {
+            $data_to_insert = [
+                'tanggal_kuota' => $_POST['tanggal_kuota'] ?? null,
+                'kuota_maksimal' => (int)($_POST['kuota_maksimal'] ?? 0),
+                'kuota_terpesan' => 0 // Default 0 untuk kuota baru
+            ];
+            
+            // Lakukan INSERT ke Supabase
+            $result = supabase_request('POST', 'kuota_harian', $data_to_insert);
+
+            if ($result && !isset($result['error'])) {
+                $response_data = ['success' => true, 'message' => 'Kuota berhasil ditambahkan.'];
+            } else {
+                $error_message = $result['error']['message'] ?? 'Gagal menambahkan kuota. Cek log Supabase/RLS.';
+                $response_data = ['success' => false, 'message' => $error_message];
+            }
+
+        } elseif ($action === 'edit') {
+            $id_kuota = $_POST['id_kuota'] ?? null;
+            $data_to_update = [
+                'tanggal_kuota' => $_POST['tanggal_kuota'] ?? null,
+                'kuota_maksimal' => (int)($_POST['kuota_maksimal'] ?? 0)
+            ];
+            
+            if (!$id_kuota) {
+                 throw new Exception('ID Kuota tidak ditemukan.');
+            }
+
+            // Lakukan PATCH/UPDATE ke Supabase
+            $endpoint = 'kuota_harian?id_kuota=eq.' . $id_kuota;
+            $result = supabase_request('PATCH', $endpoint, $data_to_update); 
+            
+            if ($result && !isset($result['error']) && count($result) > 0) {
+                $response_data = ['success' => true, 'message' => 'Kuota berhasil diupdate.'];
+            } else {
+                $error_message = $result['error']['message'] ?? 'Gagal mengupdate kuota. Kuota tidak ditemukan atau RLS bermasalah.';
+                $response_data = ['success' => false, 'message' => $error_message];
+            }
+            
+        } elseif ($action === 'hapus') {
+            $id_kuota = $_POST['id_kuota'] ?? null;
+            
+            if (!$id_kuota) {
+                throw new Exception('ID Kuota tidak ditemukan.');
+            }
+
+            // Lakukan DELETE ke Supabase
+            $endpoint = 'kuota_harian?id_kuota=eq.' . $id_kuota;
+            $result = supabase_request('DELETE', $endpoint); 
+
+            if ($result && !isset($result['error']) && count($result) > 0) {
+                $response_data = ['success' => true, 'message' => 'Kuota berhasil dihapus.'];
+            } else {
+                $error_message = $result['error']['message'] ?? 'Gagal menghapus kuota atau kuota tidak ditemukan. RLS?';
+                $response_data = ['success' => false, 'message' => $error_message];
+            }
+        }
+
+    } catch (Exception $e) {
+        $response_data = ['success' => false, 'message' => 'Kesalahan sistem PHP: ' . $e->getMessage()];
     }
+
+    // Selalu kirim respons JSON dan HENTIKAN eksekusi
+    echo json_encode($response_data);
+    exit;
 }
+
 ?>
 
 <div class="form-container">

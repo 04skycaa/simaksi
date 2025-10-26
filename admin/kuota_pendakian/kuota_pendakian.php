@@ -40,42 +40,12 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="/simaksi/assets/css/style.css"> 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="icon" type="image/x-icon" href="/simaksi/assets/images/favicon.ico">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
 <div class="menu-container">
-  <div class="status-bar">
-    <div class="card green">
-      <span class="icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M3 3h2v18H3zm4 7h2v11H7zm4-5h2v16h-2zm4 8h2v8h-2zm4-3h2v11h-2z"/>
-          </svg>
-      </span>
-      Kuota Bulan Ini
-      <span class="value"><?= $totalKuotaBulanIni ?></span>
-  </div>
-
-  <div class="card red">
-      <span class="icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12 2a5 5 0 1 1 0 10a5 5 0 0 1 0-10m0 12c-4.336 0-8 2.239-8 5v3h16v-3c0-2.761-3.664-5-8-5"/>
-          </svg>
-      </span>
-      Terdaftar
-      <span class="value"><?= $totalTerdaftar ?></span>
-  </div>
-
-  <div class="card blue">
-      <span class="icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M10 15.172L5.414 10.586L4 12l6 6l10-10l-1.414-1.414z"/>
-          </svg>
-      </span>
-      Tersisa
-      <span class="value"><?= $kuotaTersisa ?></span>
-  </div>
-  </div>
 
   <div class="filter-section">
     <form action="" method="GET" class="filter-form">
