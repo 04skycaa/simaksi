@@ -24,7 +24,6 @@ if ($page === 'reservasi' && isset($_GET['action'])) {
         die();
     }
 }
-// =========================================================================
 
 switch ($page) {
     case 'kuota_pendakian':
@@ -44,6 +43,9 @@ switch ($page) {
         break;
     case 'pengumuman':
         $content = '../admin/pengumuman/pengumuman.php';
+        break;
+    case 'poster':
+        $content = '../admin/poster/poster.php';
         break;
     case 'manage_pendakian':
         $content = '../admin/manage_pendakian/manage_pendakian.php';
@@ -121,12 +123,21 @@ switch ($page) {
                     </a>
                 </li>
 
+                <li data-menu-name="poster" class="<?php echo $page == 'poster' ? 'hovered' : ''; ?>">
+                    <a href="index.php?page=poster">
+                        <span class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M9.744 2.072L7.818.917L5.892 2.072l-2.237.198l-.88 2.066l-1.693 1.475L1.585 8l-.503 2.189l1.693 1.475l.88 2.066l2.237.198l1.926 1.155l1.926-1.155l2.237-.198l.88-2.066l1.694-1.475L14.05 8l.504-2.189l-1.694-1.475l-.88-2.066zM5.5 6.5a.5.5 0 1 1 1 0a.5.5 0 0 1-1 0M6 5a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3m-.146 5.854l5-5l-.708-.708l-5 5zM9.5 10a.5.5 0 1 1 1 0a.5.5 0 0 1-1 0m.5-1.5a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3" clip-rule="evenodd"/></svg>
+                        </span>
+                        <span class="title">Poster</span>
+                    </a>
+                </li>
+
                 <li data-menu-name="Manage Pendakian" class="<?php echo $page == 'manage_pendakian' ? 'hovered' : ''; ?>">
                     <a href="index.php?page=manage_pendakian">
                         <span class="icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M22 5v2h-3v3h-2V7h-3V5h3V2h2v3Zm-3 14H5V5h6V3H5a2.006 2.006 0 0 0-2 2v14a2.006 2.006 0 0 0 2 2h14a2.006 2.006 0 0 0 2-2v-6h-2Z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="448" height="512" viewBox="0 0 448 512"><path fill="currentColor" d="M224 248a120 120 0 1 0 0-240a120 120 0 1 0 0 240m-29.7 56C95.8 304 16 383.8 16 482.3c0 16.4 13.3 29.7 29.7 29.7h356.6c16.4 0 29.7-13.3 29.7-29.7c0-98.5-79.8-178.3-178.3-178.3z"/></svg>
                         </span>
-                        <span class="title">Manage Pendakian</span>
+                            <span class="title">Manage Pendakian</span>
                     </a>
                 </li>
 
@@ -152,6 +163,7 @@ switch ($page) {
                                  'reservasi' => 'Reservasi & Validasi',
                                  'kuota_pendakian' => 'Kuota Pendakian',
                                  'pengumuman' => 'Pengumuman',
+                                 'poster' => 'Poster',
                                  'pembukuan' => 'Keuangan',
                                  'manage_pendakian' => 'Manage Pendakian',
                                  'user' => 'Management User'
