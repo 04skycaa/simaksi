@@ -3,49 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gunung Butak | Reservasi Pendakian</title>
+    <title data-translate-key="page_title">Gunung Butak | Reservasi Pendakian</title>
     <link rel="icon" type="image/x-icon" href="assets/images/LOGO_WEB.png">
     
-    <!-- Google Fonts: Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase Client Library -->
+    <!-- Supabase Client Library (If needed, keep it) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- Custom Native CSS (Memanggil file eksternal) -->
-    <link rel="stylesheet" href="assets/css/index.css">
-    
-    <!-- Include Supabase Configuration (Halaman PHP memanggil file PHP lain) -->
-    <?php include 'config/supabase.php'; ?>
-
+    <!-- Native CSS (Jalur Absolut sudah terpasang) -->
+    <link rel="stylesheet" href="/simaksi/assets/css/index.css">
 </head>
-<body class="bg-gray-50">
+<body class="bg-white">
     <!-- Main Content -->
-    <div class="main-content">
-        <!-- Header (Fixed Top) -->
-        <header class="header">
-            <div class="container">
-                <div class="header-inner">
-                    <div class="logo-group">
-                        <img src="assets/images/LOGO_WEB.png" onerror="this.src='https://placehold.co/40x40/ffffff/10b981?text=L'" alt="Logo Gunung Butak" class="logo-img">
-                        <h1 class="logo-title">Gunung Butak | Reservasi Pendakian</h1>
+    <div class="flex-col main-content">
+        <!-- Header -->
+        <header class="header-shadow bg-primary text-white py-4 px-6 static">
+            <div class="container auto-margin">
+                <div class="flex-display items-center justify-between">
+                    <div class="flex-display items-center">
+                        <img src="assets/images/LOGO_WEB.png" alt="Logo Gunung Butak" class="w-10 h-10 mr-3">
+                        <h1 class="text-xl font-bold" data-translate-key="header_title">Gunung Butak | Reservasi Pendakian</h1>
                     </div>
-                    <div class="auth-controls">
-                        <button class="dark-mode-toggle" id="dark-mode-toggle">
-                            <i class="fas fa-moon"></i>
+                    <div class="flex-display items-center space-x-4">
+                        <!-- Tombol Toggle Bahasa -->
+                        <button id="lang-toggle" class="text-xl transition-default" title="Ganti Bahasa">
+                            <i class="fas fa-language"></i>
+                        </button>
+                        <!-- Tombol Toggle Mode Gelap/Terang -->
+                        <button id="theme-toggle" class="text-xl transition-default" title="Ganti Tema">
+                            <i class="fas fa-moon" id="theme-icon"></i>
                         </button>
                         <div id="auth-container">
-                            <a href="simaksi/auth/login.php" id="auth-link" class="auth-button">
+                            <a href="#auth" id="auth-link" class="border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default" data-translate-key="login_button">
                                 Login
                             </a>
+                            <a href="#" id="logout-link" class="border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default hidden" data-translate-key="logout_button">
+                                Logout
+                            </a>
                         </div>
-                        <div id="user-greeting" class="user-greeting">
-                            <span id="greeting-text" class="text-sm">Halo,</span>
+                        <div id="user-greeting" class="hidden flex-display items-center space-x-3">
+                            <span id="greeting-text" class="text-sm" data-translate-key="greeting_text">Selamat datang,</span>
                             <span id="user-fullname" class="font-semibold text-sm"></span>
-                            <a href="#" id="logout-link-header" class="logout-btn-header">
+                            <a href="#" id="logout-link-header" class="border border-white px-3 py-1 rounded-full text-xs hover-bg-white text-white transition-default" data-translate-key="logout_button_header">
                                 Logout
                             </a>
                         </div>
@@ -55,71 +59,70 @@
         </header>
 
     <!-- Hero Section -->
-    <section class="hero-section" id="hero">
-        <div class="hero-text-container">
-            <div style="transition-delay: 0s;" class="hero-content">
-                <h1 class="hero-title gradient-text" style="text-shadow: 0 4px 10px rgba(0,0,0,0.5);">GUNUNG BUTAK</h1>
-                <p class="hero-subtitle font-light" style="text-shadow: 0 2px 5px rgba(0,0,0,0.5);">
+    <section class="hero-background min-height-screen flex-display items-center justify-center relative overflow-hidden">
+        <div class="text-center text-white z-10 px-4 max-w-4xl auto-margin relative">
+            <div class="mb-8 hero-content">
+                <h1 class="text-6xl md-text-8xl font-bold mb-6 gradient-text" data-translate-key="hero_title">GUNUNG BUTAK</h1>
+                <p class="text-2xl text-3xl mb-10 max-w-3xl auto-margin leading-relaxed" data-translate-key="hero_subtitle">
                     Jelajahi keindahan alam dan tantangan ekstrem di puncak tertinggi Jawa Timur
                 </p>
             </div>
             
-            <div class="hero-buttons" style="transition-delay: 0.2s;">
-                <a href="simaksi/auth/login.php" class="hero-btn pulse-button reserve-btn">
-                    <i class="fas fa-rocket"></i>Reservasi Sekarang
+            <div class="flex-display flex-col sm-flex-row justify-center space-y-6 sm-space-y-0 sm-space-x-8 hero-content mb-16">
+                <a href="#" class="pulse-button bg-gradient-accent-primary text-white font-bold py-4 px-10 rounded-full transition-default hover-scale-105 shadow-2xl text-lg glow-button" data-translate-key="reserve_now">
+                    <i class="fas fa-rocket mr-3"></i>Reservasi Sekarang
                 </a>
-                <a href="#lokasi" class="hero-btn pulse-button location-btn">
-                    <i class="fas fa-map-marker-alt"></i>Lokasi Pendakian
+                <a href="#lokasi" class="pulse-button border-2 border-white text-white hover-bg-white font-bold py-4 px-10 rounded-full transition-default hover-scale-105 shadow-2xl text-lg glow-button" data-translate-key="location">
+                    <i class="fas fa-map-marker-alt mr-3"></i>Lokasi Pendakian
                 </a>
             </div>
             
-            <div class="hero-stats-grid" style="transition-delay: 0.4s;">
-                <div class="stat-item card-hover">
-                    <i class="fas fa-users stat-icon"></i>
-                    <div class="stat-value gradient-text"><span class="counter" data-target="2500">0</span>+</div>
-                    <div class="stat-label">Pendaki Tahun Ini</div>
+            <div class="grid-cols-1 md-grid-cols-3 gap-8 max-w-4xl auto-margin hero-content">
+                <div class="glass-card rounded-xl p-6 border border-white border-opacity-30 card-hover">
+                    <i class="fas fa-users text-3xl text-accent mb-3"></i>
+                    <div class="text-3xl font-bold mb-2 gradient-text">2000+</div>
+                    <div class="text-lg opacity-90" data-translate-key="climbers_this_year">Pendaki Tahun Ini</div>
                 </div>
-                <div class="stat-item card-hover">
-                    <i class="fas fa-star stat-icon"></i>
-                    <div class="stat-value gradient-text"><span class="counter" data-target="49">0</span>/5</div>
-                    <div class="stat-label">Rating Pengalaman</div>
+                <div class="glass-card rounded-xl p-6 border border-white border-opacity-30 card-hover">
+                    <i class="fas fa-star text-3xl text-accent mb-3"></i>
+                    <div class="text-3xl font-bold mb-2 gradient-text">4.9/5</div>
+                    <div class="text-lg opacity-90" data-translate-key="experience_rating">Rating Pengalaman</div>
                 </div>
-                <div class="stat-item card-hover">
-                    <i class="fas fa-calendar-check stat-icon"></i>
-                    <div class="stat-value gradient-text"><span class="counter" data-target="6">0</span>+</div>
-                    <div class="stat-label">Tahun Operasional</div>
+                <div class="glass-card rounded-xl p-6 border border-white border-opacity-30 card-hover">
+                    <i class="fas fa-calendar-check text-3xl text-accent mb-3"></i>
+                    <div class="text-3xl font-bold mb-2 gradient-text">5+</div>
+                    <div class="text-lg opacity-90" data-translate-key="years_of_operation">Tahun Operasional</div>
                 </div>
             </div>
         </div>
         
         <!-- Scroll indicator -->
-        <div class="scroll-indicator">
-            <i class="fas fa-chevron-down"></i>
+        <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce text-white">
+            <i class="fas fa-chevron-down text-3xl"></i>
         </div>
     </section>
 
     <!-- Pengumuman Section -->
-    <section class="section-padding bg-gradient-green-blue" id="pengumuman">
-        <div class="container">
+    <section class="py-16 bg-gradient-br-green-blue">
+        <div class="container auto-margin px-4">
             <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold text-primary mb-4 animated-border">Pengumuman Terbaru</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                <h2 class="text-4xl font-bold text-primary mb-4 animated-border auto-margin" data-translate-key="latest_announcements_title">Pengumuman Terbaru</h2>
+                <p class="text-xl text-gray-600 max-w-3xl auto-margin leading-relaxed" data-translate-key="latest_announcements_subtitle">
                     Informasi penting terkait pendakian Gunung Butak
                 </p>
             </div>
             
-            <div id="pengumuman-container" class="announcement-card-wrapper card-hover">
-                <div class="announcement-card">
-                    <div id="pengumuman-content" class="announcement-content">
-                        <!-- Konten pengumuman akan dimuat di sini oleh JavaScript dari Supabase -->
-                        <div id="pengumuman-loading" class="loading-state">
-                            <div class="spinner"></div>
-                            <p class="text-gray-600">Memuat pengumuman terbaru...</p>
+            <div id="pengumuman-container" class="max-w-6xl auto-margin">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <div id="pengumuman-content" class="space-y-6">
+                        <div id="pengumuman-loading" class="text-center py-12">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary auto-margin mb-4"></div>
+                            <p class="text-gray-600" data-translate-key="loading_announcements">Memuat pengumuman terbaru...</p>
                         </div>
-                        <div id="pengumuman-empty" class="empty-state" style="display: none;">
-                            <i class="fas fa-bullhorn"></i>
-                            <h3 class="text-2xl font-bold text-gray-700 mb-2">Tidak Ada Pengumuman</h3>
-                            <p class="text-gray-600">Belum ada pengumuman aktif saat ini</p>
+                        <div id="pengumuman-empty" class="hidden text-center py-12">
+                            <i class="fas fa-bullhorn text-5xl text-gray-300 mb-4"></i>
+                            <h3 class="text-2xl font-bold text-gray-700 mb-2" data-translate-key="no_announcements_title">Tidak Ada Pengumuman</h3>
+                            <p class="text-gray-600" data-translate-key="no_announcements_subtitle">Belum ada pengumuman aktif saat ini</p>
                         </div>
                     </div>
                 </div>
@@ -128,126 +131,124 @@
     </section>
 
     <!-- Info Kunci -->
-    <section class="section-padding bg-gradient-gray-white" id="info-kunci">
-        <div class="container">
+    <section class="py-20 bg-gradient-br-gray-white">
+        <div class="container auto-margin px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-primary mb-6 animated-border">Kenapa Memilih Gunung Butak?</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                <h2 class="text-4xl font-bold text-primary mb-6 animated-border auto-margin" data-translate-key="why_butak_title">Kenapa Memilih Gunung Butak?</h2>
+                <p class="text-xl text-gray-600 max-w-3xl auto-margin leading-relaxed" data-translate-key="why_butak_subtitle">
                     Temukan alasan mengapa Gunung Butak menjadi destinasi pendakian favorit para petualang
                 </p>
             </div>
             
-            <div class="info-grid-main">
-                <!-- Ketinggian -->
-                <div class="stat-info-card card-hover">
-                    <div class="stat-info-card-header header-green"></div>
-                    <div class="card-content-p10">
+            <div class="grid-cols-1 lg-grid-cols-3 gap-10 mb-16">
+                <!-- Main Stats Cards -->
+                <div class="stat-card bg-white rounded-3xl shadow-2xl card-hover overflow-hidden feature-badge glass-card">
+                    <div class="w-full h-1 bg-gradient-to-r from-green-400 to-green-600"></div>
+                    <div class="p-10">
                         <div class="text-center">
-                            <div class="icon-wrapper-24 icon-bg-green shadow-inner">
-                                <i class="fas fa-mountain text-4xl elevation-icon"></i>
+                            <div class="w-24 h-24 bg-gradient-to-r from-green-100 to-green-200 rounded-full flex-display items-center justify-center auto-margin mb-8">
+                                <i class="fas fa-mountain text-4xl text-primary"></i>
                             </div>
-                            <h3 class="info-main-stat gradient-text text-primary">2,868</h3>
-                            <p class="info-secondary-stat">Ketinggian Gunung</p>
-                            <div class="progress-bar">
-                                <div class="progress-fill progress-fill-elevation"></div>
+                            <h3 class="text-6xl font-bold mb-4 gradient-text">2,868</h3>
+                            <p class="text-2xl font-semibold text-gray-800 mb-3" data-translate-key="mountain_height_label">Ketinggian Gunung</p>
+                            <div class="progress-bar elevation-bar bg-gray-200 w-full auto-margin mb-3 h-4" data-value="2868" data-max="2868">
+                                <div class="progress-fill bg-gradient-to-r from-green-400 to-green-600 h-full"></div>
                             </div>
-                            <p class="info-description">Meter di Atas Permukaan Laut</p>
+                            <p class="text-lg text-gray-600" data-translate-key="masl">Meter di Atas Permukaan Laut</p>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Kesulitan -->
-                <div class="stat-info-card card-hover">
-                    <div class="stat-info-card-header header-orange"></div>
-                    <div class="card-content-p10">
+                <div class="stat-card bg-white rounded-3xl shadow-2xl card-hover overflow-hidden feature-badge glass-card difficulty-section">
+                    <div class="w-full h-1 bg-gradient-to-r from-orange-400 to-orange-600"></div>
+                    <div class="p-10">
                         <div class="text-center">
-                            <div class="icon-wrapper-24 icon-bg-orange shadow-inner">
-                                <i class="fas fa-bolt text-4xl difficulty-icon text-orange-600"></i>
+                            <div class="w-24 h-24 bg-gradient-to-r from-orange-100 to-orange-200 rounded-full flex-display items-center justify-center auto-margin mb-8">
+                                <i class="fas fa-bolt text-4xl text-orange"></i>
                             </div>
-                            <h3 class="text-5xl font-bold mb-4 text-orange-600">Sulit</h3>
-                            <p class="info-secondary-stat">Tingkat Kesulitan</p>
-                            <div class="progress-bar progress-bar-difficulty">
-                                <div class="progress-fill progress-fill-difficulty" style="width: 80%;"></div>
+                            <h3 class="text-5xl font-bold mb-4 text-orange" data-translate-key="difficulty_level">Sulit</h3>
+                            <p class="text-2xl font-semibold text-gray-800 mb-4" data-translate-key="difficulty_label">Tingkat Kesulitan</p>
+                            <div class="progress-bar difficulty-bar bg-gray-200 w-full auto-margin mb-4 h-8" data-value="80" data-max="100">
+                                <div class="progress-fill bg-gradient-to-r from-orange-400 to-red h-full"></div>
                             </div>
-                            <p class="info-description">Cocok untuk pendaki berpengalaman</p>
+                            <p class="text-lg text-gray-600" data-translate-key="difficulty_description">Cocok untuk pendaki berpengalaman</p>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Durasi -->
-                <div class="stat-info-card card-hover">
-                    <div class="stat-info-card-header header-blue"></div>
-                    <div class="card-content-p10">
+                <div class="stat-card bg-white rounded-3xl shadow-2xl card-hover overflow-hidden feature-badge glass-card">
+                    <div class="w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600"></div>
+                    <div class="p-10">
                         <div class="text-center">
-                            <div class="icon-wrapper-24 icon-bg-blue shadow-inner">
-                                <i class="fas fa-clock text-4xl duration-icon text-blue-600"></i>
+                            <div class="w-24 h-24 bg-gradient-to-r from-blue-100 to-blue-200 rounded-full flex-display items-center justify-center auto-margin mb-8">
+                                <i class="fas fa-clock text-4xl text-blue-600"></i>
                             </div>
-                            <h3 class="info-main-stat gradient-text text-blue-600">3-4</h3>
-                            <p class="info-secondary-stat">Durasi Pendakian</p>
-                            <p class="info-description">Hari Pendakian Ideal</p>
+                            <h3 class="text-6xl font-bold mb-4 gradient-text">3-4</h3>
+                            <p class="text-2xl font-semibold text-gray-800 mb-3" data-translate-key="duration_label">Durasi Pendakian</p>
+                            <p class="text-lg text-gray-600" data-translate-key="ideal_duration">Hari Pendakian Ideal</p>
                         </div>
                     </div>
                 </div>
             </div>
             
             <!-- Additional Info Cards -->
-            <div class="info-grid-secondary">
-                <div class="additional-info-card card-hover">
-                    <div class="icon-wrapper-20 icon-temp shadow-md">
-                        <i class="fas fa-temperature-high text-3xl"></i>
+            <div class="grid-cols-1 md-grid-cols-2 lg-grid-cols-4 gap-8 mt-12">
+                <div class="bg-white rounded-2xl p-8 shadow-xl card-hover text-center feature-badge glass-card border border-white border-opacity-30">
+                    <div class="w-20 h-20 bg-gradient-to-r from-green-100 to-green-200 rounded-full flex-display items-center justify-center auto-margin mb-6">
+                        <i class="fas fa-temperature-high text-3xl text-green-600"></i>
                     </div>
-                    <h4 class="additional-info-title">Suhu Rata-rata</h4>
-                    <p class="additional-info-stat">15-22°C</p>
-                    <p class="additional-info-desc">Nyaman untuk pendakian</p>
+                    <h4 class="font-bold text-xl text-gray-800 mb-3" data-translate-key="avg_temp_title">Suhu Rata-rata</h4>
+                    <p class="text-2xl font-bold text-primary mb-2">15-22°C</p>
+                    <p class="text-gray-600" data-translate-key="avg_temp_desc">Nyaman untuk pendakian</p>
                 </div>
                 
-                <div class="additional-info-card card-hover">
-                    <div class="icon-wrapper-20 icon-wind shadow-md">
-                        <i class="fas fa-wind text-3xl"></i>
+                <div class="bg-white rounded-2xl p-8 shadow-xl card-hover text-center feature-badge glass-card border border-white border-opacity-30">
+                    <div class="w-20 h-20 bg-gradient-to-r from-blue-100 to-blue-200 rounded-full flex-display items-center justify-center auto-margin mb-6">
+                        <i class="fas fa-wind text-3xl text-blue-600"></i>
                     </div>
-                    <h4 class="additional-info-title">Kecepatan Angin</h4>
-                    <p class="additional-info-stat">10-30 km/jam</p>
-                    <p class="additional-info-desc">Angin segar di puncak</p>
+                    <h4 class="font-bold text-xl text-gray-800 mb-3" data-translate-key="wind_speed_title">Kecepatan Angin</h4>
+                    <p class="text-2xl font-bold text-primary mb-2">10-30 km/jam</p>
+                    <p class="text-gray-600" data-translate-key="wind_speed_desc">Angin segar di puncak</p>
                 </div>
                 
-                <div class="additional-info-card card-hover">
-                    <div class="icon-wrapper-20 icon-rain shadow-md">
-                        <i class="fas fa-cloud-sun text-3xl"></i>
+                <div class="bg-white rounded-2xl p-8 shadow-xl card-hover text-center feature-badge glass-card border border-white border-opacity-30">
+                    <div class="w-20 h-20 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-full flex-display items-center justify-center auto-margin mb-6">
+                        <i class="fas fa-cloud-sun text-3xl text-yellow-600"></i>
                     </div>
-                    <h4 class="additional-info-title">Curah Hujan</h4>
-                    <p class="additional-info-stat">Rendah</p>
-                    <p class="additional-info-desc">Kemungkinan hujan rendah (Kemarau)</p>
+                    <h4 class="font-bold text-xl text-gray-800 mb-3" data-translate-key="rainfall_title">Curah Hujan</h4>
+                    <p class="text-2xl font-bold text-primary mb-2" data-translate-key="rainfall_level">Rendah</p>
+                    <p class="text-gray-600" data-translate-key="rainfall_desc">Kemungkinan hujan rendah</p>
                 </div>
                 
-                <div class="additional-info-card card-hover">
-                    <div class="icon-wrapper-20 icon-veg shadow-md">
-                        <i class="fas fa-tree text-3xl"></i>
+                <div class="bg-white rounded-2xl p-8 shadow-xl card-hover text-center feature-badge glass-card border border-white border-opacity-30">
+                    <div class="w-20 h-20 bg-gradient-to-r from-purple-100 to-purple-200 rounded-full flex-display items-center justify-center auto-margin mb-6">
+                        <i class="fas fa-tree text-3xl text-purple-600"></i>
                     </div>
-                    <h4 class="additional-info-title">Vegetasi</h4>
-                    <p class="additional-info-stat">4 Zona</p>
-                    <p class="additional-info-desc">Hutan-Sabana yang bervariasi</p>
+                    <h4 class="font-bold text-xl text-gray-800 mb-3" data-translate-key="vegetation_title">Vegetasi</h4>
+                    <p class="text-2xl font-bold text-primary mb-2" data-translate-key="vegetation_zones">4 Zona</p>
+                    <p class="text-gray-600" data-translate-key="vegetation_desc">Hutan-Sahara yang bervariasi</p>
                 </div>
             </div>
             
             <!-- Additional Information Section -->
-            <div class="security-section card-hover">
-                <div class="security-content">
-                    <h3 class="security-title">Keamanan dan Fasilitas</h3>
-                    <div class="security-grid">
-                        <div class="security-item card-hover">
-                            <i class="fas fa-shield-alt"></i>
-                            <h4 class="text-xl font-bold mb-2">Keamanan Terjamin</h4>
-                            <p>Pendakian aman dengan pemandu bersertifikat</p>
+            <div class="mt-20 bg-gradient-primary-accent rounded-3xl p-10 text-white">
+                <div class="max-w-4xl auto-margin text-center">
+                    <h3 class="text-3xl font-bold mb-6" data-translate-key="safety_facilities_title">Keamanan dan Fasilitas</h3>
+                    <div class="grid-cols-1 md-grid-cols-3 gap-8">
+                        <div>
+                            <i class="fas fa-shield-alt text-4xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-2" data-translate-key="safety_guaranteed_title">Keamanan Terjamin</h4>
+                            <p data-translate-key="safety_guaranteed_desc">Pendakian aman dengan pemandu bersertifikat</p>
                         </div>
-                        <div class="security-item card-hover">
-                            <i class="fas fa-medkit"></i>
-                            <h4 class="text-xl font-bold mb-2">Fasilitas Lengkap</h4>
-                            <p>Basecamp lengkap dengan peralatan darurat</p>
+                        <div>
+                            <i class="fas fa-medkit text-4xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-2" data-translate-key="complete_facilities_title">Fasilitas Lengkap</h4>
+                            <p data-translate-key="complete_facilities_desc">Basecamp lengkap dengan peralatan darurat</p>
                         </div>
-                        <div class="security-item card-hover">
-                            <i class="fas fa-users"></i>
-                            <h4 class="text-xl font-bold mb-2">Komunitas Pendaki</h4>
-                            <p>Ikuti komunitas pendakian aktif</p>
+                        <div>
+                            <i class="fas fa-users text-4xl mb-4"></i>
+                            <h4 class="text-xl font-bold mb-2" data-translate-key="climber_community_title">Komunitas Pendaki</h4>
+                            <p data-translate-key="climber_community_desc">Ikuti komunitas pendakian aktif</p>
                         </div>
                     </div>
                 </div>
@@ -256,25 +257,25 @@
     </section>
 
     <!-- Tentang Gunung Butak -->
-    <section id="tentang" class="section-padding bg-gradient-gray-white">
-        <div class="container">
+    <section id="tentang" class="py-20 bg-gradient-to-br from-white to-gray-50">
+        <div class="container auto-margin px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-primary mb-4 animated-border">Tentang Gunung Butak</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-12 leading-relaxed">
+                <h2 class="text-4xl font-bold text-primary mb-4 animated-border auto-margin" data-translate-key="about_butak_title">Tentang Gunung Butak</h2>
+                <p class="text-xl text-gray-600 max-w-3xl auto-margin mb-12 leading-relaxed" data-translate-key="about_butak_subtitle">
                     Kenali lebih dekat destinasi pendakian terbaik di Jawa Timur
                 </p>
             </div>
             
-            <div class="max-w-6xl mx-auto">
-                <div class="about-grid">
+            <div class="max-w-5xl auto-margin">
+                <div class="grid-cols-1 lg-grid-cols-2 gap-12 items-center mb-16">
                     <div class="feature-card card-hover">
-                        <div class="about-card-wrapper">
-                            <div class="about-card-inner">
-                                <h3 class="about-title">Sejarah dan Asal Usul</h3>
-                                <p class="about-text mb-4">
+                        <div class="bg-gradient-primary-accent rounded-2xl p-1">
+                            <div class="bg-white rounded-2xl p-8">
+                                <h3 class="text-2xl font-bold mb-6 text-primary" data-translate-key="history_title">Sejarah dan Asal Usul</h3>
+                                <p class="text-gray-700 text-lg leading-relaxed mb-4" data-translate-key="history_p1">
                                     Gunung Butak adalah destinasi pendakian yang menawarkan keindahan alam yang luar biasa dan pengalaman mendaki yang menantang. Terletak di Jawa Timur, gunung ini memiliki ketinggian 2.868 meter di atas permukaan laut.
                                 </p>
-                                <p class="about-text">
+                                <p class="text-gray-700 text-lg leading-relaxed" data-translate-key="history_p2">
                                     Dengan berbagai ekosistem yang berbeda dari hutan hingga sabana, Gunung Butak menjadi tempat yang ideal bagi para pendaki yang mencari keindahan alam sekaligus tantangan ekstrem.
                                 </p>
                             </div>
@@ -282,55 +283,145 @@
                     </div>
                     
                     <div class="feature-card card-hover">
-                        <div class="about-image-wrapper">
-                            <img src="assets/images/Pemandangan_Gunung_Butak.jpg" onerror="this.src='https://placehold.co/600x400/10b981/ffffff?text=Pemandangan+Gunung+Butak'" alt="Pemandangan Gunung Butak" class="about-image">
+                        <div class="overflow-hidden rounded-2xl shadow-xl">
+                            <img src="assets/images/gunung2.jpg" alt="Pemandangan Gunung Butak" class="w-full h-80 object-cover">
                         </div>
                     </div>
                 </div>
                 
-                <div class="fact-grid">
-                    <div class="fact-card-left card-hover">
-                        <h3 class="fact-title">Fakta Menarik</h3>
-                        <ul class="fact-list">
-                            <li class="fact-item">
-                                <i class="fas fa-star"></i>
-                                <span class="fact-item-text">Nama "Butak" berasal dari bahasa Jawa yang berarti 'telanjang', merujuk pada puncaknya yang tidak berpohon.</span>
+                <div class="grid-cols-1 md-grid-cols-2 gap-10">
+                    <div class="bg-gradient-primary-green700 rounded-2xl p-8 text-white feature-badge card-hover">
+                        <h3 class="text-2xl font-bold mb-6" data-translate-key="fun_facts_title">Fakta Menarik</h3>
+                        <ul class="space-y-4">
+                            <li class="flex-display items-start">
+                                <i class="fas fa-star text-yellow-300 mt-1 mr-4 text-xl"></i>
+                                <span class="text-lg" data-translate-key="fun_fact_1">Nama "Butak" berasal dari bahasa Jawa yang berarti 'telanjang', merujuk pada puncaknya yang tidak berpohon</span>
                             </li>
-                            <li class="fact-item">
-                                <i class="fas fa-star"></i>
-                                <span class="fact-item-text">Merupakan gunung tertinggi ke-3 di Jawa Timur.</span>
+                            <li class="flex-display items-start">
+                                <i class="fas fa-star text-yellow-300 mt-1 mr-4 text-xl"></i>
+                                <span class="text-lg" data-translate-key="fun_fact_2">Merupakan gunung tertinggi ke-3 di Jawa Timur</span>
                             </li>
-                            <li class="fact-item">
-                                <i class="fas fa-star"></i>
-                                <span class="fact-item-text">Habitat bagi berbagai spesies langka flora dan fauna.</span>
+                            <li class="flex-display items-start">
+                                <i class="fas fa-star text-yellow-300 mt-1 mr-4 text-xl"></i>
+                                <span class="text-lg" data-translate-key="fun_fact_3">Habitat bagi berbagai spesies langka flora dan fauna</span>
                             </li>
-                            <li class="fact-item">
-                                <i class="fas fa-star"></i>
-                                <span class="fact-item-text">Lokasi *hunting sunrise* yang legendaris.</span>
+                            <li class="flex-display items-start">
+                                <i class="fas fa-star text-yellow-300 mt-1 mr-4 text-xl"></i>
+                                <span class="text-lg" data-translate-key="fun_fact_4">Lokasi hunting sunrise yang legendaris</span>
                             </li>
                         </ul>
                     </div>
                     
-                    <div class="fact-card-right card-hover">
-                        <h3 class="fact-title">Keunggulan Kami</h3>
-                        <ul class="fact-list">
-                            <li class="fact-item">
-                                <i class="fas fa-shield-alt fact-item-accent"></i>
-                                <span class="fact-item-text">Sistem reservasi online terintegrasi dan aman.</span>
+                    <div class="bg-gradient-accent-blue500 rounded-2xl p-8 text-white feature-badge card-hover">
+                        <h3 class="text-2xl font-bold mb-6" data-translate-key="our_advantages_title">Keunggulan Kami</h3>
+                        <ul class="space-y-4">
+                            <li class="flex-display items-start">
+                                <i class="fas fa-shield-alt text-white mt-1 mr-4 text-xl"></i>
+                                <span class="text-lg" data-translate-key="advantage_1">Sistem reservasi online terintegrasi dan aman</span>
                             </li>
-                            <li class="fact-item">
-                                <i class="fas fa-user-friends fact-item-accent"></i>
-                                <span class="fact-item-text">Pemandu berpengalaman bersertifikat nasional.</span>
+                            <li class="flex-display items-start">
+                                <i class="fas fa-user-friends text-white mt-1 mr-4 text-xl"></i>
+                                <span class="text-lg" data-translate-key="advantage_2">Pemandu berpengalaman bersertifikat nasional</span>
                             </li>
-                            <li class="fact-item">
-                                <i class="fas fa-home fact-item-accent"></i>
-                                <span class="fact-item-text">Basecamp lengkap dengan fasilitas memadai.</span>
+                            <li class="flex-display items-start">
+                                <i class="fas fa-home text-white mt-1 mr-4 text-xl"></i>
+                                <span class="text-lg" data-translate-key="advantage_3">Basecamp lengkap dengan fasilitas memadai</span>
                             </li>
-                            <li class="fact-item">
-                                <i class="fas fa-heart fact-item-accent"></i>
-                                <span class="fact-item-text">Komunitas pendaki aktif dan suportif.</span>
+                            <li class="flex-display items-start">
+                                <i class="fas fa-heart text-white mt-1 mr-4 text-xl"></i>
+                                <span class="text-lg" data-translate-key="advantage_4">Komunitas pendaki aktif dan suportif</span>
                             </li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mengapa Mendaki Gunung Butak -->
+    <section class="py-20 bg-gradient-br-gray-white">
+        <div class="container auto-margin px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-primary mb-4 animated-border auto-margin" data-translate-key="why_climb_title">Mengapa Mendaki Gunung Butak?</h2>
+                <p class="text-xl text-gray-600 max-w-3xl auto-margin leading-relaxed" data-translate-key="why_climb_subtitle">
+                    Temukan alasan mengapa Gunung Butak menjadi destinasi pendakian yang tak terlupakan
+                </p>
+            </div>
+            
+            <div class="grid-cols-1 lg-grid-cols-3 gap-10">
+                <!-- Card 1 -->
+                <div class="feature-card card-hover bg-gradient-br-green-blue rounded-3xl shadow-2xl overflow-hidden transition-default group">
+                    <div class="h-72 overflow-hidden">
+                        <img src="assets/images/gunung2.jpg" alt="Pemandangan Indah" class="w-full h-full object-cover transition-transform group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-r from-green-500 to-blue-600 opacity-0 group-hover:opacity-20 transition-default"></div>
+                    </div>
+                    <div class="p-8">
+                        <div class="w-16 h-16 bg-gradient-to-r from-green-100 to-green-200 rounded-full flex-display items-center justify-center mb-6 text-green-600 auto-margin">
+                            <i class="fas fa-camera text-2xl"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-4 text-center text-primary" data-translate-key="beautiful_scenery_title">Pemandangan Indah</h3>
+                        <p class="text-gray-700 text-lg leading-relaxed text-center" data-translate-key="beautiful_scenery_desc">
+                            Nikmati pemandangan alam yang luar biasa dari hutan hingga sabana yang menakjubkan di sepanjang jalur pendakian. 
+                            Puncak Gunung Butak menawarkan pemandangan 360 derajat yang memukau.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Card 2 -->
+                <div class="feature-card card-hover bg-gradient-br-yellow-red rounded-3xl shadow-2xl overflow-hidden transition-default group">
+                    <div class="h-72 overflow-hidden">
+                        <img src="assets/images/flora_fauna.jpg" alt="Keberagaman Flora & Fauna" class="w-full h-full object-cover transition-transform group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-r from-yellow-500 to-red-600 opacity-0 group-hover:opacity-20 transition-default"></div>
+                    </div>
+                    <div class="p-8">
+                        <div class="w-16 h-16 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-full flex-display items-center justify-center mb-6 text-yellow-600 auto-margin">
+                            <i class="fas fa-leaf text-2xl"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-4 text-center text-primary" data-translate-key="biodiversity_title">Keberagaman Flora & Fauna</h3>
+                        <p class="text-gray-700 text-lg leading-relaxed text-center" data-translate-key="biodiversity_desc">
+                            Jelajahi berbagai ekosistem unik dan temukan berbagai spesies langka yang hanya ditemukan di kawasan ini. 
+                            Habitat alami berbagai jenis burung dan satwa endemik Jawa.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Card 3 -->
+                <div class="feature-card card-hover bg-gradient-br-blue-indigo rounded-3xl shadow-2xl overflow-hidden transition-default group">
+                    <div class="h-72 overflow-hidden">
+                        <img src="assets/images/Sabana_Butak.jpg" alt="Sabana" class="w-full h-full object-cover transition-transform group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-hover:opacity-20 transition-default"></div>
+                    </div>
+                    <div class="p-8">
+                        <div class="w-16 h-16 bg-gradient-to-r from-blue-100 to-blue-200 rounded-full flex-display items-center justify-center mb-6 text-blue-600 auto-margin">
+                            <i class="fas fa-heart text-2xl"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-4 text-center text-primary" data-translate-key="vast_savanna_title">Sabana Luas</h3>
+                        <p class="text-gray-700 text-lg leading-relaxed text-center" data-translate-key="vast_savanna_desc">
+                            Rasakan keindahan luasnya padang sabana di kaki gunung, tempat yang sangat indah untuk berkemah dan menikmati alam. 
+                            Sempurna untuk hunting sunrise dan stargazing.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Benefits Section -->
+            <div class="mt-20 bg-gradient-primary-accent rounded-3xl p-12 text-white text-center">
+                <h3 class="text-4xl font-bold mb-6" data-translate-key="climb_benefits_title">Keuntungan Mendaki Bersama Kami</h3>
+                <div class="grid-cols-1 md-grid-cols-3 gap-8 mt-12">
+                    <div class="feature-badge card-hover">
+                        <i class="fas fa-graduation-cap text-5xl mb-4"></i>
+                        <h4 class="text-2xl font-bold mb-3" data-translate-key="certified_guides_title">Pemandu Bersertifikat</h4>
+                        <p class="text-lg opacity-90" data-translate-key="certified_guides_desc">Pemandu profesional dengan sertifikasi nasional</p>
+                    </div>
+                    <div class="feature-badge card-hover">
+                        <i class="fas fa-shield-alt text-5xl mb-4"></i>
+                        <h4 class="text-2xl font-bold mb-3" data-translate-key="guaranteed_safety_title">Keamanan Terjamin</h4>
+                        <p class="text-lg opacity-90" data-translate-key="guaranteed_safety_desc">Sistem keamanan terintegrasi dan SOP ketat</p>
+                    </div>
+                    <div class="feature-badge card-hover">
+                        <i class="fas fa-campground text-5xl mb-4"></i>
+                        <h4 class="text-2xl font-bold mb-3" data-translate-key="complete_basecamp_title">Fasilitas Lengkap</h4>
+                        <p class="text-lg opacity-90" data-translate-key="complete_basecamp_desc">Basecamp lengkap dengan peralatan standar</p>
                     </div>
                 </div>
             </div>
@@ -338,85 +429,101 @@
     </section>
 
     <!-- Waktu Terbaik untuk Mendaki -->
-    <section class="section-padding bg-gradient-gray-white" id="waktu-terbaik">
-        <div class="container">
+    <section class="py-20 bg-gradient-to-br from-white to-gray-100">
+        <div class="container auto-margin px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-primary mb-4 animated-border">Waktu Terbaik untuk Mendaki</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                <h2 class="text-4xl font-bold text-primary mb-4 animated-border auto-margin" data-translate-key="best_time_title">Waktu Terbaik untuk Mendaki</h2>
+                <p class="text-xl text-gray-600 max-w-3xl auto-margin leading-relaxed" data-translate-key="best_time_subtitle">
                     Rencanakan pendakian Anda dengan informasi cuaca dan waktu yang optimal
                 </p>
             </div>
             
-            <div class="best-time-grid">
+            <div class="grid-cols-1 lg-grid-cols-2 gap-12 max-w-6xl auto-margin">
                 <!-- Card 1 -->
-                <div class="time-card dry-season-card card-hover">
-                    <div class="time-card-header">
-                        <div class="time-icon-wrapper dry-season-icon-bg shadow-md">
+                <div class="feature-badge bg-gradient-br-orange-yellow rounded-3xl shadow-2xl p-10 card-hover border-t-4 border-orange-400 overflow-hidden">
+                    <div class="text-center mb-8">
+                        <div class="w-24 h-24 bg-gradient-to-r from-orange-100 to-yellow-100 rounded-full flex-display items-center justify-center auto-margin mb-6 text-orange-600">
                             <i class="fas fa-cloud-sun text-4xl"></i>
                         </div>
-                        <h3 class="time-card-title dry-season-title">Musim Kemarau</h3>
-                        <p class="time-card-subtitle">April - Oktober</p>
+                        <h3 class="text-3xl font-bold mb-2 text-orange" data-translate-key="dry_season_title">Musim Kemarau</h3>
+                        <p class="text-lg text-gray-600" data-translate-key="dry_season_months">April - Oktober</p>
                     </div>
-                    <ul class="time-feature-list">
-                        <li class="time-feature-item">
-                            <div class="time-check-icon-wrapper">
+                    <ul class="space-y-5">
+                        <li class="flex-display items-start group">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex-display items-center justify-center mt-1 mr-4 flex-shrink-0 group-hover:bg-green-200 transition-colors">
                                 <i class="fas fa-check text-green-600"></i>
                             </div>
                             <div>
-                                <p><strong>Jalur pendakian stabil</strong> tanpa hambatan genangan air</p>
+                                <p class="text-gray-800 font-medium text-lg" data-translate-key="dry_season_benefit_1"><strong>Jalur pendakian stabil</strong> tanpa hambatan genangan air</p>
                             </div>
                         </li>
-                        <li class="time-feature-item">
-                            <div class="time-check-icon-wrapper">
+                        <li class="flex-display items-start group">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex-display items-center justify-center mt-1 mr-4 flex-shrink-0 group-hover:bg-green-200 transition-colors">
                                 <i class="fas fa-check text-green-600"></i>
                             </div>
                             <div>
-                                <p><strong>Visibilitas sangat baik</strong> untuk menikmati pemandangan</p>
+                                <p class="text-gray-800 font-medium text-lg" data-translate-key="dry_season_benefit_2"><strong>Visibilitas sangat baik</strong> untuk menikmati pemandangan</p>
                             </div>
                         </li>
-                        <li class="time-feature-item">
-                            <div class="time-check-icon-wrapper">
+                        <li class="flex-display items-start group">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex-display items-center justify-center mt-1 mr-4 flex-shrink-0 group-hover:bg-green-200 transition-colors">
                                 <i class="fas fa-check text-green-600"></i>
                             </div>
                             <div>
-                                <p><strong>Suhu sejuk dan nyaman</strong> untuk pendakian</p>
+                                <p class="text-gray-800 font-medium text-lg" data-translate-key="dry_season_benefit_3"><strong>Suhu sejuk dan nyaman</strong> untuk pendakian</p>
+                            </div>
+                        </li>
+                        <li class="flex-display items-start group">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex-display items-center justify-center mt-1 mr-4 flex-shrink-0 group-hover:bg-green-200 transition-colors">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-800 font-medium text-lg" data-translate-key="dry_season_benefit_4"><strong>Kondisi jalan kering</strong> memudahkan perjalanan</p>
                             </div>
                         </li>
                     </ul>
                 </div>
                 
                 <!-- Card 2 -->
-                <div class="time-card daily-time-card card-hover">
-                    <div class="time-card-header">
-                        <div class="time-icon-wrapper daily-time-icon-bg shadow-md">
+                <div class="feature-badge bg-gradient-br-blue-indigo rounded-3xl shadow-2xl p-10 card-hover border-t-4 border-blue-600 overflow-hidden">
+                    <div class="text-center mb-8">
+                        <div class="w-24 h-24 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex-display items-center justify-center auto-margin mb-6 text-blue-600">
                             <i class="fas fa-clock text-4xl"></i>
                         </div>
-                        <h3 class="time-card-title daily-time-title">Waktu Ideal Sehari</h3>
-                        <p class="time-card-subtitle">Pendakian Harian</p>
+                        <h3 class="text-3xl font-bold mb-2 text-blue-600" data-translate-key="ideal_daily_time_title">Waktu Ideal Sehari</h3>
+                        <p class="text-lg text-gray-600" data-translate-key="daily_climb_label">Pendakian Harian</p>
                     </div>
-                    <ul class="time-feature-list">
-                        <li class="time-feature-item">
-                            <div class="time-check-icon-wrapper" style="background: linear-gradient(to right, #FFFBEB, #FEF3C7); color: #D97706;">
-                                <i class="fas fa-sun" style="color: #D97706;"></i>
+                    <ul class="space-y-5">
+                        <li class="flex-display items-start group">
+                            <div class="w-10 h-10 bg-yellow-100 rounded-full flex-display items-center justify-center mt-1 mr-4 flex-shrink-0 group-hover:bg-yellow-200 transition-colors">
+                                <i class="fas fa-sun text-yellow-600"></i>
                             </div>
                             <div>
-                                <p><strong>Pagi hari (04:00-06:00):</strong> Udara segar dan suhu nyaman</p>
+                                <p class="text-gray-800 font-medium text-lg" data-translate-key="daily_time_1"><strong>Pagi hari (04:00-06:00):</strong> Udara segar dan suhu nyaman</p>
                             </div>
                         </li>
-                        <li class="time-feature-item">
-                            <div class="time-check-icon-wrapper" style="background: linear-gradient(to right, #FFEDD5, #FEF3C7); color: #EA580C;">
-                                <i class="fas fa-sunrise" style="color: #EA580C;"></i>
+                        <li class="flex-display items-start group">
+                            <div class="w-10 h-10 bg-orange-100 rounded-full flex-display items-center justify-center mt-1 mr-4 flex-shrink-0 group-hover:bg-orange-200 transition-colors">
+                                <i class="fas fa-sunrise text-orange-600"></i>
                             </div>
                             <div>
-                                <p><strong>Matahari terbit:</strong> Pemandangan menakjubkan dari puncak</p>
+                                <p class="text-gray-800 font-medium text-lg" data-translate-key="daily_time_2"><strong>Matahari terbit:</strong> Pemandangan menakjubkan dari puncak</p>
                             </div>
                         </li>
-                        <li class="time-feature-item">
-                            <div class="time-check-icon-wrapper" style="background: linear-gradient(to right, #F3E8FF, #E9D5FF); color: #9333EA;">
-                                <i class="fas fa-moon" style="color: #9333EA;"></i>
+                        <li class="flex-display items-start group">
+                            <div class="w-10 h-10 bg-red-100 rounded-full flex-display items-center justify-center mt-1 mr-4 flex-shrink-0 group-hover:bg-red-200 transition-colors">
+                                <i class="fas fa-sun text-red-600"></i>
                             </div>
                             <div>
-                                <p><strong>Malam hari:</strong> Sempurna untuk *stargazing*</p>
+                                <p class="text-gray-800 font-medium text-lg" data-translate-key="daily_time_3"><strong>Hindari siang (10:00-15:00):</strong> Suhu panas yang melelahkan</p>
+                            </div>
+                        </li>
+                        <li class="flex-display items-start group">
+                            <div class="w-10 h-10 bg-indigo-100 rounded-full flex-display items-center justify-center mt-1 mr-4 flex-shrink-0 group-hover:bg-indigo-200 transition-colors">
+                                <i class="fas fa-moon text-indigo-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-800 font-medium text-lg" data-translate-key="daily_time_4"><strong>Malam hari:</strong> Sempurna untuk stargazing</p>
                             </div>
                         </li>
                     </ul>
@@ -424,14 +531,15 @@
             </div>
             
             <!-- Weather Forecast Section -->
-            <div class="weather-forecast-section card-hover">
-                <h3 class="weather-forecast-title">Prakiraan Cuaca Mendatang</h3>
-                <p class="weather-forecast-subtitle">Cuaca terkini dan perkiraan 3 hari ke depan untuk Gunung Butak</p>
+            <div class="mt-20 bg-gradient-r-green-blue rounded-3xl p-12 text-white text-center">
+                <h3 class="text-4xl font-bold mb-6" data-translate-key="weather_forecast_title">Prakiraan Cuaca Mendatang</h3>
+                <p class="text-xl mb-8 opacity-90" data-translate-key="weather_forecast_subtitle">Cuaca terkini dan perkiraan 3 hari ke depan untuk Gunung Butak</p>
                 
                 <div id="weather-forecast" class="mt-8">
-                    <div class="weather-forecast-loading">
-                        <div class="spinner"></div>
-                        <p class="opacity-90">Memuat perkiraan cuaca...</p>
+                    <!-- Weather forecast will be loaded here by JavaScript -->
+                    <div class="flex-display flex-col items-center justify-center py-12">
+                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mb-4"></div>
+                        <p class="opacity-90" data-translate-key="loading_weather">Memuat perkiraan cuaca...</p>
                     </div>
                 </div>
             </div>
@@ -439,76 +547,76 @@
     </section>
 
     <!-- Peta Lokasi -->
-    <section id="lokasi" class="section-padding bg-gradient-gray-white">
-        <div class="container">
+    <section id="lokasi" class="py-20 bg-gradient-to-br from-gray-100 to-white">
+        <div class="container auto-margin px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-primary mb-4 animated-border">Lokasi Gunung Butak</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                <h2 class="text-4xl font-bold text-primary mb-4 animated-border auto-margin" data-translate-key="location_title">Lokasi Gunung Butak</h2>
+                <p class="text-xl text-gray-600 max-w-3xl auto-margin leading-relaxed" data-translate-key="location_subtitle">
                     Temukan jalur pendakian melalui Basecamp Kucur dan rute terbaik menuju puncak
                 </p>
             </div>
             
-            <div class="location-grid">
-                <div class="card-hover">
-                    <div class="route-card-wrapper">
-                        <div class="route-card-inner">
-                            <h3 class="route-title">Rute Akses Menuju Basecamp</h3>
-                            <div class="route-list">
-                                <div class="route-item card-hover">
-                                    <div class="route-icon-wrapper shadow-md">
-                                        <i class="fas fa-map-marker-alt"></i>
+            <div class="grid-cols-1 lg-grid-cols-2 gap-16 items-center">
+                <div class="feature-badge card-hover">
+                    <div class="bg-gradient-primary-accent rounded-3xl p-1">
+                        <div class="bg-white rounded-3xl p-10">
+                            <h3 class="text-3xl font-bold mb-8 text-center text-primary" data-translate-key="access_route_title">Rute Akses Menuju Basecamp</h3>
+                            <div class="space-y-6">
+                                <div class="flex-display items-start group p-4 rounded-xl hover:bg-green-50 transition-colors">
+                                    <div class="w-14 h-14 bg-gradient-primary-accent rounded-full flex-display items-center justify-center text-white mr-6 flex-shrink-0">
+                                        <i class="fas fa-map-marker-alt text-xl"></i>
                                     </div>
                                     <div>
-                                        <h4 class="font-bold text-xl text-gray-800 mb-2">Basecamp Kucur</h4>
-                                        <p class="text-gray-600 text-lg">Kabupaten Malang, Jawa Timur</p>
+                                        <h4 class="font-bold text-xl text-gray-800 mb-2" data-translate-key="basecamp_name">Basecamp Kucur</h4>
+                                        <p class="text-gray-600 text-lg" data-translate-key="basecamp_location">Kabupaten Malang, Jawa Timur</p>
                                     </div>
                                 </div>
                                 
-                                <div class="route-item card-hover">
-                                    <div class="route-icon-wrapper shadow-md">
-                                        <i class="fas fa-car"></i>
+                                <div class="flex-display items-start group p-4 rounded-xl hover:bg-green-50 transition-colors">
+                                    <div class="w-14 h-14 bg-gradient-primary-accent rounded-full flex-display items-center justify-center text-white mr-6 flex-shrink-0">
+                                        <i class="fas fa-car text-xl"></i>
                                     </div>
                                     <div>
-                                        <h4 class="font-bold text-xl text-gray-800 mb-2">Akses Kendaraan</h4>
-                                        <p class="text-gray-600 text-lg">Dapat dijangkau dengan mobil atau motor, ketinggian 1.200 mdpl</p>
+                                        <h4 class="font-bold text-xl text-gray-800 mb-2" data-translate-key="vehicle_access_title">Akses Kendaraan</h4>
+                                        <p class="text-gray-600 text-lg" data-translate-key="vehicle_access_desc">Dapat dijangkau dengan mobil atau motor, ketinggian 1.200 mdpl</p>
                                     </div>
                                 </div>
                                 
-                                <div class="route-item card-hover">
-                                    <div class="route-icon-wrapper shadow-md">
-                                        <i class="fas fa-walking"></i>
+                                <div class="flex-display items-start group p-4 rounded-xl hover:bg-green-50 transition-colors">
+                                    <div class="w-14 h-14 bg-gradient-primary-accent rounded-full flex-display items-center justify-center text-white mr-6 flex-shrink-0">
+                                        <i class="fas fa-walking text-xl"></i>
                                     </div>
                                     <div>
-                                        <h4 class="font-bold text-xl text-gray-800 mb-2">Jalur Pendakian</h4>
-                                        <p class="text-gray-600 text-lg">Jalur utama sepanjang 8 km, perkiraan waktu 12-15 jam</p>
+                                        <h4 class="font-bold text-xl text-gray-800 mb-2" data-translate-key="climbing_route_title">Jalur Pendakian</h4>
+                                        <p class="text-gray-600 text-lg" data-translate-key="climbing_route_desc">Jalur utama sepanjang 8 km, perkiraan waktu 12-15 jam</p>
                                     </div>
                                 </div>
                                 
-                                <div class="route-item card-hover">
-                                    <div class="route-icon-wrapper shadow-md">
-                                        <i class="fas fa-info-circle"></i>
+                                <div class="flex-display items-start group p-4 rounded-xl hover:bg-green-50 transition-colors">
+                                    <div class="w-14 h-14 bg-gradient-primary-accent rounded-full flex-display items-center justify-center text-white mr-6 flex-shrink-0">
+                                        <i class="fas fa-info-circle text-xl"></i>
                                     </div>
                                     <div>
-                                        <h4 class="font-bold text-xl text-gray-800 mb-2">Fasilitas Basecamp</h4>
-                                        <p class="text-gray-600 text-lg">Parkir, toilet, tempat istirahat, dan penyewaan peralatan</p>
+                                        <h4 class="font-bold text-xl text-gray-800 mb-2" data-translate-key="basecamp_facilities_title">Fasilitas Basecamp</h4>
+                                        <p class="text-gray-600 text-lg" data-translate-key="basecamp_facilities_desc">Parkir, toilet, tempat istirahat, dan penyewaan peralatan</p>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="travel-tips">
-                                <h4 class="font-bold text-lg text-blue-800 mb-3">Tips Perjalanan:</h4>
-                                <ul class="travel-tips-list">
-                                    <li>
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>Waktu tempuh dari Surabaya: 2-3 jam</span>
+                            <div class="mt-8 p-6 bg-gradient-br-blue-indigo rounded-2xl">
+                                <h4 class="font-bold text-lg text-blue-800 mb-3" data-translate-key="travel_tips_title">Tips Perjalanan:</h4>
+                                <ul class="space-y-2 text-gray-700">
+                                    <li class="flex-display items-start">
+                                        <i class="fas fa-check-circle text-blue-500 mt-1 mr-3"></i>
+                                        <span data-translate-key="tip_1">Waktu tempuh dari Surabaya: 2-3 jam</span>
                                     </li>
-                                    <li>
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>Parkir aman tersedia di basecamp</span>
+                                    <li class="flex-display items-start">
+                                        <i class="fas fa-check-circle text-blue-500 mt-1 mr-3"></i>
+                                        <span data-translate-key="tip_2">Parkir aman tersedia di basecamp</span>
                                     </li>
-                                    <li>
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>Siapkan peralatan sesuai cuaca</span>
+                                    <li class="flex-display items-start">
+                                        <i class="fas fa-check-circle text-blue-500 mt-1 mr-3"></i>
+                                        <span data-translate-key="tip_3">Siapkan peralatan sesuai cuaca</span>
                                     </li>
                                 </ul>
                             </div>
@@ -516,20 +624,19 @@
                     </div>
                 </div>
                 
-                <div class="card-hover">
-                    <div class="map-wrapper">
-                        <div class="map-inner">
-                            <div class="map-header"></div>
-                            <div class="map-iframe-container">
+                <div class="feature-badge card-hover">
+                    <div class="bg-gradient-r-blue-indigo rounded-3xl p-1">
+                        <div class="bg-white rounded-3xl overflow-hidden">
+                            <div class="h-12 bg-gradient-r-blue-indigo"></div>
+                            <div class="p-1">
                                 <iframe 
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.768447332634!2d112.6028828757616!3d-8.16107007943676!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7834511d51c313%3A0x6b7a5446e6a188f1!2sGunung%20Butak!5e0!3m2!1sen!2sid!4v1650000000000!5m2!1sen!2sid" 
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.768447332634!2d112.6028828757616!3d-8.16107007943676!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOMKwMDknNDAuOSJTIDExMsKwMzYnMTAuNCJF!5e0!3m2!1sen!2sid!4v1650000000000!5m2!1sen!2sid" 
                                     width="100%" 
                                     height="500" 
-                                    class="map-iframe"
+                                    style="border:0;" 
                                     allowfullscreen="" 
                                     loading="lazy" 
-                                    referrerpolicy="no-referrer-when-downgrade"
-                                    title="Google Maps Location of Gunung Butak">
+                                    referrerpolicy="no-referrer-when-downgrade">
                                 </iframe>
                             </div>
                         </div>
@@ -538,204 +645,388 @@
             </div>
             
             <!-- Interactive Map Features -->
-            <div class="map-features-grid">
-                <div class="map-feature-card card-hover">
-                    <i class="fas fa-route"></i>
-                    <h4 class="text-2xl font-bold text-gray-800 mb-3">Jalur Pendakian</h4>
-                    <p class="text-gray-600">Rute terbaik dengan pos-pos peristirahatan</p>
+            <div class="mt-20 grid-cols-1 md-grid-cols-3 gap-8">
+                <div class="bg-gradient-br-green-blue rounded-3xl p-8 text-center feature-badge card-hover">
+                    <i class="fas fa-route text-5xl text-green-600 mb-4"></i>
+                    <h4 class="text-2xl font-bold text-gray-800 mb-3" data-translate-key="trekking_routes_title">Jalur Pendakian</h4>
+                    <p class="text-gray-600" data-translate-key="trekking_routes_desc">Rute terbaik dengan pos-pos peristirahatan</p>
                 </div>
                 
-                <div class="map-feature-card card-hover">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h4 class="text-2xl font-bold text-gray-800 mb-3">Titik Bahaya</h4>
-                    <p class="text-gray-600">Area rawan longsor dan medan terjal</p>
+                <div class="bg-gradient-br-orange-yellow rounded-3xl p-8 text-center feature-badge card-hover">
+                    <i class="fas fa-exclamation-triangle text-5xl text-orange-600 mb-4"></i>
+                    <h4 class="text-2xl font-bold text-gray-800 mb-3" data-translate-key="danger_points_title">Titik Bahaya</h4>
+                    <p class="text-gray-600" data-translate-key="danger_points_desc">Area rawan longsor dan medan terjal</p>
                 </div>
                 
-                <div class="map-feature-card card-hover">
-                    <i class="fas fa-water"></i>
-                    <h4 class="text-2xl font-bold text-gray-800 mb-3">Sumber Air</h4>
-                    <p class="text-gray-600">Lokasi sumber air bersih di sepanjang jalur</p>
+                <div class="bg-gradient-br-blue-indigo rounded-3xl p-8 text-center feature-badge card-hover">
+                    <i class="fas fa-water text-5xl text-blue-600 mb-4"></i>
+                    <h4 class="text-2xl font-bold text-gray-800 mb-3" data-translate-key="water_source_title">Sumber Air</h4>
+                    <p class="text-gray-600" data-translate-key="water_source_desc">Lokasi sumber air bersih di sepanjang jalur</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Testimoni Pendaki -->
-    <section id="testimoni" class="section-padding bg-gradient-gray-white">
-        <div class="container">
+    <section id="testimoni" class="py-20 bg-gradient-to-br from-gray-100 to-white">
+        <div class="container auto-margin px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-primary mb-4 animated-border">Apa Kata Mereka?</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-12">
+                <h2 class="text-4xl font-bold text-primary mb-4 animated-border auto-margin" data-translate-key="testimonials_title">Apa Kata Mereka?</h2>
+                <p class="text-xl text-gray-600 max-w-3xl auto-margin leading-relaxed mb-12" data-translate-key="testimonials_subtitle">
                     Pendapat para pendaki yang telah menaklukkan puncak Gunung Butak
                 </p>
             </div>
             
             <!-- Sliding Testimonials Section -->
-            <div class="testimonial-wrapper">
-                <div class="testimonial-slider-container">
-                    <div id="testimoni-container" class="testimonial-slider">
-                        <!-- Testimonials will be loaded here by JS -->
-                        <div class="testimonial-card-item">
-                            <div class="testimonial-card-inner card-hover">
-                                <div class="testimonial-rating">
-                                    <div class="stars">★★★★★</div>
-                                    <span class="score">5.0</span>
-                                </div>
-                                <p class="testimonial-quote">"Pendakian yang luar biasa! Jalur Kucur menantang tapi sepadan dengan pemandangan sabana di puncak. Basecamp sangat terorganisir dan bersih."</p>
-                                <div class="testimonial-author">
-                                    <img src="assets/images/Ahmad_Dhani_Avatar.jpg" onerror="this.src='https://placehold.co/50x50/3B82F6/ffffff?text=AD'" class="testimonial-avatar" alt="Avatar Ahmad Dhani">
-                                    <div>
-                                        <p class="testimonial-name">Ahmad Dhani</p>
-                                        <p class="testimonial-role">Pendaki Berpengalaman</p>
-                                    </div>
-                                </div>
+            <div class="relative mb-16">
+                <div class="overflow-hidden">
+                    <div id="testimoni-container" class="flex-display transition-transform duration-500 ease-in-out">
+                        <!-- Testimonials will be loaded here -->
+                        <div class="testimonial-card animate-pulse w-full flex-shrink-0 px-4">
+                            <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
+                                <div class="bg-gray-200 h-64 rounded-2xl"></div>
                             </div>
                         </div>
-                        <div class="testimonial-card-item">
-                            <div class="testimonial-card-inner card-hover">
-                                <div class="testimonial-rating">
-                                    <div class="stars">★★★★☆</div>
-                                    <span class="score">4.0</span>
-                                </div>
-                                <p class="testimonial-quote">"Keamanannya top. Pemandu sangat informatif. Hanya saja, treknya agak licin setelah hujan. Overall, pengalaman yang tak terlupakan!"</p>
-                                <div class="testimonial-author">
-                                    <img src="assets/images/Siti_Dewi_Avatar.jpg" onerror="this.src='https://placehold.co/50x50/10B981/ffffff?text=SD'" class="testimonial-avatar" alt="Avatar Siti Dewi">
-                                    <div>
-                                        <p class="testimonial-name">Siti Dewi</p>
-                                        <p class="testimonial-role">Pendaki Pemula</p>
-                                    </div>
-                                </div>
+                        <div class="testimonial-card animate-pulse w-full flex-shrink-0 px-4">
+                            <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
+                                <div class="bg-gray-200 h-64 rounded-2xl"></div>
                             </div>
                         </div>
-                        <div class="testimonial-card-item">
-                            <div class="testimonial-card-inner card-hover">
-                                <div class="testimonial-rating">
-                                    <div class="stars">★★★★★</div>
-                                    <span class="score">5.0</span>
-                                </div>
-                                <p class="testimonial-quote">"Sabana Butak di pagi hari adalah yang terbaik! Sunrise dan lautan awan yang sempurna. Sistem registrasi onlinenya juga sangat mudah digunakan."</p>
-                                <div class="testimonial-author">
-                                    <img src="assets/images/Rizky_Dirgantara_Avatar.jpg" onerror="this.src='https://placehold.co/50x50/F59E0B/ffffff?text=RD'" class="testimonial-avatar" alt="Avatar Rizky Dirgantara">
-                                    <div>
-                                        <p class="testimonial-name">Rizky Dirgantara</p>
-                                        <p class="testimonial-role">Petualang</p>
-                                    </div>
-                                </div>
+                        <div class="testimonial-card animate-pulse w-full flex-shrink-0 px-4">
+                            <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
+                                <div class="bg-gray-200 h-64 rounded-2xl"></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Navigation Arrows -->
-                <button id="prev-testimonial" class="slider-nav-btn">
-                    <i class="fas fa-chevron-left"></i>
+                <button id="prev-testimonial" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg z-10 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-chevron-left text-primary text-xl"></i>
                 </button>
-                <button id="next-testimonial" class="slider-nav-btn">
-                    <i class="fas fa-chevron-right"></i>
+                <button id="next-testimonial" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg z-10 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-chevron-right text-primary text-xl"></i>
                 </button>
                 
                 <!-- Pagination Dots -->
-                <div id="testimonial-dots" class="pagination-dots"></div>
+                <div id="testimonial-dots" class="flex-display justify-center mt-8 space-x-2"></div>
             </div>
             
-            <!-- Stats Section -->
-            <div class="stats-footer card-hover">
-                <div class="stats-footer-grid">
-                    <div class="text-center card-hover">
-                        <div class="stats-footer-item-value" id="total-pendaki-rating"><span class="counter" data-target="98">0</span>%</div>
-                        <p class="stats-footer-item-label">Kepuasan Pendaki</p>
+            <!-- Form Komentar untuk Pengguna yang Login -->
+            <div id="komentar-form-section" class="hidden">
+                <div class="max-w-2xl auto-margin mb-16">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold text-primary animated-border auto-margin mb-4" data-translate-key="share_experience_title">Bagikan Pengalaman Anda</h2>
+                        <p class="text-gray-600" data-translate-key="share_experience_subtitle">Tulis komentar dan beri penilaian untuk membantu pendaki lain</p>
                     </div>
-                    <div class="text-center card-hover">
-                        <div class="stats-footer-item-value" id="avg-rating"><span class="counter-float" data-target="4.9">0</span>/5</div>
-                        <p class="stats-footer-item-label">Rating Rata-rata</p>
-                    </div>
-                    <div class="text-center card-hover">
-                        <div class="stats-footer-item-value" id="total-komentar"><span class="counter" data-target="5000">0</span>+</div>
-                        <p class="stats-footer-item-label">Total Ulasan</p>
+                    
+                    <div class="feature-badge card-hover">
+                        <div class="bg-gradient-primary-accent rounded-3xl p-1">
+                            <div class="bg-white rounded-3xl shadow-2xl p-8">
+                                <div id="komentar-error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6"></div>
+                                <div id="komentar-success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 px-6 py-4 rounded-lg mb-6"></div>
+                                
+                                <form id="komentarForm" class="space-y-6">
+                                    <div>
+                                        <label class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="comment_label">Komentar:</label>
+                                        <textarea id="isi-komentar" class="w-full px-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Tulis pengalaman Anda mendaki Gunung Butak..." data-translate-key="placeholder_comment_area"></textarea>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="rating_label">Rating:</label>
+                                        <div class="flex-display items-center">
+                                            <div class="rating flex-display space-x-1">
+                                                <input type="radio" id="star5" name="rating" value="5" class="hidden" />
+                                                <label for="star5" class="text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition-colors">★</label>
+                                                <input type="radio" id="star4" name="rating" value="4" class="hidden" />
+                                                <label for="star4" class="text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition-colors">★</label>
+                                                <input type="radio" id="star3" name="rating" value="3" class="hidden" />
+                                                <label for="star3" class="text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition-colors">★</label>
+                                                <input type="radio" id="star2" name="rating" value="2" class="hidden" />
+                                                <label for="star2" class="text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition-colors">★</label>
+                                                <input type="radio" id="star1" name="rating" value="1" class="hidden" />
+                                                <label for="star1" class="text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition-colors">★</label>
+                                            </div>
+                                            <span id="rating-value" class="ml-4 text-xl text-gray-600" data-translate-key="select_rating">Pilih rating</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="w-full bg-gradient-primary-accent hover:from-accent hover:to-primary text-white font-bold py-4 px-6 rounded-2xl transition-default hover-scale-105 shadow-2xl text-xl glow-button" data-translate-key="submit_comment">
+                                        <i class="fas fa-paper-plane mr-3"></i>Kirim Komentar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+            
+            <!-- Stats Section -->
+            <div class="bg-gradient-primary-accent rounded-3xl p-12 text-white mt-16">
+                <div class="grid-cols-1 md-grid-cols-3 gap-8">
+                    <div class="text-center feature-badge card-hover">
+                        <div class="text-7xl font-bold mb-4" id="total-pendaki-rating">98%</div>
+                        <p class="text-xl opacity-90" data-translate-key="climber_satisfaction">Kepuasan Pendaki</p>
+                    </div>
+                    <div class="text-center feature-badge card-hover">
+                        <div class="text-7xl font-bold mb-4" id="avg-rating">4.9/5</div>
+                        <p class="text-xl opacity-90" data-translate-key="avg_rating_label">Rating Rata-rata</p>
+                    </div>
+                    <div class="text-center feature-badge card-hover">
+                        <div class="text-7xl font-bold mb-4" id="total-komentar">5000+</div>
+                        <p class="text-xl opacity-90" data-translate-key="total_reviews">Total Ulasan</p>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </section>
 
     <!-- Poster Slider Section -->
-    <section id="poster-slider" class="section-padding bg-gradient-gray-white">
-        <div class="container">
+    <section id="poster-slider" class="py-20 bg-gradient-to-br from-white to-gray-100">
+        <div class="container auto-margin px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-primary mb-4 animated-border">Poster Promosi</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-12">
+                <h2 class="text-4xl font-bold text-primary mb-4 animated-border auto-margin" data-translate-key="promo_poster_title">Poster Promosi</h2>
+                <p class="text-xl text-gray-600 max-w-3xl auto-margin leading-relaxed mb-12" data-translate-key="promo_poster_subtitle">
                     Temukan informasi terbaru dan promosi menarik dari Gunung Butak
                 </p>
             </div>
             
             <!-- Sliding Posters Section -->
-            <div class="poster-slider-wrapper">
-                <div class="poster-slider-container">
-                    <div id="poster-container" class="poster-slider">
+            <div class="relative mb-16">
+                <div class="overflow-hidden">
+                    <div id="poster-container" class="flex-display transition-transform duration-500 ease-in-out">
                         <!-- Poster items will be dynamically loaded -->
-                        <div class="poster-card-item">
-                            <div class="poster-card-inner card-hover">
-                                <img src="assets/images/Poster_Promo.jpg" onerror="this.src='https://placehold.co/600x800/22c55e/ffffff?text=PROMO+HUT+RI'" alt="Poster Promo" class="poster-img">
-                                <h4 class="poster-title">Diskon 17% Tiket Pendakian</h4>
-                                <p class="poster-desc">Berlaku selama bulan Agustus! Pesan sekarang.</p>
+                        <div class="poster-card animate-pulse w-full flex-shrink-0 px-4">
+                            <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
+                                <div class="bg-gray-200 h-64 rounded-2xl"></div>
                             </div>
                         </div>
-                        <div class="poster-card-item">
-                            <div class="poster-card-inner card-hover">
-                                <img src="assets/images/Poster_Event.jpg" onerror="this.src='https://placehold.co/600x800/3B82F6/ffffff?text=EVENT+CLEAN+UP'" alt="Poster Event" class="poster-img">
-                                <h4 class="poster-title" style="color: var(--accent);">Aksi Bersih Gunung Butak</h4>
-                                <p class="poster-desc">Gabung dengan kami di akhir pekan ini!</p>
+                        <div class="poster-card animate-pulse w-full flex-shrink-0 px-4">
+                            <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
+                                <div class="bg-gray-200 h-64 rounded-2xl"></div>
                             </div>
                         </div>
-                        <div class="poster-card-item">
-                            <div class="poster-card-inner card-hover">
-                                <img src="assets/images/Poster_Info_Cuaca.jpg" onerror="this.src='https://placehold.co/600x800/F59E0B/ffffff?text=INFO+CUACA'" alt="Poster Info" class="poster-img">
-                                <h4 class="poster-title" style="color: var(--orange);">Peringatan Cuaca Ekstrem</h4>
-                                <p class="poster-desc">Pastikan peralatan anda lengkap sebelum mendaki.</p>
+                        <div class="poster-card animate-pulse w-full flex-shrink-0 px-4">
+                            <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
+                                <div class="bg-gray-200 h-64 rounded-2xl"></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Navigation Arrows -->
-                <button id="prev-poster" class="slider-nav-btn">
-                    <i class="fas fa-chevron-left"></i>
+                <button id="prev-poster" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg z-10 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-chevron-left text-primary text-xl"></i>
                 </button>
-                <button id="next-poster" class="slider-nav-btn">
-                    <i class="fas fa-chevron-right"></i>
+                <button id="next-poster" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg z-10 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-chevron-right text-primary text-xl"></i>
                 </button>
                 
                 <!-- Pagination Dots -->
-                <div id="poster-dots" class="pagination-dots"></div>
+                <div id="poster-dots" class="flex-display justify-center mt-8 space-x-2"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Auth Section -->
+    <section id="auth" class="py-20 bg-gradient-br-gray-white">
+        <div class="container auto-margin px-4">
+            <div class="max-w-2xl auto-margin">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-primary animated-border auto-margin mb-4" data-translate-key="account_access_title">Akses Akun</h2>
+                    <p class="text-gray-600 text-lg" data-translate-key="account_access_subtitle">Login atau daftar untuk mengakses sistem pendakian</p>
+                </div>
+                
+                <div class="feature-badge card-hover">
+                    <div class="bg-gradient-primary-accent rounded-3xl p-1">
+                        <div class="bg-white rounded-3xl shadow-2xl p-1">
+                            <!-- Tabs -->
+                            <div class="border-b border-gray-200">
+                                <nav class="flex-display -mb-px">
+                                    <button id="login-tab" class="py-4 px-6 text-center border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 active text-blue-600 border-blue-600 w-1\/3" data-translate-key="tab_login">
+                                        Login
+                                    </button>
+                                    <button id="register-tab" class="py-4 px-6 text-center border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 w-1\/3" data-translate-key="tab_register">
+                                        Daftar
+                                    </button>
+                                    <button id="forgot-tab" class="py-4 px-6 text-center border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 w-1\/3" data-translate-key="tab_forgot_password">
+                                        Lupa Password
+                                    </button>
+                                </nav>
+                            </div>
+                            
+                            <div class="p-9">
+                                <!-- Login Form -->
+                                <div id="login-content" class="block">
+                                    <div id="login-error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6"></div>
+                                    <div id="login-success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 px-6 py-4 rounded-lg mb-6"></div>
+                                    
+                                    <form id="loginForm" class="space-y-6">
+                                        <div>
+                                            <label for="login-email" class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="email_label">Email:</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex-display items-center pointer-events-none">
+                                                    <i class="fas fa-envelope text-gray-400"></i>
+                                                </div>
+                                                <input type="email" id="login-email" class="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Masukkan email Anda" data-translate-key="placeholder_enter_email">
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label for="login-password" class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="password_label">Password:</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex-display items-center pointer-events-none">
+                                                    <i class="fas fa-lock text-gray-400"></i>
+                                                </div>
+                                                <input type="password" id="login-password" class="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Masukkan password Anda" data-translate-key="placeholder_enter_password">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex-display items-center justify-between">
+                                            <div class="flex-display items-center">
+                                                <input type="checkbox" id="remember" class="h-5 w-5 text-accent focus:ring-accent border-gray-300 rounded">
+                                                <label for="remember" class="ml-2 block text-gray-700" data-translate-key="remember_me">Ingat saya</label>
+                                            </div>
+                                            <button type="button" id="forgot-password-link" class="text-accent hover:text-primary font-medium" data-translate-key="forgot_password_link">Lupa password?</button>
+                                        </div>
+                                        
+                                        <button type="submit" class="w-full bg-gradient-primary-accent hover:from-accent hover:to-primary text-white font-bold py-4 px-6 rounded-2xl transition-default hover-scale-105 shadow-2xl text-xl glow-button" data-translate-key="login_now_button">
+                                            <i class="fas fa-sign-in-alt mr-3"></i>Login Sekarang
+                                        </button>
+                                    </form>
+                                    
+                                    <div class="mt-8 text-center">
+                                        <p class="text-gray-600" data-translate-key="no_account_yet">Belum punya akun? <button type="button" id="show-register" class="text-accent hover:text-primary font-bold" data-translate-key="register_here">Daftar di sini</button></p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Register Form -->
+                                <div id="register-content" class="hidden">
+                                    <div id="register-error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6"></div>
+                                    <div id="register-success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 px-6 py-4 rounded-lg mb-6"></div>
+                                    
+                                    <form id="registerForm" class="space-y-6">
+                                        <div>
+                                            <label for="register-name" class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="full_name_label">Nama Lengkap:</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex-display items-center pointer-events-none">
+                                                    <i class="fas fa-user text-gray-400"></i>
+                                                </div>
+                                                <input type="text" id="register-name" class="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Masukkan nama lengkap Anda" data-translate-key="placeholder_enter_full_name">
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label for="register-email" class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="email_label_2">Email:</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex-display items-center pointer-events-none">
+                                                    <i class="fas fa-envelope text-gray-400"></i>
+                                                </div>
+                                                <input type="email" id="register-email" class="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Masukkan email Anda" data-translate-key="placeholder_enter_email_2">
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label for="register-phone" class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="phone_number_label">Nomor Telepon:</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex-display items-center pointer-events-none">
+                                                    <i class="fas fa-phone text-gray-400"></i>
+                                                </div>
+                                                <input type="tel" id="register-phone" class="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Masukkan nomor telepon Anda" data-translate-key="placeholder_enter_phone">
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label for="register-password" class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="password_label_2">Password:</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex-display items-center pointer-events-none">
+                                                    <i class="fas fa-lock text-gray-400"></i>
+                                                </div>
+                                                <input type="password" id="register-password" class="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Masukkan password Anda" data-translate-key="placeholder_enter_password_2">
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label for="register-confirm-password" class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="confirm_password_label">Konfirmasi Password:</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex-display items-center pointer-events-none">
+                                                    <i class="fas fa-lock text-gray-400"></i>
+                                                </div>
+                                                <input type="password" id="register-confirm-password" class="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Konfirmasi password Anda" data-translate-key="placeholder_confirm_password">
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="submit" class="w-full bg-gradient-primary-accent hover:from-accent hover:to-primary text-white font-bold py-4 px-6 rounded-2xl transition-default hover-scale-105 shadow-2xl text-xl glow-button" data-translate-key="register_now_button">
+                                            <i class="fas fa-user-plus mr-3"></i>Daftar Sekarang
+                                        </button>
+                                    </form>
+                                    
+                                    <div class="mt-8 text-center">
+                                        <p class="text-gray-600" data-translate-key="already_have_account">Sudah punya akun? <button type="button" id="show-login" class="text-accent hover:text-primary font-bold" data-translate-key="login_here_2">Login di sini</button></p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Forgot Password Form -->
+                                <div id="forgot-content" class="hidden">
+                                    <div id="forgot-error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6"></div>
+                                    <div id="forgot-success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 px-6 py-4 rounded-lg mb-6"></div>
+                                    
+                                    <form id="forgotForm" class="space-y-6">
+                                        <div>
+                                            <label for="forgot-email" class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="email_label_3">Email:</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex-display items-center pointer-events-none">
+                                                    <i class="fas fa-envelope text-gray-400"></i>
+                                                </div>
+                                                <input type="email" id="forgot-email" class="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Masukkan email Anda" data-translate-key="placeholder_enter_email_3">
+                                            </div>
+                                        </div>
+                                        
+                                        <p class="text-gray-600 text-sm" data-translate-key="verification_code_info">Kami akan mengirimkan kode verifikasi ke email Anda. Masukkan kode tersebut untuk mereset password Anda.</p>
+                                        
+                                        <button type="submit" class="w-full bg-gradient-primary-accent hover:from-accent hover:to-primary text-white font-bold py-4 px-6 rounded-2xl transition-default hover-scale-105 shadow-2xl text-xl glow-button" data-translate-key="send_verification_button">
+                                            <i class="fas fa-paper-plane mr-3"></i>Kirim Kode Verifikasi
+                                        </button>
+                                    </form>
+                                    
+                                    <div class="mt-8 text-center">
+                                        <p class="text-gray-600" data-translate-key="back_to_login">Ingin kembali ke login? <button type="button" id="show-login-from-forgot" class="text-accent hover:text-primary font-bold" data-translate-key="login_here_3">Login di sini</button></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
+    <footer class="bg-dark-green text-white py-16">
+        <div class="container auto-margin px-4">
+            <div class="grid-cols-1 md-grid-cols-4 gap-8">
                 <!-- Logo dan Deskripsi -->
                 <div>
-                    <div class="footer-logo-group">
-                        <i class="fas fa-mountain"></i>
-                        <h3 class="text-2xl font-bold">Gunung Butak</h3>
+                    <div class="flex-display items-center mb-6">
+                        <i class="fas fa-mountain text-3xl text-accent mr-3"></i>
+                        <h3 class="text-2xl font-bold" data-translate-key="footer_title">Gunung Butak</h3>
                     </div>
-                    <p class="footer-description">
+                    <p class="text-gray-300 mb-6 leading-relaxed" data-translate-key="footer_description">
                         Platform reservasi pendakian Gunung Butak melalui jalur Kucur. 
                         Membantu pendaki untuk merencanakan dan menikmati petualangan alam mereka dengan aman dan menyenangkan.
                     </p>
-                    <div class="social-links">
-                        <a href="#" class="social-badge">
+                    <div class="flex-display space-x-4">
+                        <a href="#" class="social-badge w-12 h-12 bg-accent rounded-full flex-display items-center justify-center text-white hover:bg-white text-primary transition-default">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="#" class="social-badge">
+                        <a href="#" class="social-badge w-12 h-12 bg-accent rounded-full flex-display items-center justify-center text-white hover:bg-white text-primary transition-default">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="#" class="social-badge">
+                        <a href="#" class="social-badge w-12 h-12 bg-accent rounded-full flex-display items-center justify-center text-white hover:bg-white text-primary transition-default">
                             <i class="fab fa-twitter"></i>
                         </a>
-                        <a href="#" class="social-badge">
+                        <a href="#" class="social-badge w-12 h-12 bg-accent rounded-full flex-display items-center justify-center text-white hover:bg-white text-primary transition-default">
                             <i class="fab fa-youtube"></i>
                         </a>
                     </div>
@@ -743,492 +1034,697 @@
                 
                 <!-- Navigasi -->
                 <div>
-                    <h4 class="footer-title">Navigasi</h4>
-                    <ul class="footer-nav-list">
-                        <li><a href="#hero" class="nav-link">Beranda</a></li>
-                        <li><a href="#tentang" class="nav-link">Tentang Kami</a></li>
-                        <li><a href="#lokasi" class="nav-link">Jalur Pendakian</a></li>
-                        <li><a href="#poster-slider" class="nav-link">Galeri</a></li>
-                        <li><a href="simaksi/auth/login.php" class="nav-link">Login/Daftar</a></li>
+                    <h4 class="text-lg font-bold mb-6" data-translate-key="navigation_title">Navigasi</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#header" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_home">Beranda</a></li>
+                        <li><a href="#tentang" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_about_us">Tentang Kami</a></li>
+                        <li><a href="#lokasi" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_climbing_route">Jalur Pendakian</a></li>
+                        <li><a href="#" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_gallery">Galeri</a></li>
+                        <li><a href="#testimoni" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_contact">Kontak</a></li>
                     </ul>
                 </div>
                 
                 <!-- Jalur Pendakian -->
                 <div>
-                    <h4 class="footer-title">Data Gunung</h4>
-                    <ul class="footer-data-list">
-                        <li>
-                            <i class="fas fa-mountain"></i>
-                            <span>Jalur Utama: Kucur</span>
+                    <h4 class="text-lg font-bold mb-6" data-translate-key="climbing_info_title">Jalur Pendakian</h4>
+                    <ul class="space-y-3 text-gray-300">
+                        <li class="flex-display items-start">
+                            <i class="fas fa-mountain mt-1 mr-2 text-accent"></i>
+                            <span data-translate-key="info_route">Jalur Utama: Kucur</span>
                         </li>
-                        <li>
-                            <i class="fas fa-bolt"></i>
-                            <span>Tingkat Kesulitan: Sulit</span>
+                        <li class="flex-display items-start">
+                            <i class="fas fa-bolt mt-1 mr-2 text-accent"></i>
+                            <span data-translate-key="info_difficulty">Tingkat Kesulitan: Sulit</span>
                         </li>
-                        <li>
-                            <i class="fas fa-clock"></i>
-                            <span>Durasi: 3-4 Hari</span>
+                        <li class="flex-display items-start">
+                            <i class="fas fa-clock mt-1 mr-2 text-accent"></i>
+                            <span data-translate-key="info_duration">Durasi: 3-4 Hari</span>
                         </li>
-                        <li>
-                            <i class="fas fa-ruler-vertical"></i>
-                            <span>Ketinggian: 2.868 mdpl</span>
+                        <li class="flex-display items-start">
+                            <i class="fas fa-ruler-vertical mt-1 mr-2 text-accent"></i>
+                            <span data-translate-key="info_height">Ketinggian: 2.868 mdpl</span>
                         </li>
-                        <li>
-                            <i class="fas fa-thermometer-half"></i>
-                            <span>Suhu: 15-22°C</span>
+                        <li class="flex-display items-start">
+                            <i class="fas fa-thermometer-half mt-1 mr-2 text-accent"></i>
+                            <span data-translate-key="info_temperature">Suhu: 15-22°C</span>
                         </li>
                     </ul>
                 </div>
                 
                 <!-- Kontak Kami -->
                 <div>
-                    <h4 class="footer-title">Kontak Kami</h4>
-                    <ul class="footer-contact-list">
-                        <li>
-                            <i class="fas fa-envelope"></i>
-                            <span class="break-all">info@gunungbutak.com</span>
+                    <h4 class="text-lg font-bold mb-6" data-translate-key="contact_us_title">Kontak Kami</h4>
+                    <ul class="space-y-4 text-gray-300">
+                        <li class="flex-display items-start">
+                            <i class="fas fa-envelope mr-3 mt-1 text-accent"></i>
+                            <span>info@gunungbutak.com</span>
                         </li>
-                        <li>
-                            <i class="fas fa-phone"></i>
+                        <li class="flex-display items-start">
+                            <i class="fas fa-phone mr-3 mt-1 text-accent"></i>
                             <span>+62 812 3456 7890</span>
                         </li>
-                        <li>
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Basecamp Kucur, Gunung Butak, Jawa Timur</span>
+                        <li class="flex-display items-start">
+                            <i class="fas fa-map-marker-alt mr-3 mt-1 text-accent"></i>
+                            <span data-translate-key="contact_address">Basecamp Kucur, Gunung Butak, Jawa Timur</span>
                         </li>
-                        <li>
-                            <i class="fas fa-comments"></i>
-                            <span>Live Chat 24/7</span>
+                        <li class="flex-display items-start">
+                            <i class="fas fa-comments mr-3 mt-1 text-accent"></i>
+                            <span data-translate-key="contact_chat">Live Chat 24/7</span>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
-        <div class="copyright">
-            <p>&copy; 2025 Gunung Butak Reservasi Pendakian. All rights reserved.</p>
+        <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
+            <p data-translate-key="copyright">&copy; 2025 Gunung Butak Reservasi Pendakian. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- Modal Verifikasi Token (Tetap dipertahankan untuk potensi penggunaan JS) -->
-    <div id="verifikasi-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <i class="fas fa-key"></i>
-                <h3 class="modal-title">Verifikasi Email</h3>
-                <p class="modal-subtitle">Masukkan kode verifikasi yang dikirimkan ke email Anda</p>
-                
-                <div id="verifikasi-error-message" class="modal-message modal-message-error" style="display: none;"></div>
-                <div id="verifikasi-success-message" class="modal-message modal-message-success" style="display: none;"></div>
-                
-                <div class="mb-6">
-                    <input type="text" id="verification-token" class="modal-input" placeholder="XXXXXX" maxlength="6">
-                </div>
-                
-                <div class="modal-actions">
-                    <button type="button" id="cancel-verifikasi" class="modal-btn cancel-btn">
-                        Batal
-                    </button>
-                    <button type="button" id="submit-verifikasi" class="modal-btn submit-modal-btn">
-                        Verifikasi
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- JavaScript (Fungsionalitas disatukan dan disederhanakan) -->
+    <!-- JavaScript (Memasukkan logika Theme Toggle dan Translation) -->
     <script>
-        // --- Globals & Setup ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        let isUserLoggedIn = false; // Mock state
-        let currentUserName = "Pendaki Hebat";
+        // --- TRANSLATION DATA ---
+        const translations = {
+            'id': {
+                page_title: "Gunung Butak | Reservasi Pendakian",
+                header_title: "Gunung Butak | Reservasi Pendakian",
+                login_button: "Login", logout_button: "Logout", logout_button_header: "Logout", greeting_text: "Selamat datang,",
+                hero_title: "GUNUNG BUTAK", hero_subtitle: "Jelajahi keindahan alam dan tantangan ekstrem di puncak tertinggi Jawa Timur",
+                reserve_now: "Reservasi Sekarang", location: "Lokasi Pendakian", climbers_this_year: "Pendaki Tahun Ini",
+                experience_rating: "Rating Pengalaman", years_of_operation: "Tahun Operasional",
+                latest_announcements_title: "Pengumuman Terbaru", latest_announcements_subtitle: "Informasi penting terkait pendakian Gunung Butak",
+                loading_announcements: "Memuat pengumuman terbaru...", no_announcements_title: "Tidak Ada Pengumuman",
+                no_announcements_subtitle: "Belum ada pengumuman aktif saat ini",
+                why_butak_title: "Kenapa Memilih Gunung Butak?", why_butak_subtitle: "Temukan alasan mengapa Gunung Butak menjadi destinasi pendakian favorit para petualang",
+                mountain_height_label: "Ketinggian Gunung", masl: "Meter di Atas Permukaan Laut", difficulty_level: "Sulit",
+                difficulty_label: "Tingkat Kesulitan", difficulty_description: "Cocok untuk pendaki berpengalaman", duration_label: "Durasi Pendakian",
+                ideal_duration: "Hari Pendakian Ideal", avg_temp_title: "Suhu Rata-rata", avg_temp_desc: "Nyaman untuk pendakian",
+                wind_speed_title: "Kecepatan Angin", wind_speed_desc: "Angin segar di puncak", rainfall_title: "Curah Hujan",
+                rainfall_level: "Rendah", rainfall_desc: "Kemungkinan hujan rendah", vegetation_title: "Vegetasi",
+                vegetation_zones: "4 Zona", vegetation_desc: "Hutan-Sahara yang bervariasi",
+                safety_facilities_title: "Keamanan dan Fasilitas", safety_guaranteed_title: "Keamanan Terjamin",
+                safety_guaranteed_desc: "Pendakian aman dengan pemandu bersertifikat", complete_facilities_title: "Fasilitas Lengkap",
+                complete_facilities_desc: "Basecamp lengkap dengan peralatan darurat", climber_community_title: "Komunitas Pendaki",
+                climber_community_desc: "Ikuti komunitas pendakian aktif",
+                about_butak_title: "Tentang Gunung Butak", about_butak_subtitle: "Kenali lebih dekat destinasi pendakian terbaik di Jawa Timur",
+                history_title: "Sejarah dan Asal Usul",
+                history_p1: "Gunung Butak adalah destinasi pendakian yang menawarkan keindahan alam yang luar biasa dan pengalaman mendaki yang menantang. Terletak di Jawa Timur, gunung ini memiliki ketinggian 2.868 meter di atas permukaan laut.",
+                history_p2: "Dengan berbagai ekosistem yang berbeda dari hutan hingga sabana, Gunung Butak menjadi tempat yang ideal bagi para pendaki yang mencari keindahan alam sekaligus tantangan ekstrem.",
+                fun_facts_title: "Fakta Menarik",
+                fun_fact_1: 'Nama "Butak" berasal dari bahasa Jawa yang berarti \'telanjang\', merujuk pada puncaknya yang tidak berpohon',
+                fun_fact_2: "Merupakan gunung tertinggi ke-3 di Jawa Timur", fun_fact_3: "Habitat bagi berbagai spesies langka flora dan fauna",
+                fun_fact_4: "Lokasi hunting sunrise yang legendaris", our_advantages_title: "Keunggulan Kami",
+                advantage_1: "Sistem reservasi online terintegrasi dan aman", advantage_2: "Pemandu berpengalaman bersertifikat nasional",
+                advantage_3: "Basecamp lengkap dengan fasilitas memadai", advantage_4: "Komunitas pendaki aktif dan suportif",
+                why_climb_title: "Mengapa Mendaki Gunung Butak?", why_climb_subtitle: "Temukan alasan mengapa Gunung Butak menjadi destinasi pendakian yang tak terlupakan",
+                beautiful_scenery_title: "Pemandangan Indah", beautiful_scenery_desc: "Nikmati pemandangan alam yang luar biasa dari hutan hingga sabana yang menakjubkan di sepanjang jalur pendakian. Puncak Gunung Butak menawarkan pemandangan 360 derajat yang memukau.",
+                biodiversity_title: "Keberagaman Flora & Fauna", biodiversity_desc: "Jelajahi berbagai ekosistem unik dan temukan berbagai spesies langka yang hanya ditemukan di kawasan ini. Habitat alami berbagai jenis burung dan satwa endemik Jawa.",
+                vast_savanna_title: "Sabana Luas", vast_savanna_desc: "Rasakan keindahan luasnya padang sabana di kaki gunung, tempat yang sangat indah untuk berkemah dan menikmati alam. Sempurna untuk hunting sunrise dan stargazing.",
+                climb_benefits_title: "Keuntungan Mendaki Bersama Kami", certified_guides_title: "Pemandu Bersertifikat",
+                certified_guides_desc: "Pemandu profesional dengan sertifikasi nasional", guaranteed_safety_title: "Keamanan Terjamin",
+                guaranteed_safety_desc: "Sistem keamanan terintegrasi dan SOP ketat", complete_basecamp_title: "Fasilitas Lengkap",
+                complete_basecamp_desc: "Basecamp lengkap dengan peralatan standar", best_time_title: "Waktu Terbaik untuk Mendaki",
+                best_time_subtitle: "Rencanakan pendakian Anda dengan informasi cuaca dan waktu yang optimal", dry_season_title: "Musim Kemarau",
+                dry_season_months: "April - Oktober", dry_season_benefit_1: "<strong>Jalur pendakian stabil</strong> tanpa hambatan genangan air",
+                dry_season_benefit_2: "<strong>Visibilitas sangat baik</strong> untuk menikmati pemandangan", dry_season_benefit_3: "<strong>Suhu sejuk dan nyaman</strong> untuk pendakian",
+                dry_season_benefit_4: "<strong>Kondisi jalan kering</strong> memudahkan perjalanan", ideal_daily_time_title: "Waktu Ideal Sehari",
+                daily_climb_label: "Pendakian Harian", daily_time_1: "<strong>Pagi hari (04:00-06:00):</strong> Udara segar dan suhu nyaman",
+                daily_time_2: "<strong>Matahari terbit:</strong> Pemandangan menakjubkan dari puncak", daily_time_3: "<strong>Hindari siang (10:00-15:00):</strong> Suhu panas yang melelahkan",
+                daily_time_4: "<strong>Malam hari:</strong> Sempurna untuk stargazing", weather_forecast_title: "Prakiraan Cuaca Mendatang",
+                weather_forecast_subtitle: "Cuaca terkini dan perkiraan 3 hari ke depan untuk Gunung Butak", loading_weather: "Memuat perkiraan cuaca...",
+                location_title: "Lokasi Gunung Butak", location_subtitle: "Temukan jalur pendakian melalui Basecamp Kucur dan rute terbaik menuju puncak",
+                access_route_title: "Rute Akses Menuju Basecamp", basecamp_name: "Basecamp Kucur", basecamp_location: "Kabupaten Malang, Jawa Timur",
+                vehicle_access_title: "Akses Kendaraan", vehicle_access_desc: "Dapat dijangkau dengan mobil atau motor, ketinggian 1.200 mdpl",
+                climbing_route_title: "Jalur Pendakian", climbing_route_desc: "Jalur utama sepanjang 8 km, perkiraan waktu 12-15 jam",
+                basecamp_facilities_title: "Fasilitas Basecamp", basecamp_facilities_desc: "Parkir, toilet, tempat istirahat, dan penyewaan peralatan",
+                travel_tips_title: "Tips Perjalanan:", tip_1: "Waktu tempuh dari Surabaya: 2-3 jam", tip_2: "Parkir aman tersedia di basecamp",
+                tip_3: "Siapkan peralatan sesuai cuaca", trekking_routes_title: "Jalur Pendakian", trekking_routes_desc: "Rute terbaik dengan pos-pos peristirahatan",
+                danger_points_title: "Titik Bahaya", danger_points_desc: "Area rawan longsor dan medan terjal", water_source_title: "Sumber Air",
+                water_source_desc: "Lokasi sumber air bersih di sepanjang jalur", testimonials_title: "Apa Kata Mereka?",
+                testimonials_subtitle: "Pendapat para pendaki yang telah menaklukkan puncak Gunung Butak", share_experience_title: "Bagikan Pengalaman Anda",
+                share_experience_subtitle: "Tulis komentar dan beri penilaian untuk membantu pendaki lain", comment_label: "Komentar:",
+                select_rating: "Pilih rating", submit_comment: "Kirim Komentar", climber_satisfaction: "Kepuasan Pendaki",
+                avg_rating_label: "Rating Rata-rata", total_reviews: "Total Ulasan", promo_poster_title: "Poster Promosi",
+                promo_poster_subtitle: "Temukan informasi terbaru dan promosi menarik dari Gunung Butak", account_access_title: "Akses Akun",
+                account_access_subtitle: "Login atau daftar untuk mengakses sistem pendakian", tab_login: "Login",
+                tab_register: "Daftar", tab_forgot_password: "Lupa Password", email_label: "Email:",
+                placeholder_enter_email: "Masukkan email Anda", password_label: "Password:", placeholder_enter_password: "Masukkan password Anda",
+                remember_me: "Ingat saya", forgot_password_link: "Lupa password?", login_now_button: "Login Sekarang",
+                no_account_yet: "Belum punya akun?", register_here: "Daftar di sini", full_name_label: "Nama Lengkap:",
+                placeholder_enter_full_name: "Masukkan nama lengkap Anda", email_label_2: "Email:",
+                placeholder_enter_email_2: "Masukkan email Anda", phone_number_label: "Nomor Telepon:",
+                placeholder_enter_phone: "Masukkan nomor telepon Anda", password_label_2: "Password:",
+                placeholder_enter_password_2: "Masukkan password Anda", confirm_password_label: "Konfirmasi Password:",
+                placeholder_confirm_password: "Konfirmasi password Anda", register_now_button: "Daftar Sekarang",
+                already_have_account: "Sudah punya akun?", login_here_2: "Login di sini", email_label_3: "Email:",
+                placeholder_enter_email_3: "Masukkan email Anda", verification_code_info: "Kami akan mengirimkan kode verifikasi ke email Anda. Masukkan kode tersebut untuk mereset password Anda.",
+                send_verification_button: "Kirim Kode Verifikasi", back_to_login: "Ingin kembali ke login?", login_here_3: "Login di sini",
+                footer_title: "Gunung Butak", footer_description: "Platform reservasi pendakian Gunung Butak melalui jalur Kucur. Membantu pendaki untuk merencanakan dan menikmati petualangan alam mereka dengan aman dan menyenangkan.",
+                navigation_title: "Navigasi", nav_home: "Beranda", nav_about_us: "Tentang Kami", nav_climbing_route: "Jalur Pendakian",
+                nav_gallery: "Galeri", nav_contact: "Kontak", climbing_info_title: "Jalur Pendakian", info_route: "Jalur Utama: Kucur",
+                info_difficulty: "Tingkat Kesulitan: Sulit", info_duration: "Durasi: 3-4 Hari", info_height: "Ketinggian: 2.868 mdpl",
+                info_temperature: "Suhu: 15-22°C", contact_us_title: "Kontak Kami", contact_address: "Basecamp Kucur, Gunung Butak, Jawa Timur",
+                contact_chat: "Live Chat 24/7", copyright: "&copy; 2025 Gunung Butak Reservasi Pendakian. All rights reserved.",
+            },
+            'en': {
+                page_title: "Mount Butak | Climbing Reservation",
+                header_title: "Mount Butak | Climbing Reservation",
+                login_button: "Login", logout_button: "Logout", logout_button_header: "Logout", greeting_text: "Welcome,",
+                hero_title: "MOUNT BUTAK", hero_subtitle: "Explore the natural beauty and extreme challenge on the highest peaks of East Java",
+                reserve_now: "Reserve Now", location: "Climbing Location", climbers_this_year: "Climbers This Year",
+                experience_rating: "Experience Rating", years_of_operation: "Years of Operation",
+                latest_announcements_title: "Latest Announcements", latest_announcements_subtitle: "Important information regarding Mount Butak climbing",
+                loading_announcements: "Loading latest announcements...", no_announcements_title: "No Announcements",
+                no_announcements_subtitle: "No active announcements currently",
+                why_butak_title: "Why Choose Mount Butak?", why_butak_subtitle: "Discover why Mount Butak is the favorite climbing destination for adventurers",
+                mountain_height_label: "Mountain Height", masl: "Meters Above Sea Level", difficulty_level: "Difficult",
+                difficulty_label: "Difficulty Level", difficulty_description: "Suitable for experienced climbers", duration_label: "Climbing Duration",
+                ideal_duration: "Ideal Climbing Days", avg_temp_title: "Average Temperature", avg_temp_desc: "Comfortable for climbing",
+                wind_speed_title: "Wind Speed", wind_speed_desc: "Fresh air at the peak", rainfall_title: "Rainfall",
+                rainfall_level: "Low", rainfall_desc: "Low probability of rain", vegetation_title: "Vegetation",
+                vegetation_zones: "4 Zones", vegetation_desc: "Varied Forest-Savanna",
+                safety_facilities_title: "Safety and Facilities", safety_guaranteed_title: "Guaranteed Safety",
+                safety_guaranteed_desc: "Safe climbing with certified guides", complete_facilities_title: "Complete Facilities",
+                complete_facilities_desc: "Basecamp equipped with emergency gear", climber_community_title: "Climber Community",
+                climber_community_desc: "Join the active climbing community",
+                about_butak_title: "About Mount Butak", about_butak_subtitle: "Get to know the best climbing destination in East Java",
+                history_title: "History and Origin",
+                history_p1: "Mount Butak is a climbing destination that offers incredible natural beauty and a challenging climbing experience. Located in East Java, this mountain has an altitude of 2,868 meters above sea level.",
+                history_p2: "With various distinct ecosystems from forest to savanna, Mount Butak is an ideal place for climbers seeking natural beauty and extreme challenges.",
+                fun_facts_title: "Interesting Facts",
+                fun_fact_1: 'The name "Butak" originates from Javanese meaning \'bare\', referring to its treeless peak',
+                fun_fact_2: "It is the 3rd highest mountain in East Java", fun_fact_3: "Habitat for various rare flora and fauna species",
+                fun_fact_4: "A legendary spot for sunrise hunting", our_advantages_title: "Our Advantages",
+                advantage_1: "Integrated and secure online reservation system", advantage_2: "Experienced guides with national certification",
+                advantage_3: "Complete basecamp with adequate facilities", advantage_4: "Active and supportive climbing community",
+                why_climb_title: "Why Climb Mount Butak?", why_climb_subtitle: "Discover the reasons why Mount Butak is an unforgettable climbing destination",
+                beautiful_scenery_title: "Beautiful Scenery", beautiful_scenery_desc: "Enjoy extraordinary natural views from the forest to the stunning savanna along the climbing route. Mount Butak Peak offers a captivating 360-degree panorama.",
+                biodiversity_title: "Flora & Fauna Diversity", biodiversity_desc: "Explore various unique ecosystems and find rare species found only in this area. Natural habitat for various types of birds and endemic Javanese animals.",
+                vast_savanna_title: "Vast Savanna", vast_savanna_desc: "Experience the vast beauty of the savanna plains at the foot of the mountain, an incredibly beautiful place for camping and enjoying nature. Perfect for sunrise hunting and stargazing.",
+                climb_benefits_title: "Benefits of Climbing With Us", certified_guides_title: "Certified Guides",
+                certified_guides_desc: "Professional guides with national certification", guaranteed_safety_title: "Guaranteed Safety",
+                guaranteed_safety_desc: "Integrated safety system and strict SOP", complete_basecamp_title: "Complete Facilities",
+                complete_basecamp_desc: "Basecamp equipped with standard gear", best_time_title: "Best Time to Climb",
+                best_time_subtitle: "Plan your climb with optimal weather and time information", dry_season_title: "Dry Season",
+                dry_season_months: "April - October", dry_season_benefit_1: "<strong>Stable climbing routes</strong> without waterlogging obstacles",
+                dry_season_benefit_2: "<strong>Excellent visibility</strong> to enjoy the view", dry_season_benefit_3: "<strong>Cool and comfortable temperature</strong> for climbing",
+                dry_season_benefit_4: "<strong>Dry road conditions</strong> ease the journey", ideal_daily_time_title: "Ideal Daily Time",
+                daily_climb_label: "Daily Climb", daily_time_1: "<strong>Morning (04:00-06:00):</strong> Fresh air and comfortable temperature",
+                daily_time_2: "<strong>Sunrise:</strong> Stunning views from the peak", daily_time_3: "<strong>Avoid noon (10:00-15:00):</strong> Exhausting heat",
+                daily_time_4: "<strong>Night:</strong> Perfect for stargazing", weather_forecast_title: "Upcoming Weather Forecast",
+                weather_forecast_subtitle: "Current weather and 3-day forecast for Mount Butak", loading_weather: "Loading weather forecast...",
+                location_title: "Mount Butak Location", location_subtitle: "Find the climbing route through Kucur Basecamp and the best route to the peak",
+                access_route_title: "Access Route to Basecamp", basecamp_name: "Kucur Basecamp", basecamp_location: "Malang Regency, East Java",
+                vehicle_access_title: "Vehicle Access", vehicle_access_desc: "Accessible by car or motorcycle, altitude 1,200 masl",
+                climbing_route_title: "Climbing Route", climbing_route_desc: "Main route along 8 km, estimated time 12-15 hours",
+                basecamp_facilities_title: "Basecamp Facilities", basecamp_facilities_desc: "Parking, toilet, rest area, and equipment rental",
+                travel_tips_title: "Travel Tips:", tip_1: "Travel time from Surabaya: 2-3 hours", tip_2: "Secure parking available at basecamp",
+                tip_3: "Prepare gear according to weather", trekking_routes_title: "Trekking Routes", trekking_routes_desc: "Best routes with rest posts",
+                danger_points_title: "Danger Points", danger_points_desc: "Landslide-prone area and steep terrain", water_source_title: "Water Sources",
+                water_source_desc: "Location of clean water sources along the trail", testimonials_title: "What They Say?",
+                testimonials_subtitle: "Opinions of climbers who have conquered the peak of Mount Butak", share_experience_title: "Share Your Experience",
+                share_experience_subtitle: "Write a comment and give a rating to help other climbers", comment_label: "Comment:",
+                select_rating: "Select rating", submit_comment: "Submit Comment", climber_satisfaction: "Climber Satisfaction",
+                avg_rating_label: "Average Rating", total_reviews: "Total Reviews", promo_poster_title: "Promotional Posters",
+                promo_poster_subtitle: "Find the latest information and attractive promotions from Mount Butak", account_access_title: "Account Access",
+                account_access_subtitle: "Login or register to access the climbing system", tab_login: "Login",
+                tab_register: "Register", tab_forgot_password: "Forgot Password", email_label: "Email:",
+                placeholder_enter_email: "Enter your email", password_label: "Password:", placeholder_enter_password: "Enter your password",
+                remember_me: "Remember me", forgot_password_link: "Forgot password?", login_now_button: "Login Now",
+                no_account_yet: "Don't have an account yet?", register_here: "Register here", full_name_label: "Full Name:",
+                placeholder_enter_full_name: "Enter your full name", email_label_2: "Email:",
+                placeholder_enter_email_2: "Enter your email", phone_number_label: "Phone Number:",
+                placeholder_enter_phone: "Enter your phone number", password_label_2: "Password:",
+                placeholder_enter_password_2: "Enter your password", confirm_password_label: "Confirm Password:",
+                placeholder_confirm_password: "Confirm your password", register_now_button: "Register Now",
+                already_have_account: "Already have an account?", login_here_2: "Login here", email_label_3: "Email:",
+                placeholder_enter_email_3: "Enter your email", verification_code_info: "We will send a verification code to your email. Enter the code to reset your password.",
+                send_verification_button: "Send Verification Code", back_to_login: "Want to return to login?", login_here_3: "Login here",
+                footer_title: "Mount Butak", footer_description: "Mount Butak climbing reservation platform via the Kucur route. Helping climbers plan and enjoy their natural adventure safely and pleasantly.",
+                navigation_title: "Navigation", nav_home: "Home", nav_about_us: "About Us", nav_climbing_route: "Climbing Route",
+                nav_gallery: "Gallery", nav_contact: "Contact", climbing_info_title: "Climbing Route", info_route: "Main Route: Kucur",
+                info_difficulty: "Difficulty Level: Difficult", info_duration: "Duration: 3-4 Days", info_height: "Height: 2,868 masl",
+                info_temperature: "Temperature: 15-22°C", contact_us_title: "Contact Us", contact_address: "Kucur Basecamp, Mount Butak, East Java",
+                contact_chat: "Live Chat 24/7", copyright: "&copy; 2025 Mount Butak Climbing Reservation. All rights reserved.",
+            }
+        };
 
-        // --- Utility Functions (Simplified for External Auth) ---
+        let currentLang = 'id'; // Default language
+        
+        // --- THEME TOGGLE LOGIC ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
 
-        function updateAuthState(loggedIn) {
-            isUserLoggedIn = loggedIn;
-            const authLink = document.getElementById('auth-link');
-            const userGreeting = document.getElementById('user-greeting');
-            const userFullnameEl = document.getElementById('user-fullname');
-
-            if (isUserLoggedIn) {
-                if (authLink) authLink.style.display = 'none';
-                if (userGreeting) userGreeting.classList.add('show');
-                if (userFullnameEl) userFullnameEl.textContent = currentUserName;
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
             } else {
-                if (authLink) authLink.style.display = 'inline-block';
-                if (userGreeting) userGreeting.classList.remove('show');
+                document.body.classList.remove('dark-mode');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
             }
         }
+        
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme === 'dark');
+        }
 
-        document.getElementById('logout-link-header')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            // Dalam aplikasi nyata, ini akan memanggil signOut Firebase dan me-refresh halaman.
-            updateAuthState(false);
-            console.log("Logout Mocked. User must manually navigate to login page.");
+        themeToggle.addEventListener('click', () => {
+            const isDark = document.body.classList.contains('dark-mode');
+            applyTheme(!isDark);
         });
         
-        // Modal functions are retained but simplified since Auth logic is gone
-        function showModal(show) {
-            const modal = document.getElementById('verifikasi-modal');
-            if (show) {
-                modal.classList.add('show');
-            } else {
-                modal.classList.remove('show');
-            }
-        }
-        document.getElementById('cancel-verifikasi')?.addEventListener('click', () => showModal(false));
+        // --- TRANSLATION LOGIC ---
+        const langToggle = document.getElementById('lang-toggle');
 
-        // --- Supabase Data Loading Functions ---
-
-        /**
-         * Mengambil data pengumuman yang aktif dan menampilkannya di halaman.
-         */
-        async function loadPengumuman() {
-            const contentDiv = document.getElementById('pengumuman-content');
-            const loadingDiv = document.getElementById('pengumuman-loading');
-            const emptyDiv = document.getElementById('pengumuman-empty');
-            
-            // Tampilkan loading, sembunyikan semua yang lain
-            if (contentDiv) contentDiv.innerHTML = loadingDiv.outerHTML;
-            if (emptyDiv) emptyDiv.style.display = 'none';
-
-            try {
-                // Pastikan klien Supabase sudah terinisialisasi
-                if (typeof supabase === 'undefined') {
-                    console.error("Supabase client is not initialized. Check config/supabase.php.");
-                    if (contentDiv) contentDiv.innerHTML = `<div class="announcement-item" style="border-left: 4px solid var(--red); background-color: #FEE2E2;"><h4 class="announcement-title">Error Koneksi</h4><p class="announcement-text">Gagal memuat pengumuman. Pastikan konfigurasi Supabase di simaksi/config/supabase.php sudah benar.</p></div>`;
-                    return;
-                }
-
-                const today = new Date().toISOString();
-
-                // Query Supabase: Ambil data dari tabel 'pengumuman'
-                // Filter: 'aktif' = TRUE DAN (tanggal_mulai <= hari_ini) DAN (tanggal_akhir >= hari_ini)
-                // Urutkan berdasarkan tanggal terbaru
-                const { data, error } = await supabase
-                    .from('pengumuman')
-                    .select('judul, konten, start_date, end_date')
-                    .eq('aktif', true)
-                    .lte('start_date', today)
-                    .gte('end_date', today)
-                    .order('start_date', { ascending: false });
-
-                // Sembunyikan loading
-                if (loadingDiv) loadingDiv.style.display = 'none';
-
-                if (error) {
-                    console.error("Supabase Error:", error.message);
-                    if (contentDiv) contentDiv.innerHTML = `<div class="announcement-item" style="border-left: 4px solid var(--red); background-color: #FEE2E2;"><h4 class="announcement-title">Error Data</h4><p class="announcement-text">Gagal memuat pengumuman: ${error.message}</p></div>`;
-                    return;
-                }
-
-                if (data && data.length > 0) {
-                    const pengumumanHtml = data.map(item => {
-                        const startDate = new Date(item.start_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-                        const endDate = new Date(item.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-                        
-                        return `
-                            <div class="announcement-item">
-                                <h4 class="announcement-title" style="font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">${item.judul}</h4>
-                                <p class="announcement-text" style="color: #4B5563;">${item.konten}</p>
-                                <span class="announcement-date" style="font-size: 0.875rem; color: #6B7280; display: block; margin-top: 1rem;">
-                                    Periode: ${startDate} hingga ${endDate}
-                                </span>
-                            </div>
-                        `;
-                    }).join('');
-
-                    if (contentDiv) contentDiv.innerHTML = pengumumanHtml;
-
-                } else {
-                    // Tampilkan pesan kosong jika tidak ada data
-                    if (contentDiv) contentDiv.innerHTML = emptyDiv.outerHTML;
-                    if (emptyDiv) emptyDiv.style.display = 'block';
-                }
-
-            } catch (e) {
-                console.error("General Error loading announcements:", e);
-                if (contentDiv) contentDiv.innerHTML = `<div class="announcement-item" style="border-left: 4px solid var(--red); background-color: #FEE2E2;"><h4 class="announcement-title">Kesalahan Umum</h4><p class="announcement-text">Terjadi kesalahan tak terduga saat memuat data: ${e.message}</p></div>`;
-            }
-        }
-        
-        // --- Counter Animation Logic ---
-        function animateCounter(element, target, duration) {
-            let start = 0;
-            const isFloat = target.includes('.');
-            const finalValue = parseFloat(target);
-            const increment = finalValue / (duration / 16);
-            
-            const timer = setInterval(() => {
-                start += increment;
-                if (start >= finalValue) {
-                    element.textContent = finalValue.toFixed(isFloat ? 1 : 0);
-                    clearInterval(timer);
-                } else {
-                    element.textContent = start.toFixed(isFloat ? 1 : 0);
-                }
-            }, 16);
-        }
-
-        const counterObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.querySelectorAll('.counter, .counter-float').forEach(counter => {
-                        if (counter.classList.contains('animated')) return;
-                        
-                        const target = counter.getAttribute('data-target');
-                        if (target) {
-                            animateCounter(counter, target, 2000);
-                            counter.classList.add('animated');
-                        }
-                    });
-                    
-                    entry.target.querySelectorAll('.progress-bar').forEach(bar => {
-                        const fill = bar.querySelector('.progress-fill');
-                        const value = bar.getAttribute('data-value');
-                        const max = bar.getAttribute('data-max');
-                        const percent = (parseInt(value) / parseInt(max)) * 100;
-                        if (fill) fill.style.width = `${percent}%`;
-                    });
-
-                    counterObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
-        
-        document.querySelectorAll('.stat-item, .stat-info-card, .stats-footer').forEach(card => {
-            counterObserver.observe(card);
-        });
-
-        // --- Slider Logic (Testimonial and Poster) ---
-
-        function initSlider(containerId, prevBtnId, nextBtnId, dotContainerId, cardClass) {
-            const container = document.getElementById(containerId);
-            const prevBtn = document.getElementById(prevBtnId);
-            const nextBtn = document.getElementById(nextBtnId);
-            const dotContainer = document.getElementById(dotContainerId);
-
-            if (!container) return;
-
-            let currentIndex = 0;
-            let cards;
-            let visibleCards = 1;
-
-            function updateSlider() {
-                cards = container.querySelectorAll(`.${cardClass}`);
-                if (cards.length === 0) return;
+        function translateElement(element) {
+            const key = element.getAttribute('data-translate-key');
+            if (key && translations[currentLang][key]) {
+                const translation = translations[currentLang][key];
                 
-                if (window.innerWidth >= 768) {
-                    visibleCards = 3;
-                } else {
-                    visibleCards = 1;
-                }
-                
-                const maxIndex = Math.ceil(cards.length / visibleCards) - 1;
-                if (currentIndex > maxIndex) currentIndex = maxIndex;
-                if (currentIndex < 0) currentIndex = 0;
-                
-                // Calculate translation percentage based on total cards and visible cards
-                const cardWidthPercentage = 100 / cards.length; 
-                const translateValue = -(currentIndex * visibleCards * cardWidthPercentage);
-                
-                container.style.transform = `translateX(${translateValue}%)`;
-                
-                updateDots(cards.length);
-                updateButtons(cards.length, maxIndex);
-            }
-            
-            function updateDots(totalCards) {
-                if (!dotContainer) return;
-                dotContainer.innerHTML = '';
-                const numDots = Math.ceil(totalCards / visibleCards);
-                for (let i = 0; i < numDots; i++) {
-                    const dot = document.createElement('span');
-                    dot.classList.add('dot');
-                    if (i === currentIndex) dot.classList.add('active');
-                    
-                    dot.addEventListener('click', () => {
-                        currentIndex = i;
-                        updateSlider();
-                    });
-                    dotContainer.appendChild(dot);
-                }
-            }
-
-            function updateButtons(totalCards, maxIndex) {
-                if (prevBtn) prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
-                if (nextBtn) nextBtn.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
-                if (totalCards <= visibleCards) {
-                    if (prevBtn) prevBtn.style.display = 'none';
-                    if (nextBtn) nextBtn.style.display = 'none';
-                    if (dotContainer) dotContainer.style.display = 'none';
-                } else {
-                    if (prevBtn) prevBtn.style.display = 'block';
-                    if (nextBtn) nextBtn.style.display = 'block';
-                    if (dotContainer) dotContainer.style.display = 'flex';
-                }
-            }
-
-            prevBtn?.addEventListener('click', () => {
-                if (currentIndex > 0) {
-                    currentIndex--;
-                    updateSlider();
-                }
-            });
-
-            nextBtn?.addEventListener('click', () => {
-                const maxIndex = Math.ceil(cards.length / visibleCards) - 1;
-                if (currentIndex < maxIndex) {
-                    currentIndex++;
-                    updateSlider();
-                }
-            });
-
-            window.addEventListener('resize', updateSlider);
-            
-            setTimeout(updateSlider, 100);
-        }
-
-        // --- Dynamic Content & Initial Load ---
-
-        function loadWeatherForecast() {
-            const forecastContainer = document.getElementById('weather-forecast');
-            if (!forecastContainer) return;
-
-            const weatherData = [
-                { day: "Hari Ini", icon: "fas fa-sun", temp: "18°C - 24°C", condition: "Cerah Penuh" },
-                { day: "Besok", icon: "fas fa-cloud-sun", temp: "15°C - 22°C", condition: "Cerah Berawan" },
-                { day: "Lusa", icon: "fas fa-cloud-rain", temp: "14°C - 20°C", condition: "Hujan Ringan" },
-            ];
-
-            const html = `
-                <div class="forecast-grid">
-                    ${weatherData.map(day => `
-                        <div class="forecast-card card-hover text-center">
-                            <p class="forecast-card-day">${day.day}</p>
-                            <i class="${day.icon} forecast-card-icon"></i>
-                            <h4 class="forecast-card-temp">${day.temp}</h4>
-                            <p class="forecast-card-condition">${day.condition}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            
-            setTimeout(() => {
-                forecastContainer.innerHTML = html;
-            }, 1500);
-        }
-        
-        function animateOnScroll() {
-            const elements = document.querySelectorAll('.card-hover, .section-padding .container > div');
-            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
-            
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                        obs.unobserve(entry.target); 
+                // Cek apakah elemen input/placeholder
+                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    if (element.placeholder) {
+                         element.placeholder = translation;
+                    } else if (element.value) {
+                         element.value = translation;
                     }
-                });
-            }, observerOptions);
+                } else if (element.tagName === 'TITLE') {
+                    document.title = translation;
+                } else {
+                    // Untuk elemen dengan konten HTML (misalnya, yang memiliki <strong>), gunakan innerHTML
+                    if (translation.includes('<strong>') || translation.includes('<b>')) {
+                        element.innerHTML = translation;
+                    } else {
+                        // Untuk teks biasa, gunakan textContent
+                        element.textContent = translation;
+                    }
+                }
+            }
+        }
 
-            elements.forEach(element => {
-                if (!element.closest('.hero-section')) { 
-                    element.style.opacity = '0';
-                    element.style.transform = 'translateY(40px)';
-                    observer.observe(element);
+        function applyTranslation(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            const elementsToTranslate = document.querySelectorAll('[data-translate-key]');
+            
+            elementsToTranslate.forEach(translateElement);
+            
+            // Handle placeholders manual (Dibutuhkan untuk elemen tanpa data-translate-key)
+            // (Placeholder di bawah sudah ditangani dengan baik oleh logic utama)
+            
+            // Karena elemen input tidak memiliki data-translate-key untuk placeholder, kita perlu melakukan pembaruan langsung di sini.
+            // Namun, dalam HTML, kita telah menambahkan data-translate-key pada placeholder. Mari kita pastikan semua placeholder ter-update.
+            document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(el => {
+                const key = el.getAttribute('data-translate-key');
+                if (key && translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
                 }
             });
+            
+            localStorage.setItem('lang', lang);
         }
-        
-        // Parallax Effect
-        window.addEventListener('scroll', function() {
-            const scrolled = window.pageYOffset;
-            const parallax = document.querySelector('.hero-section');
-            if (parallax) {
-                const speed = scrolled * 0.3;
-                parallax.style.backgroundPosition = `center calc(50% - ${speed}px)`;
-            }
+
+        langToggle.addEventListener('click', () => {
+            const newLang = currentLang === 'id' ? 'en' : 'id';
+            applyTranslation(newLang);
         });
 
-        // Scroll to Anchor Logic
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                const hash = this.getAttribute('href');
-                if (hash !== '#') { // Ignore links to #
+        function loadLanguage() {
+            const savedLang = localStorage.getItem('lang') || 'id';
+            applyTranslation(savedLang);
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            loadLanguage(); // Muat bahasa setelah tema
+            
+            // Existing JS logic...
+        
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const target = document.querySelector(hash);
+                    const target = document.querySelector(this.getAttribute('href'));
                     if (target) {
                         window.scrollTo({
-                            top: target.offsetTop - 80, 
+                            top: target.offsetTop - 80,
                             behavior: 'smooth'
                         });
                     }
-                }
-            });
-        });
-        
-        // Navigation Highlighting
-        function highlightNavOnScroll() {
-            const sections = document.querySelectorAll('section[id]');
-            const navLinks = document.querySelectorAll('.nav-link');
-            
-            let current = '';
-            
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= (sectionTop - 150)) {
-                    current = section.getAttribute('id');
-                }
+                });
             });
             
-            navLinks.forEach(link => {
-                const linkHref = link.getAttribute('href').replace('#', '');
-                link.classList.remove('text-accent');
-                if (linkHref === current) {
-                    link.classList.add('text-accent');
-                }
-            });
-        }
-        
-        document.addEventListener('scroll', highlightNavOnScroll);
-
-
-        document.addEventListener('DOMContentLoaded', () => {
-            updateAuthState(false);
-            loadWeatherForecast();
-            
-            // Panggil fungsi untuk memuat pengumuman
-            loadPengumuman();
-
-            // Init Sliders
-            initSlider('testimoni-container', 'prev-testimonial', 'next-testimonial', 'testimonial-dots', 'testimonial-card-item');
-            initSlider('poster-container', 'prev-poster', 'next-poster', 'poster-dots', 'poster-card-item');
-
-            // Hero Animation
-            document.querySelectorAll('.hero-content').forEach(el => el.classList.add('show'));
-
-            // Initial scroll check for animations
-            setTimeout(animateOnScroll, 100);
-            
-            // Scroll to top button functionality
+            // Enhanced scroll to top functionality
             const scrollToTopBtn = document.createElement('div');
-            scrollToTopBtn.className = 'scroll-to-top';
+            scrollToTopBtn.className = 'scroll-to-top visible';
             scrollToTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
             document.body.appendChild(scrollToTopBtn);
-
+            
             scrollToTopBtn.addEventListener('click', function() {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
             });
             
-            window.addEventListener('scroll', () => {
-                scrollToTopBtn.style.display = window.pageYOffset > 300 ? 'flex' : 'none';
+            // Add animation on scroll for elements
+            function animateOnScroll() {
+                const elements = document.querySelectorAll('.card-hover, .bg-white, .testimonial-card, .feature-badge');
+                elements.forEach(element => {
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const screenPosition = window.innerHeight / 1.3;
+                    
+                    if (elementPosition < screenPosition) {
+                        if (element.style.opacity !== '1') {
+                            element.style.opacity = '1';
+                            element.style.transform = 'translateY(0)';
+                        }
+                    }
+                });
+            }
+            
+            window.addEventListener('scroll', animateOnScroll);
+            
+            // Initialize elements with opacity 0 for animation
+            const elements = document.querySelectorAll('.card-hover, .bg-white, .testimonial-card, .feature-badge');
+            elements.forEach(element => {
+                element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
             });
-            scrollToTopBtn.style.display = 'none'; 
+                
+            // Trigger initial animation check
+            setTimeout(animateOnScroll, 100);
+            
+            // Add floating effect to hero section (The new CSS defines the .floating animation)
+            const heroElements = document.querySelectorAll('.hero-background h1, .hero-background h2, .hero-background p, .hero-background a, .hero-background .counter, .hero-content');
+            heroElements.forEach(el => {
+                 if (el.classList.contains('hero-content')) {
+                    el.classList.add('floating');
+                }
+            });
+            
+            // Enhanced counter animation for stats
+            function animateCounter(element, target, duration) {
+                let start = 0;
+                const increment = target / (duration / 16);
+                const timer = setInterval(() => {
+                    start += increment;
+                    element.textContent = Math.floor(start);
+                    
+                    if (start >= target) {
+                        element.textContent = target.toLocaleString('id-ID'); // Format numbers
+                        clearInterval(timer);
+                    }
+                }, 16);
+            }
+            
+            // Activate counters when they come into view
+            const observerOptions = {
+                root: null, rootMargin: '0px', threshold: 0.5
+            };
+            
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const numberElements = entry.target.querySelectorAll('.gradient-text, [id$="-rating"], [id$="-komentar"]');
+                        numberElements.forEach(counter => {
+                            const text = counter.textContent.replace(/[^0-9.]/g, ''); 
+                            let target = parseFloat(text);
+                            if (counter.textContent.endsWith('+')) {
+                                target = target * 1000;
+                            }
+                            if (!isNaN(target)) {
+                                counter.textContent = '0'; 
+                                animateCounter(counter, target, 2000);
+                                counterObserver.unobserve(entry.target);
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe counter elements
+            document.querySelectorAll('.stat-card, .bg-gradient-to-r, .bg-gradient-primary-accent').forEach(card => {
+                counterObserver.observe(card);
+            });
+
+            // Enhanced parallax effect to hero background
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const parallax = document.querySelector('.hero-background');
+                if (parallax) {
+                    const speed = scrolled * 0.3;
+                    parallax.style.backgroundPosition = `center calc(50% + ${speed}px)`;
+                }
+            });
+            
+            // Add ripple effect to buttons
+            const buttons = document.querySelectorAll('.pulse-button, .glow-button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    if (window.getComputedStyle(this).position === 'static') {
+                        this.style.position = 'relative';
+                    }
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    const existingRipple = this.querySelector('.ripple');
+                    if (existingRipple) { existingRipple.remove(); }
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => { ripple.remove(); }, 600);
+                });
+            });
+            
+            // Add typing animation to hero text
+            function animateHeroText() {
+                const heroContents = document.querySelectorAll('.hero-content > *');
+                heroContents.forEach((el, index) => {
+                    el.style.opacity = '0';
+                    el.style.transition = 'opacity 1s ease';
+                    setTimeout(() => { el.style.opacity = '1'; }, 500 + (index * 200));
+                });
+            }
+            setTimeout(animateHeroText, 500);
+            
+            // Add particle effect to hero section
+            function createParticles() {
+                const hero = document.querySelector('.hero-background');
+                if (!hero) return;
+                for (let i = 0; i < 20; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'absolute w-1 h-1 bg-white rounded-full opacity-30';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = Math.random() * 100 + '%';
+                    particle.style.animation = `float ${Math.random() * 10 + 5}s infinite ease-in-out`;
+                    hero.appendChild(particle);
+                }
+            }
+            window.addEventListener('load', createParticles);
+            
+            // Add scroll progress indicator
+            function addScrollProgress() {
+                const progressContainer = document.createElement('div');
+                progressContainer.id = 'scroll-progress';
+                progressContainer.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 0%; height: 3px; 
+                    background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+                    z-index: 9999; transition: width 0.1s ease;
+                `;
+                document.body.appendChild(progressContainer);
+                window.addEventListener('scroll', () => {
+                    const scrollTop = window.pageYOffset;
+                    const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    const scrollPercent = (scrollTop / windowHeight) * 100;
+                    progressContainer.style.width = scrollPercent + '%';
+                });
+            }
+            addScrollProgress();
+            
+            // Add enhanced navigation highlighting
+            function highlightNavOnScroll() {
+                const sections = document.querySelectorAll('section[id]');
+                const navLinks = document.querySelectorAll('.nav-link');
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= (sectionTop - 200)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('text-accent');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('text-accent');
+                    }
+                });
+            }
+            window.addEventListener('scroll', highlightNavOnScroll);
+            
+            // Tab switching logic for Auth Section
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            const forgotTab = document.getElementById('forgot-tab');
+            const loginContent = document.getElementById('login-content');
+            const registerContent = document.getElementById('register-content');
+            const forgotContent = document.getElementById('forgot-content');
+            
+            function switchAuthTab(tabName) {
+                const tabs = [loginTab, registerTab, forgotTab];
+                const contents = [loginContent, registerContent, forgotContent];
+                
+                tabs.forEach(tab => {
+                    tab.classList.remove('text-blue-600', 'border-blue-600');
+                    tab.classList.add('text-gray-500', 'border-transparent');
+                });
+                
+                contents.forEach(content => {
+                    content.classList.add('hidden');
+                    content.classList.remove('block');
+                });
+                
+                if (tabName === 'login') {
+                    loginTab.classList.add('text-blue-600', 'border-blue-600');
+                    loginTab.classList.remove('text-gray-500', 'border-transparent');
+                    loginContent.classList.add('block');
+                    loginContent.classList.remove('hidden');
+                } else if (tabName === 'register') {
+                    registerTab.classList.add('text-blue-600', 'border-blue-600');
+                    registerTab.classList.remove('text-gray-500', 'border-transparent');
+                    registerContent.classList.add('block');
+                    registerContent.classList.remove('hidden');
+                } else if (tabName === 'forgot') {
+                    forgotTab.classList.add('text-blue-600', 'border-blue-600');
+                    forgotTab.classList.remove('text-gray-500', 'border-transparent');
+                    forgotContent.classList.add('block');
+                    forgotContent.classList.remove('hidden');
+                }
+            }
+            
+            loginTab.addEventListener('click', () => switchAuthTab('login'));
+            registerTab.addEventListener('click', () => switchAuthTab('register'));
+            forgotTab.addEventListener('click', () => switchAuthTab('forgot'));
+            
+            document.getElementById('show-register').addEventListener('click', () => switchAuthTab('register'));
+            document.getElementById('show-login').addEventListener('click', () => switchAuthTab('login'));
+            document.getElementById('forgot-password-link').addEventListener('click', () => switchAuthTab('forgot'));
+            document.getElementById('show-login-from-forgot').addEventListener('click', () => switchAuthTab('login'));
+            
+            // Rating interaction logic
+            const ratingInputs = document.querySelectorAll('.rating input[type="radio"]');
+            const ratingValueSpan = document.getElementById('rating-value');
+            ratingInputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    ratingValueSpan.textContent = `${input.value} dari 5`;
+                });
+            });
+            
+            // Supabase/Auth/Firestore MOCKS (unchanged)
+            const SUPABASE_URL = 'https://your-supabase-url.supabase.co';
+            const SUPABASE_ANON_KEY = 'your-anon-key';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            const authContainer = document.getElementById('auth-container');
+            const userGreeting = document.getElementById('user-greeting');
+            const logoutLinkHeader = document.getElementById('logout-link-header');
+            const komentarFormSection = document.getElementById('komentar-form-section');
+
+            function updateAuthState(session) {
+                if (session) {
+                    authContainer.classList.add('hidden');
+                    userGreeting.classList.remove('hidden');
+                    komentarFormSection.classList.remove('hidden');
+                    document.getElementById('greeting-text').textContent = 'Selamat datang,';
+                    document.getElementById('user-fullname').textContent = 'Pendaki Hebat';
+                } else {
+                    authContainer.classList.remove('hidden');
+                    userGreeting.classList.add('hidden');
+                    komentarFormSection.classList.add('hidden');
+                }
+            }
+            supabase.auth.onAuthStateChange((event, session) => { updateAuthState(session); });
+            updateAuthState(null);
+            logoutLinkHeader.addEventListener('click', async (e) => {
+                e.preventDefault();
+                updateAuthState(null);
+                console.log('User logged out (mock)');
+            });
+            
+            document.getElementById('registerForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('register-email').value;
+                document.getElementById('register-success-message').textContent = `Pendaftaran berhasil untuk ${email}. Silakan login.`;
+                document.getElementById('register-success-message').classList.remove('hidden');
+                document.getElementById('register-error-message').classList.add('hidden');
+                switchAuthTab('login');
+            });
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                if (email === 'test@example.com' && password === 'password') {
+                     updateAuthState({ user: { email: email } });
+                     document.getElementById('login-success-message').textContent = `Login berhasil!`;
+                     document.getElementById('login-success-message').classList.remove('hidden');
+                     document.getElementById('login-error-message').classList.add('hidden');
+                } else {
+                     document.getElementById('login-error-message').textContent = `Email atau password salah.`;
+                     document.getElementById('login-error-message').classList.remove('hidden');
+                     document.getElementById('login-success-message').classList.add('hidden');
+                }
+            });
+            document.getElementById('komentarForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const komentar = document.getElementById('isi-komentar').value;
+                const rating = document.querySelector('input[name="rating"]:checked');
+                if (!komentar || !rating) {
+                    document.getElementById('komentar-error-message').textContent = 'Harap isi komentar dan berikan rating.';
+                    document.getElementById('komentar-error-message').classList.remove('hidden');
+                    document.getElementById('komentar-success-message').classList.add('hidden');
+                    return;
+                }
+                document.getElementById('komentar-success-message').textContent = `Komentar Anda telah terkirim! Rating: ${rating.value}/5`;
+                document.getElementById('komentar-success-message').classList.remove('hidden');
+                document.getElementById('komentar-error-message').classList.add('hidden');
+                document.getElementById('isi-komentar').value = '';
+                rating.checked = false;
+                ratingValueSpan.textContent = 'Pilih rating';
+                setTimeout(() => { loadTestimonials(true); }, 1000);
+            });
         });
         
     </script>
+    
+    <!-- Include index.js -->
+    <script src="assets/js/index.js"></script>
+    
+    <!-- Include sliding-komentar.js first to ensure sliding functions are available -->
+    <script src="assets/js/sliding-komentar.js"></script>
+    
+    <!-- Include main.js -->
+    <script src="assets/js/main.js"></script>
+    
+    <!-- Include weather forecast -->
+    <script src="assets/js/weather-forecast.js"></script>
+    
+    <!-- Include poster slider -->
+    <script src="assets/js/poster-slider.js"></script>
+    
+    <!-- Close the main content div -->
+    </div>
 </body>
 </html>

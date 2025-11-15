@@ -227,9 +227,7 @@ $current_title = isset($menu_titles[$page]) ? $menu_titles[$page] : 'Dashboard';
                 </div>
                 <div class="topbar-right">
                     <div class="topbar-info">
-                        <!-- Perubahan di sini: Menggunakan variabel PHP $greeting -->
                         <span id="topbar-greeting" style="font-size: 0.95em; font-weight: 600; color: #35542E;"><?php echo $greeting; ?></span>
-                        <!-- Asumsi tanggal dan waktu dibuat dinamis oleh JavaScript (script.js) atau kode PHP lainnya -->
                         <span id="current-date" style="margin-top: 5px;">Jumat, 24 Oktober 2025</span>
                         <span id="current-time">14:13:10</span>
                     </div>
