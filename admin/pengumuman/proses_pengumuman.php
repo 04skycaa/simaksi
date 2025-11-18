@@ -1,8 +1,20 @@
 <?php
+session_start(); // WAJIB di baris paling atas
 header('Content-Type: application/json');
+
+// --- TAMBAHAN KEAMANAN ---
+// Cek apakah ada session admin yang aktif.
+if (!isset($_SESSION['user_id'])) {
+    // Jika tidak ada, kirim error dan hentikan skrip
+    echo json_encode(['success' => false, 'message' => 'Akses ditolak. Sesi Anda mungkin telah berakhir. Silakan login kembali.']);
+    exit;
+}
+// --- SELESAI KEAMANAN ---
+
+
 include __DIR__ . '/../../config/supabase.php';
 
-// ini untuk mengambil data dari request body
+// Ambil data dari request body
 $input = json_decode(file_get_contents('php://input'), true);
 
 if (!$input || !isset($input['action'])) {
@@ -12,35 +24,41 @@ if (!$input || !isset($input['action'])) {
 
 $action = $input['action'];
 $response = ['success' => false, 'message' => 'Terjadi kesalahan.'];
-$id_admin_contoh = '2b367615-30d4-4ce0-b1d0-16d585e5055b'; 
 
-//untuk perbaikan patch telah_terbit
-$telah_terbit_value = null;
+// === INI DIA PERUBAHANNYA ===
+// Ambil ID admin dari session yang sudah login, BUKAN hardcode
+$id_admin_dari_session = $_SESSION['user_id']; 
+// === SELESAI PERUBAHAN ===
 
-if (array_key_exists('telah_terbit', $input)) {
-    $telah_terbit_value = $input['telah_terbit'] ? "true" : "false";
+
+// Cek boolean 'telah_terbit'
+if (isset($input['telah_terbit']) && $input['telah_terbit']) {
+    $telah_terbit_value = "true";
+} else {
+    $telah_terbit_value = "false";
 }
 
 
 switch ($action) {
     case 'create':
         $data = [
-            'id_admin' => $id_admin_contoh,
+            // Gunakan variabel dari session
+            'id_admin' => $id_admin_dari_session, 
             'judul' => $input['judul'],
             'konten' => $input['konten'],
             'start_date' => $input['start_date'],
             'end_date' => $input['end_date'],
+            'telah_terbit' => $telah_terbit_value 
         ];
-        if ($telah_terbit_value !== null) {
-            $data['telah_terbit'] = $telah_terbit_value; 
-        }
 
         $result = supabase_request('POST', 'pengumuman', $data); 
         
         if (is_array($result) && isset($result[0]['id_pengumuman'])) {
             $response = ['success' => true, 'message' => 'Pengumuman berhasil dibuat.'];
         } else {
-            $response['message'] = 'Gagal membuat pengumuman: ' . ($result['message'] ?? 'Error');
+            // Debugging response
+            $raw_response = json_encode($result);
+            $response['message'] = 'Gagal membuat pengumuman. Raw response: ' . $raw_response;
         }
         break;
 
@@ -52,22 +70,21 @@ switch ($action) {
             'konten' => $input['konten'],
             'start_date' => $input['start_date'],
             'end_date' => $input['end_date'],
-            'diperbarui_pada' => date('c')
+            'diperbarui_pada' => date('c'),
+            'telah_terbit' => $telah_terbit_value // Gunakan logika baru yang robust
         ];
-        if ($telah_terbit_value !== null) {
-            $data['telah_terbit'] = $telah_terbit_value;
-        }
-
-        // ini untuk endpoint patch
         $endpoint = 'pengumuman?id_pengumuman=eq.' . $id;
         // ini untuk request patch
         $result = supabase_request('PATCH', $endpoint, $data);
+        
         if (is_array($result) && isset($result[0]['id_pengumuman'])) {
             $response = ['success' => true, 'message' => 'Pengumuman berhasil diperbarui.'];
         } else {
             $error_msg = 'Gagal memperbarui pengumuman.';
             if(isset($result['error']['message'])) {
                 $error_msg .= ' Pesan: ' . $result['error']['message'];
+            } elseif(isset($result['message'])) {
+                $error_msg .= ' Pesan: ' . $result['message'];
             }
             $response['message'] = $error_msg;
         }
@@ -79,6 +96,7 @@ switch ($action) {
         
         $result = supabase_request('DELETE', $endpoint); 
         
+        // Cek hasil delete (biasanya $result kosong saat sukses)
         if (is_array($result) && empty($result)) {
             $response = ['success' => true, 'message' => 'Pengumuman berhasil dihapus.'];
         } else {

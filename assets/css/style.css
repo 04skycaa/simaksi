@@ -1414,6 +1414,16 @@ td {
 .status-ditolak, .status-batal { background-color: #ef4444; } 
 .status-pembayaran-tertunda { background-color: #3b82f6; }
 
+.status-disetujui {
+    background-color: #75B368; 
+    border: 1px solid #35542E; 
+}
+
+.status-ditolak {
+    background-color: #6b7280; 
+    border: 1px solid #4b5563; 
+}
+
 /* Tombol Aksi */
 .data-table button.btn { margin: 0 2px; }
 .data-table button.blue { background-color: #3b82f6; }

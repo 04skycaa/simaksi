@@ -1,16 +1,11 @@
 <?php
 session_start();
 
-// Catatan: Pastikan Anda menangani redirect jika pengguna belum login.
-// Biasanya, ini dilakukan di sini:
-/*
-if (!isset($_SESSION['access_token'])) {
-    header('Location: ../auth/login.php');
+$page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    header('Location: /simaksi/auth/login.php'); 
     exit;
 }
-*/
-
-$page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
 
 // Logic untuk menangani AJAX request pada halaman reservasi
 if ($page === 'reservasi' && isset($_GET['action'])) {
@@ -27,8 +22,6 @@ if ($page === 'reservasi' && isset($_GET['action'])) {
         // Menghentikan output buffer untuk mencegah output yang tidak diinginkan
         ob_end_clean();
         header('Content-Type: application/json');
-        // Seharusnya file reservasi.php yang menangani output JSON dan die(),
-        // Jika sampai di sini berarti ada kesalahan.
         echo json_encode(['success' => false, 'message' => 'Internal server error: AJAX logic did did not exit properly.']);
         die(); 
     } else {
@@ -70,22 +63,19 @@ switch ($page) {
         break;
 }
 
-// --- LOGIC BARU: MENENTUKAN SAPAAN DINAMIS BERDASARKAN WAKTU ---
-$hour = date('H'); // Ambil jam dalam format 24 jam (00 hingga 23)
-$greeting = 'Selamat Datang'; // Sapaan default
+// Menentukan salam berdasarkan waktu
+$hour = date('H'); 
+$greeting = 'Selamat Datang';
 
-if ($hour >= 5 && $hour < 12) {
+if ($hour >= 5 && $hour < 11) {
     $greeting = 'Selamat Pagi';
-} elseif ($hour >= 12 && $hour < 15) {
+} elseif ($hour >= 11 && $hour < 15) {
     $greeting = 'Selamat Siang';
 } elseif ($hour >= 15 && $hour < 18) {
     $greeting = 'Selamat Sore';
 } else {
-    // Termasuk 18:00 (6 PM) hingga 04:59 AM
     $greeting = 'Selamat Malam';
 }
-// --- AKHIR LOGIC SAPAAN DINAMIS ---
-
 
 // untuk menampilkan ikon pada sidebar dan topbar (Tidak diubah)
 $icon_svg = [
@@ -99,8 +89,6 @@ $icon_svg = [
     'user' => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 28 28"><path fill="currentColor" d="M9.5 13a4.5 4.5 0 1 0 0-9a4.5 4.5 0 0 0 0 9m14-3.5a3.5 3.5 0 1 1-7 0a3.5 3.5 0 0 1 7 0M2 17.25A2.25 2.25 0 0 1 4.25 15h10.5q.298.001.573.074A7.48 7.48 0 0 0 13 20.5c0 .665.086 1.309.249 1.922c-.975.355-2.203.578-3.749.578C2 23 2 17.75 2 17.75zm14.796-.552a2 2 0 0 1-1.441 2.497l-1.024.253a6.8 6.8 0 0 0 .008 2.152l.976.235a2 2 0 0 1 1.45 2.51l-.324 1.098c.518.46 1.11.835 1.753 1.1l.843-.886a2 2 0 0 1 2.899 0l.85.895a6.2 6.2 0 0 0 1.751-1.09l-.335-1.16a2 2 0 0 1 1.441-2.495l1.026-.254a6.8 6.8 0 0 0-.008-2.152l-.977-.235a2 2 0 0 1-1.45-2.51l.324-1.1a6.2 6.2 0 0 0-1.753-1.1l-.843.888a2 2 0 0 1-2.9 0l-.849-.895a6.2 6.2 0 0 0-1.751 1.09zM20.5 22a1.5 1.5 0 1 1 0-3a1.5 1.5 0 0 1 0 3"/></svg>'
 ];
 
-// Menggunakan $_SESSION['username'] yang berisi nama_lengkap dari login.php
-// Jika sesi tidak ditemukan, gunakan 'Guest' sebagai fallback.
 $logged_in_user_name = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest';
 
 // untuk judul halaman dinamis

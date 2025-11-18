@@ -1,13 +1,18 @@
 <?php
-error_reporting(E_ALL & ~E_DEPRECATED); 
+ini_set('session.cookie_httponly', 1);
+ini_set('session.use_only_cookies', 1);
 
 session_start();
 include '../config/config.php'; 
-$error_message = '';
 
-// ini untuk fungsi login 
+// inisialisasi variabel error message
+$error_message = '';
+if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true) {
+    header('Location: /simaksi/admin/index.php');
+    exit;
+}
+ 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
     $email = $_POST['username'];
     $password = $_POST['password'];
     $auth_url = rtrim($supabaseUrl, '/') . '/auth/v1/token?grant_type=password'; 
@@ -29,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($authDataPayload));
         curl_setopt($ch, CURLOPT_HTTPHEADER, $authHeaders);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
         // ini untuk eksekusi curl
@@ -62,11 +66,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $profileData = $profileResult['data'];
         if (is_array($profileData) && count($profileData) > 0) {
             $profile = $profileData[0];
-            $_SESSION['user_id']    = $user['id']; 
-            $_SESSION['email']      = $user['email']; 
-            $_SESSION['username']   = $profile['nama_lengkap']; 
+            
+            session_regenerate_id(true);
+
+            $_SESSION['user_id'] = $user['id']; 
+            $_SESSION['email'] = $user['email']; 
+            $_SESSION['username'] = $profile['nama_lengkap']; 
             $_SESSION['user_peran'] = $profile['peran'];
             $_SESSION['access_token'] = $session['access_token']; 
+            $_SESSION['is_logged_in'] = true; 
             
             if (strtolower($profile['peran']) === 'admin') {
                 header('Location: /simaksi/admin/index.php');
@@ -89,12 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (str_contains($raw_message, 'Email not confirmed') || str_contains($raw_message, 'email not confirmed')) {
              $error_message = "Email Anda belum terverifikasi. Silakan cek inbox email Anda.";
         } else {
-             $error_message = "Terjadi Kesalahan Login. Silakan coba lagi. (DEBUG: " . $raw_message . ")"; 
+             $error_message = "Terjadi Kesalahan Login. (DEBUG: " . htmlspecialchars($raw_message) . ")"; 
         }
+
     }
 }
-
-?>
+?>>
 
 <!DOCTYPE html>
 <html lang="en">
