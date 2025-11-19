@@ -2,7 +2,7 @@
 // FILE: simaksi/admin/poster/poster.php (Content Snippet yang Di-Include oleh index.php)
 
 // 1. Panggil file koneksi database Supabase
-require_once '../config/supabase.php'; 
+require_once __DIR__ . '/../../config/supabase.php'; 
 
 // --- KONFIGURASI SERVICE ROLE KEY (Hanya digunakan di file ini) ---
 // Service Role Key: Digunakan untuk mengesampingkan RLS saat fetch data

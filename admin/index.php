@@ -3,27 +3,27 @@ session_start();
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
-    header('Location: /simaksi/auth/login.php'); 
+    header('Location: ../auth/login.php');
     exit;
 }
 
 // Logic untuk menangani AJAX request pada halaman reservasi
 if ($page === 'reservasi' && isset($_GET['action'])) {
-    $content_path = '../admin/reservasi/reservasi.php';
+    $content_path = 'reservasi/reservasi.php';
 
     if (file_exists($content_path)) {
         if (ob_get_level() === 0) {
             ob_start();
         }
-        
+
         // Memuat konten file reservasi
         include $content_path;
-        
+
         // Menghentikan output buffer untuk mencegah output yang tidak diinginkan
         ob_end_clean();
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'Internal server error: AJAX logic did did not exit properly.']);
-        die(); 
+        die();
     } else {
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'Endpoint file tidak ditemukan.']);
@@ -34,32 +34,32 @@ if ($page === 'reservasi' && isset($_GET['action'])) {
 // Penentuan file konten utama
 switch ($page) {
     case 'kuota_pendakian':
-        $content = '../admin/kuota_pendakian/kuota_pendakian.php';
+        $content = 'kuota_pendakian/kuota_pendakian.php';
         break;
     case 'pembukuan':
-        $content = '../admin/pembukuan/pembukuan.php';
+        $content = 'pembukuan/pembukuan.php';
         break;
     case 'user':
-        $content = '../admin/management_user/management_user.php';
+        $content = 'management_user/management_user.php';
         break;
     case 'login':
         $content = '../auth/login.php';
         break;
     case 'reservasi':
-        $content = '../admin/reservasi/reservasi.php';
+        $content = 'reservasi/reservasi.php';
         break;
     case 'pengumuman':
-        $content = '../admin/pengumuman/pengumuman.php';
+        $content = 'pengumuman/pengumuman.php';
         break;
     case 'poster':
-        $content = '../admin/poster/poster.php';
+        $content = 'poster/poster.php';
         break;
     case 'manage_pendakian':
-        $content = '../admin/manage_pendakian/manage_pendakian.php';
+        $content = 'manage_pendakian/manage_pendakian.php';
         break;
     case 'dashboard':
     default:
-        $content = 'dashboard.php'; 
+        $content = 'dashboard.php';
         break;
 }
 
@@ -116,7 +116,7 @@ $current_title = isset($menu_titles[$page]) ? $menu_titles[$page] : 'Dashboard';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($menu_titles[$page]) ? $menu_titles[$page] : 'Dashboard'; ?> | E-Simaksi</title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="icon" type="image/x-icon" href="/simaksi/assets/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
 </head>
 
 <body>

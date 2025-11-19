@@ -38,9 +38,9 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
   <meta charset="UTF-8">
   <title>Kuota Pendakian</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="/simaksi/assets/css/style.css"> 
+  <link rel="stylesheet" href="../../assets/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-  <link rel="icon" type="image/x-icon" href="/simaksi/assets/images/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="../../assets/images/favicon.ico">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
@@ -49,7 +49,7 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
 
   <div class="filter-section">
     <form action="" method="GET" class="filter-form">
-        <input type="hidden" name="page" value="kuota_pendakian"> 
+        <input type="hidden" name="page" value="kuota_pendakian">
 
         <div class="filter-group">
             <input type="date" name="filter_tanggal" id="filterDate" value="<?= htmlspecialchars($_GET['filter_tanggal'] ?? '') ?>">
@@ -59,7 +59,7 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
         </div>
 
         <?php if (!empty($_GET['filter_tanggal'])): ?>
-            <a href="index.php?page=kuota_pendakian" class="reset-btn">Reset</a>
+            <a href="../index.php?page=kuota_pendakian" class="reset-btn">Reset</a>
         <?php endif; ?>
     </form>
 </div>
@@ -118,6 +118,6 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
   <div class="modal-body" id="modalBody"></div></div>
 </div>
 
-<script src="/simaksi/assets/js/kuota_pendakian.js"></script>
+<script src="../../assets/js/kuota_pendakian.js"></script>
 </body>
 </html>

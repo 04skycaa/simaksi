@@ -143,21 +143,21 @@ if ($current_tab === 'reservasi') {
 <head>
     <meta charset="UTF-8">
     <title>Reservasi dan Validasi Data</title>
-    <link rel="stylesheet" href="../assets/css/style.css"> 
+    <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
 <div class="content-wrapper">
 
     <div class="secondary-nav">
-        <a href="index.php?page=reservasi&tab=reservasi" 
-           class="<?= $current_tab == 'reservasi' ? 'active' : '' ?>" 
+        <a href="../index.php?page=reservasi&tab=reservasi"
+           class="<?= $current_tab == 'reservasi' ? 'active' : '' ?>"
            id="nav-reservasi">Reservasi</a>
 
-        <a href="index.php?page=reservasi&tab=tambah" 
-           class="<?= $current_tab == 'tambah' ? 'active' : '' ?>" 
+        <a href="../index.php?page=reservasi&tab=tambah"
+           class="<?= $current_tab == 'tambah' ? 'active' : '' ?>"
            id="nav-tambah-reservasi">Tambah Reservasi</a>
     </div>
 
@@ -262,9 +262,9 @@ if ($current_tab === 'reservasi') {
     </div>
 </div>
 
-<div class="modal-overlay" id="modal-validasi">...</div> 
+<div class="modal-overlay" id="modal-validasi">...</div>
 
-<script src="../assets/js/reservasi.js"></script> 
+<script src="../../assets/js/reservasi.js"></script>
 
 </body>
 </html>

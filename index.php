@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <!-- Native CSS (Jalur Absolut sudah terpasang) -->
-    <link rel="stylesheet" href="/simaksi/assets/css/index.css">
+    <link rel="stylesheet" href="assets/css/index.css">
 </head>
 <body class="bg-white">
     <!-- Main Content -->
@@ -39,7 +39,7 @@
                             <i class="fas fa-moon" id="theme-icon"></i>
                         </button>
                         <div id="auth-container">
-                            <a href="/simaksi/auth/login.php" id="auth-link" class="border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default" data-translate-key="login_button">
+                            <a href="auth/login.php" id="auth-link" class="border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default" data-translate-key="login_button">
                                 Login
                             </a>
                             <a href="#" id="logout-link" class="border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default hidden" data-translate-key="logout_button">
