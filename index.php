@@ -69,7 +69,7 @@
             </div>
             
             <div class="flex-display flex-col sm-flex-row justify-center space-y-6 sm-space-y-0 sm-space-x-8 hero-content mb-16">
-                <a href="#" class="pulse-button bg-gradient-accent-primary text-white font-bold py-4 px-10 rounded-full transition-default hover-scale-105 shadow-2xl text-lg glow-button" data-translate-key="reserve_now">
+                <a href="booking.php" class="pulse-button bg-gradient-accent-primary text-white font-bold py-4 px-10 rounded-full transition-default hover-scale-105 shadow-2xl text-lg glow-button" data-translate-key="reserve_now">
                     <i class="fas fa-rocket mr-3"></i>Reservasi Sekarang
                 </a>
                 <a href="#lokasi" class="pulse-button border-2 border-white text-white hover-bg-white font-bold py-4 px-10 rounded-full transition-default hover-scale-105 shadow-2xl text-lg glow-button" data-translate-key="location">
@@ -115,7 +115,7 @@
             </div>
             
             <div id="pengumuman-container" class="max-w-6xl auto-margin">
-                <div class="bg-white rounded-2xl shadow-xl p-8 **card-announcement**">
+                <div class="bg-white rounded-2xl shadow-xl p-8 card-announcement">
                     <div id="pengumuman-content" class="space-y-6">
                         <div id="pengumuman-loading" class="text-center py-12">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary auto-margin mb-4"></div>
@@ -878,11 +878,11 @@
                 <div>
                     <h4 class="text-lg font-bold mb-6" data-translate-key="navigation_title">Navigasi</h4>
                     <ul class="space-y-3">
-                        <li><a href="#header" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_home">Beranda</a></li>
-                        <li><a href="#tentang" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_about_us">Tentang Kami</a></li>
-                        <li><a href="#lokasi" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_climbing_route">Jalur Pendakian</a></li>
-                        <li><a href="#" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_gallery">Galeri</a></li>
-                        <li><a href="#testimoni" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_contact">Kontak</a></li>
+                        <li><a href="index.php" class="nav-link text-gray-300 hover:text-accent transition-default block py-1 text-accent" data-translate-key="nav_home">Beranda</a></li>
+                        <li><a href="index.php#tentang" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_about_us">Tentang Kami</a></li>
+                        <li><a href="index.php#lokasi" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_climbing_route">Jalur Pendakian</a></li>
+                        <li><a href="detail.php" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_detail">Detail Pendakian</a></li>
+                        <li><a href="booking.php" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_booking">Reservasi</a></li>
                     </ul>
                 </div>
                 

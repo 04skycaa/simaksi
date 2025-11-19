@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-SIMAKSI - Login</title>
-    <link rel="stylesheet" href="assets/css/auth.css">
+    <link rel="stylesheet" href="../assets/css/auth.css">
 </head>
 <body>
     <div class="container">
@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="right-section">
             <div class="login-box">
                 <div class="logo">
-                    <img src="assets/images/logo1.png" alt="E-SIMAKSI Logo">
+                    <img src="../assets/images/logo1.png" alt="E-SIMAKSI Logo">
                 </div>
                 <h2>LOGIN</h2>
                 <p>Yuk login sekarang, biar cerita pendakianmu di Butak resmi dimulai</p>
@@ -163,6 +163,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-<script src="assets/js/auth.js"></script>
+<script src="../assets/js/auth.js"></script>
 </body>
 </html>

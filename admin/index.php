@@ -42,6 +42,9 @@ switch ($page) {
     case 'user':
         $content = 'management_user/management_user.php';
         break;
+    case 'user_profile':
+        $content = 'management_user/management_user.php';
+        break;
     case 'login':
         $content = '../auth/login.php';
         break;

@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="left-section">
             <h1>SELAMAT DATANG DI <br> GUNUNG BUTAK</h1>
             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae eum optio debitis fugiat ad, suscipit tenetur totam labore possimus beatae itaque accusantium soluta libero quos recusandae obcaecati voluptatum temporibus enim?</p>
-            
+
         </div>
 
         <div class="right-section">

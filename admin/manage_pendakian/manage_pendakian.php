@@ -59,7 +59,7 @@ if ($semuaPendakian && !isset($semuaPendakian['error'])) {
     <meta charset="UTF-8">
     <title>Manajemen Pendakian</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="/simaksi/assets/css/style.css"> 
+    <link rel="stylesheet" href="../../assets/css/style.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <!-- Library untuk pop-up notifikasi (wajib ada) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -131,19 +131,19 @@ if ($semuaPendakian && !isset($semuaPendakian['error'])) {
 <div class="menu-container">
     
     <div class="filter-section">
-        <form action="manage_pendakian.php" method="GET" class="filter-form">
+        <form action="index.php?page=manage_pendakian" method="GET" class="filter-form">
             <input type="text" name="filter_nama" id="filterNama" placeholder="Cari Nama Lengkap..." value="<?= htmlspecialchars($filterNama ?? '') ?>" class="filter-input-text">
-            
+
             <input type="text" name="filter_nik" id="filterNIK" placeholder="Cari NIK..." value="<?= htmlspecialchars($filterNIK ?? '') ?>" class="filter-input-text">
-            
+
             <input type="number" name="filter_id_pendaki" id="filterIDPendaki" placeholder="ID Pendaki..." value="<?= htmlspecialchars($filterIDPendaki ?? '') ?>" class="filter-input-text">
-            
+
             <button type="submit" class="filter-btn-icon" title="Terapkan Filter">
                 <i class="fa-solid fa-magnifying-glass"></i> Cari
             </button>
 
             <?php if (!empty($filterNama) || !empty($filterIDPendaki) || !empty($filterNIK)): ?>
-                <a href="manage_pendakian.php" class="reset-btn">Reset Filter</a>
+                <a href="index.php?page=manage_pendakian" class="reset-btn">Reset Filter</a>
             <?php endif; ?>
         </form>
     </div>
@@ -211,6 +211,6 @@ if ($semuaPendakian && !isset($semuaPendakian['error'])) {
         </div>
     </div>
 </div>
-<script src="/simaksi/assets/js/manage_pendakian.js"></script> 
+<script src="../../assets/js/manage_pendakian.js"></script> 
 </body>
 </html>

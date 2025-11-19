@@ -50,7 +50,7 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
   <meta charset="UTF-8">
   <title>Manajemen User</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="/simaksi/assets/css/style.css"> 
+  <link rel="stylesheet" href="../../assets/css/style.css"> 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -164,6 +164,6 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
             </div>
     </div>
 </div>
-<script src="/simaksi/assets/js/management_user.js"></script>
+<script src="../../assets/js/management_user.js"></script>
 </body>
 </html>

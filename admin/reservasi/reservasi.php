@@ -152,11 +152,11 @@ if ($current_tab === 'reservasi') {
 <div class="content-wrapper">
 
     <div class="secondary-nav">
-        <a href="../index.php?page=reservasi&tab=reservasi"
+        <a href="index.php?page=reservasi&tab=reservasi"
            class="<?= $current_tab == 'reservasi' ? 'active' : '' ?>"
            id="nav-reservasi">Reservasi</a>
 
-        <a href="../index.php?page=reservasi&tab=tambah"
+        <a href="index.php?page=reservasi&tab=tambah"
            class="<?= $current_tab == 'tambah' ? 'active' : '' ?>"
            id="nav-tambah-reservasi">Tambah Reservasi</a>
     </div>
@@ -184,7 +184,7 @@ if ($current_tab === 'reservasi') {
                             <i class="fa-solid fa-search"></i> Cari
                         </button>
                         <?php if ($kodeBooking || $namaKetua): ?>
-                            <a href="index.php?page=reservasi&tab=reservasi" class="btn red" style="align-self: flex-end; padding: 10px 15px; height: 42px; line-height: 22px;">Reset</a>
+                            <a href="?page=reservasi&tab=reservasi" class="btn red" style="align-self: flex-end; padding: 10px 15px; height: 42px; line-height: 22px;">Reset</a>
                         <?php endif; ?>
                     </form>
                 </div>

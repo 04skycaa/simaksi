@@ -59,7 +59,7 @@ $kuotaTersisa = $totalKuotaBulanIni - $totalTerdaftar;
         </div>
 
         <?php if (!empty($_GET['filter_tanggal'])): ?>
-            <a href="../index.php?page=kuota_pendakian" class="reset-btn">Reset</a>
+            <a href="index.php?page=kuota_pendakian" class="reset-btn">Reset</a>
         <?php endif; ?>
     </form>
 </div>

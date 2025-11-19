@@ -458,7 +458,7 @@ if (isset($_GET['msg'])) {
                 Tambah Promosi Baru
             </h2>
 
-            <form method="POST" enctype="multipart/form-data" action="poster.php?tab=tambah">
+            <form method="POST" enctype="multipart/form-data" action="index.php?page=poster&tab=tambah">
                 <input type="hidden" name="action" value="tambah_promosi">
 
                 <div class="grid-2-cols">
@@ -531,7 +531,7 @@ if (isset($_GET['msg'])) {
             Edit Promosi Poster
         </h2>
 
-        <form method="POST" enctype="multipart/form-data" action="poster.php?tab=daftar" id="editForm">
+        <form method="POST" enctype="multipart/form-data" action="index.php?page=poster&tab=daftar" id="editForm">
             <input type="hidden" name="action" value="edit_promosi">
             <input type="hidden" name="id_promosi" id="modal_id_promosi">
             <input type="hidden" name="current_file_name" id="modal_current_file_name">
@@ -633,7 +633,7 @@ if (isset($_GET['msg'])) {
 
         try {
             // Fetch data dari endpoint JSON
-            const response = await fetch(`poster.php?action=fetch_json&id=${id}`);
+            const response = await fetch(`index.php?page=poster&action=fetch_json&id=${id}`);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
