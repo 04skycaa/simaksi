@@ -15,9 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'kuota_terpesan' => 0 // Default 0 untuk kuota baru
             ];
             
-            // Lakukan INSERT ke Supabase
             $result = supabase_request('POST', 'kuota_harian', $data_to_insert);
 
+            // Logika untuk 'tambah' (POST) biasanya mengembalikan data, jadi '$result'
+            // seharusnya berisi data. Biarkan pengecekan ini.
             if ($result && !isset($result['error'])) {
                 $response_data = ['success' => true, 'message' => 'Kuota berhasil ditambahkan.'];
             } else {
@@ -36,11 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  throw new Exception('ID Kuota tidak ditemukan.');
             }
 
-            // Lakukan PATCH/UPDATE ke Supabase
             $endpoint = 'kuota_harian?id_kuota=eq.' . $id_kuota;
             $result = supabase_request('PATCH', $endpoint, $data_to_update); 
             
-            if ($result && !isset($result['error']) && count($result) > 0) {
+            // PERBAIKAN: Operasi 'PATCH' (edit) mungkin tidak mengembalikan data.
+            // Kita HANYA perlu memeriksa jika ada 'error'.
+            if (!isset($result['error'])) {
                 $response_data = ['success' => true, 'message' => 'Kuota berhasil diupdate.'];
             } else {
                 $error_message = $result['error']['message'] ?? 'Gagal mengupdate kuota. Kuota tidak ditemukan atau RLS bermasalah.';
@@ -54,13 +56,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception('ID Kuota tidak ditemukan.');
             }
 
-            // Lakukan DELETE ke Supabase
             $endpoint = 'kuota_harian?id_kuota=eq.' . $id_kuota;
             $result = supabase_request('DELETE', $endpoint); 
 
-            if ($result && !isset($result['error']) && count($result) > 0) {
+            // PERBAIKAN FINAL: Operasi 'DELETE' (hapus) hampir pasti tidak mengembalikan data.
+            // Kita HANYA perlu memeriksa jika ada 'error'.
+            // Jika $result['error'] tidak ada (isset = false), berarti sukses.
+            if (!isset($result['error'])) {
                 $response_data = ['success' => true, 'message' => 'Kuota berhasil dihapus.'];
             } else {
+                // Jika $result['error'] ada, barulah kita tampilkan error.
                 $error_message = $result['error']['message'] ?? 'Gagal menghapus kuota atau kuota tidak ditemukan. RLS?';
                 $response_data = ['success' => false, 'message' => $error_message];
             }
@@ -75,6 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
+// Bagian HTML di bawah ini tidak akan pernah dieksekusi jika request-nya POST,
+// karena 'exit' dipanggil di atas. Ini sepertinya sisa kode dari form.
 ?>
 
 <div class="form-container">
