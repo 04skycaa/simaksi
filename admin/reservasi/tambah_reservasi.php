@@ -66,9 +66,15 @@ $base_url = '/simaksi/admin';
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
+
+    .floating-label-group {
+        position: relative;
+        margin-top: 1.25rem; 
+    }
+    
     .form-container-reservasi .form-input {
         width: 100%;
-        padding: 10px;
+        padding: 14px 10px 6px 10px; 
         border: 1px solid #75B368; 
         border-radius: 0.5rem; 
         box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06); 
@@ -77,6 +83,38 @@ $base_url = '/simaksi/admin';
         box-sizing: border-box; 
         font-family: inherit;
     }
+
+    .floating-label-group label {
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        transform: translateY(-50%);
+        color: #6b7280; 
+        font-size: 0.875rem;
+        pointer-events: none;
+        transition: all 0.2s ease-out;
+        background: none;
+        padding: 0 5px;
+    }
+
+    .form-container-reservasi .form-input:focus + label,
+    .form-container-reservasi .form-input:not(:placeholder-shown) + label,
+    .form-container-reservasi .form-input:valid + label { 
+        top: 0;
+        transform: translateY(-50%) scale(0.85);
+        font-weight: 600;
+        color: #35542E;
+        background-color: #fcfcfc; 
+    }
+    
+    .floating-label-group input[type="date"] + label {
+        top: 0;
+        transform: translateY(-50%) scale(0.85);
+        font-weight: 600;
+        color: #35542E;
+        background-color: #fcfcfc;
+    }
+
     .form-container-reservasi .form-input:focus {
         border-color: #35542E;
         outline: none;
@@ -167,13 +205,11 @@ $base_url = '/simaksi/admin';
     left: 125%; 
 }
 
-/* Efek Lift saat hover */
 .shimmer-btn:hover {
     transform: translateY(-4px) scale(1.01); 
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); 
 }
 
-/* Efek Press saat aktif (diklik) */
 .shimmer-btn:active {
     transform: translateY(1px) scale(0.99);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
@@ -192,29 +228,49 @@ $base_url = '/simaksi/admin';
 }
 
 /* tampilan gaya untuk tombol tambah barang */
-.form-container-reservasi .addBarangBtn
 #addBarangBtn {
-    background-color: #75B368 !important; 
-    color: white !important; 
-    box-shadow: 0 2px 6px rgba(117, 179, 104, 0.4);
+    background: linear-gradient(135deg, #75B368 0%, #35542E 100%) !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(53, 84, 46, 0.3);
+    border: none;
+    font-weight: 600;
+    width: auto; 
+    padding: 10px 25px; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex; 
 }
 
 #addBarangBtn:hover {
-    background-color: #35542E !important; 
+    box-shadow: 0 6px 20px rgba(53, 84, 46, 0.5);
+    transform: translateY(-2px) !important; 
 }
+
 /* gaya untuk tombol hapus barang */
-.remove-barang-btn iconify-icon {
-    color: #ef4444; 
-    transition: color 0.2s, transform 0.2s;
+.remove-barang-btn {
+    background-color: #fee2e2;
+    color: #ef4444;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
-.remove-barang-btn:hover iconify-icon {
-    color: #b91c1c; 
+.remove-barang-btn:hover {
+    background-color: #ef4444;
+    color: white;
+    transform: scale(1.1);
     animation: trash-shake 0.5s ease-in-out; 
+}
+.remove-barang-btn iconify-icon {
+    color: inherit !important;
 }
 
 </style>
-
-<!-- Kontainer Utama -->
 <div class="form-container-reservasi">
     <div class="card-wrapper">
 
@@ -226,37 +282,36 @@ $base_url = '/simaksi/admin';
 
         <form id="reservasiForm" class="space-y-8">
             
-        <!-- untuk pilihan ketua rombongan dari data profiles -->
             <div class="group-card">
                 <h3 class="group-title">Ketua Rombongan</h3>
-                <label for="id_pengguna" class="block text-sm font-medium text-gray-700 mb-1">Pilih Ketua Rombongan (Dari Data Profiles)</label>
-                <select id="id_pengguna" required class="form-input" disabled>
-                    <option value="" disabled selected>-- Pilih Pengguna --</option>
-                </select>
+                <div class="floating-label-group">
+                    <select id="id_pengguna" required class="form-input" disabled>
+                        <option value="" disabled selected></option> 
+                    <label for="id_pengguna">Pilih Ketua Rombongan</label>
+                </div>
                 <p id="loadingProfiles" class="text-xs text-gray-500 mt-1 flex items-center">
                     <iconify-icon icon="ph:spinner-gap-fill" class="animate-spin mr-2 text-base"></iconify-icon> Memuat daftar pengguna...
                 </p>
             </div>
 
-            <!-- untuk bagian detail pemesanan -->
             <div class="group-card">
                 <h3 class="group-title">Detail Pemesanan</h3>
                 
                 <div class="form-input-wrapper">
-                    <div>
-                        <label for="tanggal_pendakian" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Pendakian</label>
-                        <input type="date" id="tanggal_pendakian" required class="form-input">
+                    <div class="floating-label-group">
+                        <input type="date" id="tanggal_pendakian" required class="form-input" placeholder=" ">
+                        <label for="tanggal_pendakian">Tanggal Pendakian</label>
                         <p id="kuotaStatus" class="text-xs mt-1 text-gray-500"></p>
                     </div>
 
-                    <div>
-                        <label for="jumlah_pendaki" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Pendaki (Total)</label>
-                        <input type="number" id="jumlah_pendaki" required min="1" value="1" class="form-input">
+                    <div class="floating-label-group">
+                        <input type="number" id="jumlah_pendaki" required min="1" value="1" class="form-input" placeholder=" ">
+                        <label for="jumlah_pendaki">Jumlah Pendaki (Total)</label>
                     </div>
 
-                    <div>
-                        <label for="jumlah_tiket_parkir" class="block text-sm font-medium text-gray-700 mb-1">Jumlah Tiket Parkir (Unit)</label>
-                        <input type="number" id="jumlah_tiket_parkir" min="0" value="0" class="form-input">
+                    <div class="floating-label-group">
+                        <input type="number" id="jumlah_tiket_parkir" min="0" value="0" class="form-input" placeholder=" ">
+                        <label for="jumlah_tiket_parkir">Jumlah Tiket Parkir (Unit)</label>
                     </div>
                 </div>
 
@@ -269,16 +324,13 @@ $base_url = '/simaksi/admin';
                 </div>
             </div>
 
-            <!-- untuk bagian anggota rombongan -->
             <div class="group-card">
                 <h3 class="group-title">Data Anggota Rombongan</h3>
                 
                 <div id="anggotaRombonganContainer" class="space-y-4">
-                    <!-- Formulir Anggota akan dibuat di sini oleh JS -->
                 </div>
             </div>
 
-            <!-- untuk bagian barang bawaan (potensi sampah) -->
             <div class="group-card">
                 <h3 class="group-title">Barang Bawaan (Potensi Sampah)</h3>
                 
@@ -287,7 +339,7 @@ $base_url = '/simaksi/admin';
                 
                 <button type="button" id="addBarangBtn" 
                     class="mt-4 text-sm text-white py-2 px-4 rounded-md 
-                        transition duration-150 transform hover:scale-[1.02] flex items-center">
+                           transition duration-150 transform hover:scale-[1.02] flex items-center shimmer-btn">
                     <iconify-icon icon="ph:plus-circle-fill" class="mr-1" style="font-size: 1rem;"></iconify-icon> Tambah Barang
                 </button>
 
@@ -297,10 +349,9 @@ $base_url = '/simaksi/admin';
                 </div>
             </div>
 
-            <!-- tombol submit -->
             <div class="pt-6">
                 <button type="submit" id="submitBtn" disabled
-                        class="w-full py-3 px-4 rounded-md shadow-lg text-lg font-medium text-white btn-submit-disabled">
+                        class="w-full py-3 px-4 rounded-md shadow-lg text-lg font-medium text-white btn-submit-disabled shimmer-btn">
                     <iconify-icon icon="ph:floppy-disk-fill" class="mr-2" style="font-size: 1.25rem;"></iconify-icon> Buat Reservasi
                 </button>
             </div>
@@ -309,7 +360,6 @@ $base_url = '/simaksi/admin';
     </div>
 </div>
 
-<!-- untuk bagian utama notifikasi -->
 <div id="notificationArea" class="form-container-reservasi"></div>
 
 
@@ -338,9 +388,7 @@ $base_url = '/simaksi/admin';
     const loadingProfiles = document.getElementById('loadingProfiles');
     const notificationArea = document.getElementById('notificationArea');
 
-    // untuk inisialisasi form
-
-    /** memformat angka menjadi Rupiah */
+    // untuk inisialisasi format harga
     function formatRupiah(number) {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -375,19 +423,13 @@ $base_url = '/simaksi/admin';
             </div>
         `;
         notificationArea.appendChild(notification);
-
-        // Animasi Masuk
         setTimeout(() => notification.classList.add('notification-show'), 10);
-
-        // Animasi Keluar setelah 5 detik
         setTimeout(() => {
             notification.classList.remove('notification-show');
-            // Hapus elemen setelah animasi selesai
             setTimeout(() => notification.remove(), 500); 
         }, 5000); 
     }
 
-    /** Mengkonversi file menjadi string Base64 */
     function fileToBase64(file) {
         return new Promise((resolve, reject) => {
             if (!file) {
@@ -402,48 +444,49 @@ $base_url = '/simaksi/admin';
     }
 
     // untuk bagian update reservasi
-
-    /** membuat formulir anggota*/
     function createMemberForm(index, isLeader = false) {
         const memberId = `member_${index}`;
         const isLeaderText = isLeader ? '<span class="text-xs text-red-500 font-semibold">(Ketua Rombongan / Diri Sendiri)</span>' : '';
-        
         const html = `
             <div id="${memberId}" class="p-4 border border-gray-200 rounded-md bg-white shadow-sm transition duration-300 hover:shadow-md">
                 <h4 class="font-bold text-gray-800 mb-3">Pendaki ${index + 1} ${isLeaderText}</h4>
                 
                 <div class="member-grid form-input-wrapper grid-cols-1 gap-4">
-                    <div class="col-span-1">
-                        <label class="block text-xs font-medium text-gray-600">Nama Lengkap</label>
+                    
+                    <div class="floating-label-group col-span-1">
                         <input type="text" data-member-field="nama_lengkap" required 
-                            class="form-input" placeholder="Nama Lengkap" />
+                            class="form-input" placeholder=" " />
+                        <label>Nama Lengkap</label>
                     </div>
-                    <div class="col-span-1">
-                        <label class="block text-xs font-medium text-gray-600">NIK</label>
+
+                    <div class="floating-label-group col-span-1">
                         <input type="text" data-member-field="nik" required 
-                            class="form-input" placeholder="Nomor Induk Kependudukan" />
+                            class="form-input" placeholder=" " />
+                        <label>NIK</label>
                     </div>
-                    <div class="col-span-1">
-                        <label class="block text-xs font-medium text-gray-600">Alamat</label>
+
+                    <div class="floating-label-group col-span-1">
                         <input type="text" data-member-field="alamat" required 
-                            class="form-input" placeholder="Alamat Sesuai KTP" />
+                            class="form-input" placeholder=" " />
+                        <label>Alamat</label>
                     </div>
-                    <div class="col-span-1">
-                        <label class="block text-xs font-medium text-gray-600">Nomor Telepon</label>
+
+                    <div class="floating-label-group col-span-1">
                         <input type="tel" data-member-field="nomor_telepon" required 
-                            class="form-input" placeholder="Nomor Telepon Aktif" />
+                            class="form-input" placeholder=" " />
+                        <label>Nomor Telepon</label>
                     </div>
-                    <div class="col-span-1">
-                        <label class="block text-xs font-medium text-gray-600">Kontak Darurat</label>
+
+                    <div class="floating-label-group col-span-1">
                         <input type="tel" data-member-field="kontak_darurat" required 
-                            class="form-input" placeholder="Nomor Kontak Darurat" />
+                            class="form-input" placeholder=" " />
+                        <label>Kontak Darurat</label>
                     </div>
-                    <div class="col-span-1">
-                        <!-- PERUBAHAN: Dari input URL menjadi input FILE -->
-                        <label class="block text-xs font-medium text-gray-600">Surat Sehat (File Gambar/PDF)</label>
+                    
+                    <div class="floating-label-group col-span-1">
                         <input type="file" data-member-field="surat_sehat_file" accept="image/*,application/pdf"
-                            class="form-input file-input" />
-                        <!-- Tambahkan input hidden untuk menyimpan Base64/URL -->
+                            class="form-input file-input" placeholder=" " />
+                        <label>Surat Sehat (File Gambar/PDF)</label>
                         <input type="hidden" data-member-field="url_surat_sehat" class="surat-sehat-base64" />
                         <p class="file-status text-xs mt-1 text-gray-500"></p>
                     </div>
@@ -457,7 +500,6 @@ $base_url = '/simaksi/admin';
 
     function updateMemberForms(count) {
         anggotaContainer.innerHTML = '';
-        // Batasi jumlah anggota minimal 1
         const actualCount = Math.max(1, count); 
         for (let i = 0; i < actualCount; i++) {
             anggotaContainer.appendChild(createMemberForm(i, i === 0)); 
@@ -470,29 +512,34 @@ $base_url = '/simaksi/admin';
         const barangId = `barang_${index}`;
         const html = `
             <div id="${barangId}" class="p-3 border border-gray-200 rounded-md bg-white shadow-sm flex items-center space-x-3 transition duration-300 hover:bg-gray-100">
-                <div class="form-input-wrapper" style="grid-template-columns: repeat(3, minmax(0, 1fr)); flex-grow: 1;">
-                    <div class="col-span-1">
-                        <label class="block text-xs font-medium text-gray-600">Nama Barang</label>
+                <div class="form-input-wrapper" style="grid-template-columns: repeat(3, minmax(0, 1fr)); flex-grow: 1; gap: 1rem; margin-top: -0.5rem;">
+                    
+                    <div class="floating-label-group col-span-1">
                         <input type="text" data-barang-field="nama_barang" required 
-                            class="form-input" placeholder="Cth: Botol Plastik" />
+                            class="form-input" placeholder=" " />
+                        <label>Nama Barang</label>
                     </div>
-                    <div class="col-span-1">
-                        <label class="block text-xs font-medium text-gray-600">Jenis Sampah</label>
-                        <select data-barang-field="jenis_sampah" required class="form-input">
-                            <option value="">Pilih Jenis</option>
+
+                    <div class="floating-label-group col-span-1">
+                        <select data-barang-field="jenis_sampah" required class="form-input" placeholder=" ">
+                            <option value="" disabled selected></option> <!-- Kosong untuk placeholder -->
                             <option value="organik">Organik</option>
                             <option value="anorganik">Anorganik</option>
                         </select>
+                        <label>Jenis Sampah</label>
                     </div>
-                    <div class="col-span-1">
-                        <label class="block text-xs font-medium text-gray-600">Jumlah Unit</label>
+
+                    <div class="floating-label-group col-span-1">
                         <input type="number" data-barang-field="jumlah" required min="1" value="1"
-                            class="form-input barang-jumlah" />
+                            class="form-input barang-jumlah" placeholder=" " />
+                        <label>Jumlah Unit</label>
                     </div>
                 </div>
+                
+                <!-- PERBAIKAN: Tombol Hapus dengan style baru -->
                 <button type="button" data-remove-id="${barangId}" 
-                    class="remove-barang-btn text-red-500 hover:text-red-700 p-2 transition duration-150">
-                    <iconify-icon icon="ph:trash-fill" style="font-size: 1.25rem;"></iconify-icon>
+                    class="remove-barang-btn">
+                    <iconify-icon icon="ph:trash-fill" style="font-size: 1rem;"></iconify-icon>
                 </button>
             </div>
         `;
@@ -502,6 +549,8 @@ $base_url = '/simaksi/admin';
     }
 
     function updatePotensiSampah() {
+        if (!totalPotensiSampah || !totalPotensiSampahInput) return; 
+
         const total = Array.from(document.querySelectorAll('.barang-jumlah')).reduce((sum, input) => {
             return sum + (parseInt(input.value) || 0);
         }, 0);
@@ -510,7 +559,6 @@ $base_url = '/simaksi/admin';
         checkFormValidity();
     }
 
-    // logika untuk api 
     async function fetchProfiles() {
         loadingProfiles.classList.add('flex');
         idPenggunaSelect.disabled = true;
@@ -524,6 +572,7 @@ $base_url = '/simaksi/admin';
             const result = await response.json();
             
             if (result.status === 'success' && result.data && result.data.length > 0) {
+                idPenggunaSelect.innerHTML = '<option value="" disabled selected></option>';
                 result.data.forEach(profile => {
                     const option = document.createElement('option');
                     option.value = profile.id;
@@ -553,8 +602,6 @@ $base_url = '/simaksi/admin';
             
             if (result.status === 'success' && result.data) {
                 const pricingMap = result.data;
-                
-                // untuk membaca harga tiket dari database
                 hargaTiket = pricingMap['tiket_masuk'] || 0; 
                 hargaParkir = pricingMap['tiket_parkir'] || 0;
                 
@@ -690,13 +737,16 @@ $base_url = '/simaksi/admin';
             const result = await response.json();
             
             if (response.ok) { 
-                displayMessage('success', 'Reservasi Berhasil!', `Kode Reservasi: ${result.kode_reservasi}.`);
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: `Reservasi dengan kode ${result.kode_reservasi} berhasil dibuat.`,
+                    icon: 'success',
+                    timer: 2000, 
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = 'index.php?page=reservasi&tab=reservasi';
+                });
                 
-                // reset formulir setelah sukses
-                document.getElementById('reservasiForm').reset();
-                updateMemberForms(1); 
-                barangContainer.innerHTML = ''; 
-                calculateTotal();
             } else {
                 throw new Error(result.error || 'Terjadi kesalahan saat membuat reservasi.');
             }
@@ -716,7 +766,6 @@ $base_url = '/simaksi/admin';
         Array.from(anggotaContainer.children).forEach(memberDiv => {
             const member = {};
             memberDiv.querySelectorAll('[data-member-field]').forEach(input => {
-                // Hanya ambil data dari input non-file dan hidden (Base64)
                 if (input.type !== 'file') {
                     member[input.dataset.memberField] = input.value;
                 }
@@ -739,8 +788,7 @@ $base_url = '/simaksi/admin';
         return barangBawaan;
     }
 
-
-    // --- Event Listeners & Inisialisasi ---
+// Inisialisasi saat halaman dimuat
     document.addEventListener('DOMContentLoaded', () => {
         fetchProfiles(); 
         fetchPricing();
@@ -749,14 +797,11 @@ $base_url = '/simaksi/admin';
 
         idPenggunaSelect.addEventListener('change', checkFormValidity);
         tanggalInput.addEventListener('change', checkQuota);
-        
-        // Listener untuk Jumlah Pendaki
         jumlahPendakiInput.addEventListener('input', () => {
             updateMemberForms(parseInt(jumlahPendakiInput.value) || 0);
             checkQuota();
             calculateTotal(); 
         });
-        // Listener untuk Jumlah Tiket Parkir
         jumlahParkirInput.addEventListener('input', calculateTotal);
         
         addBarangBtn.addEventListener('click', () => {
@@ -783,7 +828,7 @@ $base_url = '/simaksi/admin';
             if (e.target.type === 'file' && e.target.classList.contains('file-input')) {
                 const fileInput = e.target;
                 const file = fileInput.files[0];
-                const container = fileInput.closest('.p-4');
+                const container = fileInput.closest('.floating-label-group');
                 const base64Input = container.querySelector('.surat-sehat-base64');
                 const statusText = container.querySelector('.file-status');
                 
@@ -794,7 +839,7 @@ $base_url = '/simaksi/admin';
                     return;
                 }
 
-                if (file.size > 2 * 1024 * 1024) { // Batasi ukuran file 2MB
+                if (file.size > 2 * 1024 * 1024) {
                     statusText.textContent = '❌ File terlalu besar (> 2MB)';
                     statusText.classList.replace('text-gray-500', 'text-red-500');
                     base64Input.value = '';
