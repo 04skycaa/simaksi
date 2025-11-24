@@ -6,27 +6,34 @@ $filterPeran = trim($_GET['filter_peran'] ?? '');
 $queryParams = [];
 
 if (!empty($filterNama)) {
-    if (strpos($filterNama, '@') !== false) {
-        $queryParams[] = 'email=eq.' . urlencode($filterNama);
-    } else {
-        $queryParams[] = 'nama_lengkap.ilike.%' . urlencode($filterNama) . '%';
-    }
+    // 1. Kita siapkan search term-nya
+    // PERUBAHAN 1: Gunakan rawurlencode agar spasi menjadi %20, bukan +
+    $searchTerm = rawurlencode($filterNama);
+
+    // 2. Kita gunakan filter 'or' dari Supabase
+    // PERUBAHAN 2: Ganti wildcard % (SQL) menjadi * (API Supabase)
+    $queryParams[] = "or=(nama_lengkap.ilike.*{$searchTerm}*,email.ilike.*{$searchTerm}*)";
 }
 
 if (!empty($filterPeran)) {
+    // PERBAIKAN: Ganti 'peran_pengguna' kembali menjadi 'peran'
     $queryParams[] = 'peran=eq.' . urlencode($filterPeran);
 }
 
+// Gabungkan query dan tambahkan sorting
 if (!empty($queryParams)) {
-    $endpoint = 'profiles?' . implode('&', $queryParams);
+    $endpoint = 'profiles?' . implode('&', $queryParams) . '&order=nama_lengkap.asc';
 } else {
+    // Default jika tidak ada filter, tetap sort
     $endpoint = 'profiles?order=nama_lengkap.asc';
 }
+
 $data = supabase_request('GET', $endpoint);
 if (!$data || isset($data['error'])) {
     $data = []; 
 }
 
+// Hitung statistik
 $semuaPengguna = supabase_request('GET', 'profiles');
 $totalPengguna = 0;
 $totalAdmin = 0;
@@ -35,8 +42,10 @@ $totalPendaki = 0;
 if ($semuaPengguna && !isset($semuaPengguna['error'])) {
     $totalPengguna = count($semuaPengguna);
     foreach ($semuaPengguna as $user) {
+        // PERBAIKAN: Ganti 'peran_pengguna' kembali menjadi 'peran'
         if ($user['peran'] === 'admin') {
             $totalAdmin++;
+        // PERBAIKAN: Ganti 'peran_pengguna' kembali menjadi 'peran'
         } elseif ($user['peran'] === 'pendaki') {
             $totalPendaki++;
         }
@@ -53,6 +62,23 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
   <link rel="stylesheet" href="/simaksi/assets/css/style.css"> 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- TAMBAHKAN CSS INI UNTUK LAYOUT BARU -->
+  <style>
+    .filter-section {
+        display: flex;
+        justify-content: space-between; /* Mendorong form ke kiri & tombol ke kanan */
+        align-items: center; /* Menjaga agar tetap sejajar */
+        gap: 20px; /* Jarak antara form dan tombol */
+    }
+    .filter-form {
+        flex-grow: 1; /* Membuat form filter mengambil sisa ruang */
+    }
+    /* Pastikan tombol baru tidak ter-wrap */
+    #tambahUser {
+        white-space: nowrap;
+    }
+  </style>
 </head>
 <body>
 
@@ -88,7 +114,8 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
         <input type="hidden" name="page" value="user">
       
         <div class="filter-group">
-            <input type="text" name="filter_nama" id="filterNama" placeholder="Cari email..." value="<?= htmlspecialchars($filterNama ?? '') ?>">
+            <!-- Placeholder diubah di sini -->
+            <input type="text" name="filter_nama" id="filterNama" placeholder="Cari nama atau email..." value="<?= htmlspecialchars($filterNama ?? '') ?>">
             
             <select name="filter_peran" id="filterPeran">
                 <option value="">Semua Peran</option>
@@ -105,6 +132,9 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
             <a href="index.php?page=user" class="reset-btn">Reset</a>
         <?php endif; ?>
     </form>
+
+    <!-- TOMBOL DIPINDAHKAN DAN DIUBAH TEKSNYA -->
+    <button class="btn green" id="tambahUser">Tambah Admin</button>
   </div>
 
   <div class="table-container">
@@ -116,7 +146,7 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
           <th>Email</th>
           <th>No. Telepon</th>
           <th>Alamat</th>
-          <th>Peran</th>
+          <th>Peran</th> <!-- Biarkan header tabel tetap 'Peran' -->
           <th>Aksi</th>
         </tr>
       </thead>
@@ -131,13 +161,11 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
             <td><?= htmlspecialchars($row['email'] ?? '') ?></td>
             <td><?= htmlspecialchars($row['nomor_telepon'] ?? '') ?></td>
             <td><?= htmlspecialchars($row['alamat'] ?? '') ?></td>
+            <!-- PERBAIKAN: Ganti 'peran_pengguna' kembali menjadi 'peran' -->
             <td><?= htmlspecialchars($row['peran'] ?? '') ?></td>
             <td>
               <button class="btn blue btn-edit" data-id="<?= htmlspecialchars($row['id']) ?>">
-                  <i class="fa-solid fa-pencil"></i> Edit
-              </button>
-              <button class="btn red btn-hapus" data-id="<?= htmlspecialchars($row['id']) ?>">
-                  <i class="fa-solid fa-trash-can"></i> Hapus
+                  <i class="fa-solid fa-eye"></i> lihat Detail
               </button>
             </td>
           </tr>
@@ -149,11 +177,15 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
     </table>
   </div>
 
+  <!-- DIV INI DIHAPUS -->
+  <!-- 
   <div class="action-bar">
     <button class="btn green" id="tambahUser">Tambah Pengguna</button>
   </div>
+  -->
 </div>
 
+<!-- Modal HTML -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-container">
         <div class="modal-header">
@@ -161,9 +193,12 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
             <button class="modal-close-btn" id="closeModal">&times;</button>
         </div>
         <div class="modal-body" id="modalBody">
-            </div>
+            <!-- Konten form akan dimuat di sini oleh JS -->
+        </div>
     </div>
 </div>
+
+<!-- Link ke file JavaScript -->
 <script src="/simaksi/assets/js/management_user.js"></script>
 </body>
 </html>

@@ -1,127 +1,106 @@
 <?php
-// Mengaktifkan laporan error untuk debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-require __DIR__ . '/../../config/supabase.php';
-
+// Selalu mulai dengan header JSON
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Metode tidak diizinkan.']);
+// Memuat konfigurasi Supabase
+require __DIR__ . '/../../config/supabase.php';
+
+// Fungsi helper untuk mengirim respons JSON
+function send_json_response($success, $message, $data = null) {
+    $response = ['success' => $success, 'message' => $message];
+    if ($data) {
+        $response['data'] = $data;
+    }
+    echo json_encode($response);
     exit;
 }
 
-$action = $_POST['form_action'] ?? null;
-
-switch ($action) {
-    case 'tambah':
-        tambahUser();
-        break;
-    case 'edit':
-        editUser();
-        break;
-    case 'hapus':
-        hapusUser();
-        break;
-    default:
-        echo json_encode(['success' => false, 'message' => 'Aksi tidak valid.']);
-        break;
+// Pastikan ini adalah request POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    send_json_response(false, 'Metode request tidak valid.');
 }
 
-function tambahUser() {
-    // Ambil semua data dari form
-    $nama_lengkap = $_POST['nama_lengkap'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $nomor_telepon = $_POST['nomor_telepon'] ?? '';
-    $alamat = $_POST['alamat'] ?? '';
-    $peran = $_POST['peran'] ?? '';
+$action = $_POST['form_action'] ?? '';
 
-    if (empty($nama_lengkap) || empty($email) || empty($peran)) {
-        echo json_encode(['success' => false, 'message' => 'Nama Lengkap, Email, dan Peran wajib diisi.']);
-        return;
-    }
+// --- LOGIKA UTAMA UNTUK MENAMBAH PENGGUNA BARU (VERSI 1 LANGKAH DENGAN METADATA) ---
+if ($action === 'tambah') {
     
-    // Cek apakah email sudah ada
-    $check = supabase_request('GET', 'profiles?email=eq.' . urlencode($email));
-    if (!empty($check)) {
-        echo json_encode(['success' => false, 'message' => 'Email ' . $email . ' sudah terdaftar.']);
-        return;
+    // Deklarasikan variabel global
+    global $supabaseUrl, $supabaseKey;
+
+    // Pengecekan error konfigurasi
+    if (empty($supabaseUrl) || empty($supabaseKey)) {
+        send_json_response(false, 'Error Konfigurasi: $supabaseUrl atau $supabaseKey tidak ditemukan.');
     }
 
-    $data = [
+    // 1. Ambil data dari form
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $nama_lengkap = $_POST['nama_lengkap'] ?? '';
+    $peran = $_POST['peran'] ?? 'admin'; // Di form, ini dikirim sebagai 'admin'
+
+    // Validasi dasar
+    if (empty($email) || empty($password) || empty($nama_lengkap)) {
+        send_json_response(false, 'Data tidak lengkap (Email, Password, dan Nama Lengkap wajib diisi).');
+    }
+
+    //
+    // --- BUAT 'user_metadata' (INI YANG AKAN DIBACA OLEH TRIGGER) ---
+    //
+    
+    $user_metadata = [
         'nama_lengkap' => $nama_lengkap,
-        'email' => $email,
-        'nomor_telepon' => $nomor_telepon,
-        'alamat' => $alamat,
-        'peran' => $peran, // <-- UBAH 'peran' menjadi 'peran_pengguna'
+        'peran' => $peran, // Trigger akan membaca ini
+        'email' => $email 
     ];
 
-    // ... (kode lain di dalam fungsi tambahUser)
+    // Tambahkan data opsional (Kirim 'null' jika kosong)
+    $user_metadata['nomor_telepon'] = !empty($_POST['nomor_telepon']) ? $_POST['nomor_telepon'] : null;
+    $user_metadata['alamat'] = !empty($_POST['alamat']) ? $_POST['alamat'] : null;
+    $user_metadata['nik'] = !empty($_POST['nik']) ? $_POST['nik'] : null;
+    $user_metadata['tanggal_lahir'] = !empty($_POST['tanggal_lahir']) ? $_POST['tanggal_lahir'] : null;
+    
+    //
+    // --- KIRIM SEMUA DATA KE AUTH UNTUK DITANGANI TRIGGER ---
+    //
 
-    $result = supabase_request('POST', 'profiles', $data);
-
-    // UBAH MENJADI KODE INI UNTUK DEBUGGING
-    if (isset($result['error']) || !$result) {
-        // Siapkan pesan error default
-        $errorMessage = 'Gagal menambahkan pengguna ke database.';
-        
-        // Jika Supabase memberikan pesan error yang lebih spesifik, kita akan menampilkannya
-        if (!empty($result['message'])) {
-            $errorMessage = 'Error dari Supabase: ' . $result['message'];
-        }
-        
-        // Kirim respons error yang lebih detail
-        echo json_encode(['success' => false, 'message' => $errorMessage, 'debug_info' => $result]);
-
-    } else {
-        echo json_encode(['success' => true, 'message' => 'Pengguna baru berhasil ditambahkan.']);
-    }
-}
-
-function editUser() {
-    $id = $_POST['id'] ?? '';
-    $nama_lengkap = $_POST['nama_lengkap'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $nomor_telepon = $_POST['nomor_telepon'] ?? '';
-    $alamat = $_POST['alamat'] ?? '';
-
-    if (empty($id) || empty($nama_lengkap) || empty($email) || empty($peran)) {
-        echo json_encode(['success' => false, 'message' => 'Data tidak lengkap.']);
-        return;
-    }
-
-    $data = [
-        'nama_lengkap' => $nama_lengkap,
+    $auth_url = $supabaseUrl . '/auth/v1/admin/users';
+    
+    $post_data = [
         'email' => $email,
-        'nomor_telepon' => $nomor_telepon,
-        'alamat' => $alamat,
+        'password' => $password,
+        'email_confirm' => true,
+        'user_metadata' => $user_metadata // Kirim semua data profil di sini
     ];
 
-    $result = supabase_request('PATCH', 'profiles?id=eq.' . $id, $data);
+    $auth_data = json_encode($post_data);
 
-    if (!$result || isset($result['error'])) {
-        echo json_encode(['success' => false, 'message' => 'Gagal memperbarui data pengguna.']);
-    } else {
-        echo json_encode(['success' => true, 'message' => 'Data pengguna berhasil diperbarui.']);
-    }
-}
+    $ch_auth = curl_init($auth_url);
+    curl_setopt($ch_auth, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch_auth, CURLOPT_POST, true);
+    curl_setopt($ch_auth, CURLOPT_POSTFIELDS, $auth_data);
+    curl_setopt($ch_auth, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'apikey: ' . $supabaseKey,
+        'Authorization: ' . 'Bearer ' . $supabaseKey
+    ]);
 
-function hapusUser() {
-    $id = $_POST['id'] ?? '';
-
-    if (empty($id)) {
-        echo json_encode(['success' => false, 'message' => 'ID Pengguna tidak ditemukan.']);
-        return;
-    }
+    $auth_response_body = curl_exec($ch_auth);
+    $auth_http_code = curl_getinfo($ch_auth, CURLINFO_HTTP_CODE);
     
-    // Catatan: Ini hanya menghapus dari tabel 'profiles', tidak dari Supabase Auth.
-    $result = supabase_request('DELETE', 'profiles?id=eq.' . $id);
+    $auth_response_data = json_decode($auth_response_body, true);
 
-    if (isset($result['error'])) {
-        echo json_encode(['success' => false, 'message' => 'Gagal menghapus pengguna.']);
-    } else {
-        echo json_encode(['success' => true, 'message' => 'Pengguna berhasil dihapus.']);
+    // Cek jika Gagal (Trigger akan mengirim error jika gagal)
+    if ($auth_http_code < 200 || $auth_http_code >= 300) {
+        $error_message = $auth_response_data['msg'] ?? $auth_response_data['message'] ?? 'Gagal membuat pengguna.';
+        // Ini adalah error yang Anda lihat
+        send_json_response(false, 'Gagal: ' . $error_message); 
     }
+
+    // --- SEMUA BERHASIL ---
+    send_json_response(true, 'Admin baru berhasil ditambahkan!');
+
+} else {
+    send_json_response(false, 'Aksi tidak diketahui.');
 }
 ?>

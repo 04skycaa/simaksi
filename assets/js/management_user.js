@@ -16,20 +16,61 @@ document.addEventListener("DOMContentLoaded", function () {
                 modalBody.innerHTML = html;
                 const form = modalBody.querySelector("#userForm");
                 if (form) {
-                    handleFormSubmit(form);
+                    // Hanya jalankan handleFormSubmit jika form_action adalah 'tambah'
+                    const formActionInput = form.querySelector('input[name="form_action"]');
+                    if (formActionInput && formActionInput.value === 'tambah') {
+                        handleFormSubmit(form);
+                    }
                 }
+
+                // --- TAMBAHKAN LOGIKA IKON MATA DI SINI ---
+                // Kode ini kita pindahkan dari form_user.php
+                const toggle = document.getElementById('togglePassword');
+                const passwordInput = document.getElementById('password');
+
+                if (toggle && passwordInput) {
+                    toggle.addEventListener('click', function() {
+                        // Toggle tipe input
+                        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                        passwordInput.setAttribute('type', type);
+                        
+                        // Toggle ikon
+                        this.classList.toggle('fa-eye');
+                        this.classList.toggle('fa-eye-slash');
+                    });
+                }
+                // --- SELESAI PENAMBAHAN ---
+
             })
             .catch(error => {
-                modalBody.innerHTML = "<p>Gagal memuat konten. Silakan coba lagi.</p>";
-                console.error("Fetch Error:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error Jaringan',
+                    text: 'Tidak bisa terhubung ke server.'
+                });
+                console.error("Submit Error:", error);
             });
-    };
+        
+        // HAPUS BARIS INI (BARIS 85 DI FILE ANDA)
+        // }); 
+
+    }; // Baris ini (sebelumnya 86) adalah penutup yang benar untuk 'openModal'
+
+    // --- FUNGSI YANG HILANG, TAMBAHKAN MULAI DARI SINI ---
 
     // Fungsi untuk menangani submit form di dalam modal (AJAX)
     const handleFormSubmit = (form) => {
         form.addEventListener("submit", function (e) {
             e.preventDefault();
             const formData = new FormData(form);
+
+            // Tambahkan loader di tombol simpan
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+                submitBtn.disabled = true;
+            }
 
             fetch(form.action, {
                 method: "POST",
@@ -53,6 +94,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         title: 'Oops...',
                         text: data.message || 'Terjadi kesalahan.'
                     });
+                    // Kembalikan tombol jika error
+                    if (submitBtn) {
+                        submitBtn.innerHTML = originalBtnHtml;
+                        submitBtn.disabled = false;
+                    }
                 }
             })
             .catch(error => {
@@ -62,27 +108,37 @@ document.addEventListener("DOMContentLoaded", function () {
                     text: 'Tidak bisa terhubung ke server.'
                 });
                 console.error("Submit Error:", error);
+                // Kembalikan tombol jika error
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalBtnHtml;
+                    submitBtn.disabled = false;
+                }
             });
         });
     };
 
-    // Event listener untuk tombol "Tambah Pengguna"
+    // --- SELESAI PENAMBAHAN FUNGSI ---
+
+
+    // Event listener untuk tombol "Tambah Pengguna" (sekarang "Tambah Admin")
     const tambahBtn = document.getElementById("tambahUser");
     if (tambahBtn) {
         tambahBtn.addEventListener("click", () => {
-            openModal('/simaksi/admin/management_user/form_user.php', 'Tambah Pengguna Baru');
+            // Judul modal diubah di sini
+            openModal('/simaksi/admin/management_user/form_user.php', 'Tambah Admin');
         });
     }
 
-    // Event listener untuk semua tombol "Edit"
+    // Event listener untuk semua tombol "Edit" (sekarang "Lihat Detail")
     document.querySelectorAll(".btn-edit").forEach(button => {
         button.addEventListener("click", function () {
             const userId = this.getAttribute("data-id");
-            openModal(`/simaksi/admin/management_user/form_user.php?id=${userId}`, 'Edit Data Pengguna');
+            // Judul modal diubah menjadi "Lihat Detail Pengguna"
+            openModal(`/simaksi/admin/management_user/form_user.php?id=${userId}`, 'Lihat Detail Pengguna');
         });
     });
 
-    // Event listener untuk semua tombol "Hapus"
+    // Event listener untuk semua tombol "Hapus" (jika Anda menambahkannya nanti)
     document.querySelectorAll(".btn-hapus").forEach(button => {
         button.addEventListener("click", function () {
             const userId = this.getAttribute("data-id");
@@ -99,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }).then((result) => {
                 if (result.isConfirmed) {
                     const formData = new FormData();
-                    formData.append('action', 'hapus');
+                    formData.append('action', 'hapus'); // Anda perlu proses_user.php untuk menangani 'action=hapus'
                     formData.append('id', userId);
 
                     fetch('/simaksi/admin/management_user/proses_user.php', {
