@@ -27,7 +27,10 @@ if (!function_exists('upload_base64_to_supabase_storage')) {
         
         $extension = $extension_map[$mime_type] ?? explode('/', $mime_type)[1] ?? 'dat'; 
         $timestamp = time();
-        $unique_name = $file_name_prefix . '_' . $timestamp . '_' . uniqid() . '.' . $extension;
+        
+        $sanitized_prefix = preg_replace('/[^a-zA-Z0-9_-]/', '_', $file_name_prefix);
+
+        $unique_name = $sanitized_prefix . '_' . $timestamp . '_' . uniqid() . '.' . $extension;
         $file_path_in_bucket = $unique_name; 
         $file_content = base64_decode($base64_data);
         if ($file_content === false) {
@@ -87,6 +90,8 @@ try {
         $id_pengguna = $data['id_pengguna']; 
         $anggota_rombongan = $data['anggota_rombongan'];
         $barang_bawaan = $data['barang_bawaan'] ?? [];
+        
+        // Cek Kuota
         $kuota_response = makeSupabaseRequest(
             'kuota_harian?select=kuota_maksimal,kuota_terpesan&tanggal_kuota=eq.' . urlencode($tanggal_pendakian), 
             'GET'
@@ -103,6 +108,7 @@ try {
             exit;
         }
 
+        // Cek Ketua Rombongan
         $user_response = makeSupabaseRequest('profiles?select=id,nama_lengkap&' . 'id=eq.' . urlencode($id_pengguna), 'GET');
         if (empty($user_response['data'])) {
              http_response_code(400);
@@ -110,6 +116,8 @@ try {
              exit;
         }
         $user_id = $user_response['data'][0]['id'];
+
+        // Buat Reservasi
         $kode_reservasi = 'R' . date('Ymd') . strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 6));
         $reservation_data = [
             'id_pengguna' => $user_id,
@@ -138,7 +146,11 @@ try {
                 list($meta, $base64_string) = explode(';', $url_surat_sehat);
                 list($base64_indicator, $base64_data) = explode(',', $base64_string);
                 $mime_type = str_replace('data:', '', $meta);
-                $file_name_for_storage = $pendaki['nama_lengkap'] . '_' . $id_reservasi . '_' . time();
+                
+                $clean_name = preg_replace('/[^a-zA-Z0-9_-]/', '_', $pendaki['nama_lengkap']);
+                
+                $file_name_for_storage = $clean_name . '_' . $id_reservasi . '_' . time();
+
                 $upload_result = upload_base64_to_supabase_storage($base64_data, $mime_type, $file_name_for_storage);
                 
                 if (isset($upload_result['error'])) {
@@ -174,6 +186,7 @@ try {
             }
         }
 
+        // Tambahkan Barang Bawaan
         foreach ($barang_bawaan as $barang) {
             $jenis_sampah_db = $barang['jenis_sampah'];
             if ($jenis_sampah_db === 'anorganik') {
@@ -196,6 +209,7 @@ try {
             }
         }
 
+        // Perbarui Kuota Harian
         $update_kuota_endpoint = 'kuota_harian?tanggal_kuota=eq.' . urlencode($tanggal_pendakian);
         $kuota_update_data = ['kuota_terpesan' => (int)$kuotaTerpesan + (int)$jumlah_pendaki];
         makeSupabaseRequest($update_kuota_endpoint, 'PATCH', $kuota_update_data);

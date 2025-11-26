@@ -205,6 +205,129 @@ $base_url = '/simaksi/admin';
     left: 125%; 
 }
 
+.group-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .group-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .form-input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .floating-label-group {
+            position: relative;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+
+        .form-input, .floating-label-group select {
+            width: 100%;
+            padding: 10px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            background-color: #fff;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-input:focus, .floating-label-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .floating-label-group select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 0.8em;
+            padding-right: 30px; 
+        }
+
+        .floating-label-group label {
+            position: absolute;
+            top: 0;
+            left: 10px;
+            pointer-events: none;
+            transition: 0.2s ease all;
+            color: #999;
+            background-color: #fff;
+            padding: 0 5px;
+            font-size: 0.85rem; 
+        }
+        .form-input:focus ~ label,
+        .form-input:not(:placeholder-shown) ~ label {
+            top: 0;
+            font-size: 0.85rem;
+            color: #007bff;
+        }
+
+        .floating-label-group select:focus ~ label,
+        .floating-label-group select:valid ~ label:not(:empty) {
+            top: 0;
+            font-size: 0.85rem;
+            color: #007bff;
+        }
+
+        .floating-label-group select:disabled ~ label {
+            color: #555; 
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+            line-height: 1rem;
+        }
+        
+        .text-gray-500 {
+            color: #6b7280; 
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem; 
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .mr-2 {
+            margin-right: 0.5rem; 
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        .text-base {
+            font-size: 1rem;
+        }
+
 .shimmer-btn:hover {
     transform: translateY(-4px) scale(1.01); 
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); 
@@ -283,37 +406,43 @@ $base_url = '/simaksi/admin';
         <form id="reservasiForm" class="space-y-8">
             
             <div class="group-card">
-                <h3 class="group-title">Ketua Rombongan</h3>
-                <div class="floating-label-group">
-                    <select id="id_pengguna" required class="form-input" disabled>
-                        <option value="" disabled selected></option> 
-                    <label for="id_pengguna">Pilih Ketua Rombongan</label>
-                </div>
-                <p id="loadingProfiles" class="text-xs text-gray-500 mt-1 flex items-center">
-                    <iconify-icon icon="ph:spinner-gap-fill" class="animate-spin mr-2 text-base"></iconify-icon> Memuat daftar pengguna...
-                </p>
+            <h3 class="group-title">Ketua Rombongan</h3>
+        
+        <div class="floating-label-group">
+            <select id="id_pengguna" required class="form-input" disabled>
+                <option value="" disabled selected></option> 
+                <option value="1">Pengguna A</option> 
+                <option value="2" selected>Pengguna B (Dipilih)</option> 
+            </select>
+            <label for="id_pengguna">Pilih Ketua Rombongan</label>
+        </div>
+        
+        <p id="loadingProfiles" class="text-xs text-gray-500 mt-1 flex items-center">
+             <iconify-icon icon="ph:spinner-gap-fill" class="spinner mr-2 text-base"></iconify-icon> Memuat daftar pengguna...
+        </p>
+    </div>
+
+    <div class="group-card">
+        <h3 class="group-title">Detail Pemesanan</h3>
+        
+        <div class="form-input-wrapper">
+            
+            <div class="floating-label-group">
+                <input type="date" id="tanggal_pendakian" required class="form-input" placeholder=" ">
+                <label for="tanggal_pendakian">Tanggal Pendakian</label>
+                <p id="kuotaStatus" class="text-xs mt-1 text-gray-500">Kuota: Tersedia 100/150</p>
             </div>
 
-            <div class="group-card">
-                <h3 class="group-title">Detail Pemesanan</h3>
-                
-                <div class="form-input-wrapper">
-                    <div class="floating-label-group">
-                        <input type="date" id="tanggal_pendakian" required class="form-input" placeholder=" ">
-                        <label for="tanggal_pendakian">Tanggal Pendakian</label>
-                        <p id="kuotaStatus" class="text-xs mt-1 text-gray-500"></p>
-                    </div>
+            <div class="floating-label-group">
+                <input type="number" id="jumlah_pendaki" required min="1" value="1" class="form-input" placeholder=" ">
+                <label for="jumlah_pendaki">Jumlah Pendaki (Total)</label>
+            </div>
 
-                    <div class="floating-label-group">
-                        <input type="number" id="jumlah_pendaki" required min="1" value="1" class="form-input" placeholder=" ">
-                        <label for="jumlah_pendaki">Jumlah Pendaki (Total)</label>
-                    </div>
-
-                    <div class="floating-label-group">
-                        <input type="number" id="jumlah_tiket_parkir" min="0" value="0" class="form-input" placeholder=" ">
-                        <label for="jumlah_tiket_parkir">Jumlah Tiket Parkir (Unit)</label>
-                    </div>
-                </div>
+            <div class="floating-label-group">
+                <input type="number" id="jumlah_tiket_parkir" min="0" value="0" class="form-input" placeholder=" ">
+                <label for="jumlah_tiket_parkir">Jumlah Tiket Parkir (Unit)</label>
+            </div>
+        </div>
 
                 <div class="total-price-display">
                     <p class="total-price-text">Total Harga Estimasi:</p>
