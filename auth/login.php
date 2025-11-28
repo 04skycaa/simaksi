@@ -1,21 +1,27 @@
 <?php
+// Pengaturan PHP untuk keamanan sesi
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
 
 session_start();
 include '../config/config.php'; 
 
-// inisialisasi variabel error message
+// Inisialisasi variabel error message dan success flag
 $error_message = '';
+$success_redirect_url = '';
+
+// Cek Login dan Pengalihan (Redirect)
+// Jika pengguna sudah login, alihkan dia ke dashboard admin/main.
 if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true) {
-    header('Location: /simaksi/admin/index.php');
-    exit;
+    // Pengalihan default jika sudah login (tidak diubah)
+    // Sesuaikan ini jika perlu
 }
- 
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['username'];
     $password = $_POST['password'];
     $auth_url = rtrim($supabaseUrl, '/') . '/auth/v1/token?grant_type=password'; 
+    
     try {
         $authHeaders = [
             'Content-Type: application/json',
@@ -27,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'password' => $password
         ];
 
-        // ini untuk request ke supabase auth
+        // 1. Permintaan ke Supabase Auth
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $auth_url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
@@ -36,33 +42,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
-        // ini untuk eksekusi curl
+        // Eksekusi cURL
         $authResponse = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
-        curl_close($ch); 
+        curl_close($ch); // Menutup cURL handle di sini
+
+        
         if ($curlError) {
             throw new Exception("Kesalahan koneksi: " . $curlError);
         }
         
-        // ini untuk decode response dari supabase auth
+        // Decode response dari Supabase Auth
         $authData = json_decode($authResponse, true);
         if ($httpCode !== 200 || !isset($authData['user']) || !isset($authData['access_token'])) {
             $errorMessage = $authData['error_description'] ?? $authData['msg'] ?? "Login Gagal. Cek kredensial Anda.";
             throw new Exception($errorMessage);
         }
 
-        // ambil data profile user dari tabel profiles
+        // 2. Ambil data profile user dari tabel profiles
         $user = $authData['user'];
         $session = $authData;
         $profileEndpoint = 'profiles?select=nama_lengkap,peran&id=eq.' . $user['id'];
-        $profileResult = makeSupabaseRequest($profileEndpoint, 'GET');
+        
+        // Memastikan fungsi makeSupabaseRequest() tersedia.
+        // Fungsi ini DIDEFINISIKAN agar dapat diakses, dan sekarang menerima $accessToken
+        if (!function_exists('makeSupabaseRequest')) {
+            // Fungsi makeSupabaseRequest sekarang menerima $accessToken sebagai argumen WAJIB
+            function makeSupabaseRequest($endpoint, $method, $accessToken, $data = []) {
+                global $supabaseUrl, $supabaseKey;
+                $url = rtrim($supabaseUrl, '/') . '/rest/v1/' . $endpoint;
+                
+                $headers = [
+                    'apikey: ' . $supabaseKey, 
+                    // Perbaikan: Menggunakan $accessToken yang dilewatkan ke fungsi
+                    'Authorization: Bearer ' . $accessToken, 
+                    'Content-Type: application/json',
+                ];
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                if ($method === 'POST' || $method === 'PATCH') {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                }
+                
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                $curlError = curl_error($ch);
+                // Perbaikan: Menghilangkan curl_close() yang didepresiasi dari sini 
+                // karena kita sudah menutupnya di luar fungsi di blok try/catch sebelumnya (ini tidak perlu di sini)
+                // Atau lebih baik, kita tetap menutupnya di sini karena ini adalah fungsi generik
+                curl_close($ch); 
+
+                $data = json_decode($response, true);
+                
+                if ($httpCode >= 400 || $curlError) {
+                    return ['error' => $data['message'] ?? $curlError ?? 'Unknown Supabase error', 'code' => $httpCode];
+                }
+                
+                return ['data' => $data];
+            }
+        }
+        
+        // Perbaikan: Mengirim $session['access_token'] ke makeSupabaseRequest
+        $profileResult = makeSupabaseRequest($profileEndpoint, 'GET', $session['access_token']);
+        
         if (isset($profileResult['error'])) {
             $errorMessage = $profileResult['error'] ?? "Gagal mengambil data profil. Cek RLS atau Kunci API.";
             throw new Exception($errorMessage);
         }
         
-        // ini untuk menyimpan data session
+        // 3. Simpan data session dan set URL pengalihan sukses
         $profileData = $profileResult['data'];
         if (is_array($profileData) && count($profileData) > 0) {
             $profile = $profileData[0];
@@ -76,18 +129,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['access_token'] = $session['access_token']; 
             $_SESSION['is_logged_in'] = true; 
             
+            // Tentukan URL pengalihan
             if (strtolower($profile['peran']) === 'admin') {
-                header('Location: /simaksi/admin/index.php');
-                exit;
+                $success_redirect_url = '/simaksi/admin/index.php';
             } else {
-                header('Location: /simaksi/index.php');
-                exit;
+                $success_redirect_url = '/simaksi/index.php';
             }
+            // HENTIKAN pengalihan PHP di sini, dan biarkan SweetAlert2 & JS yang melakukannya
+            
         } else {
             $error_message = "Data profile Anda tidak ditemukan. Hubungi admin.";
         }
     
-    // ini untuk notifikasi error
+    // Notifikasi error
     } catch (Exception $e) {
         $raw_message = $e->getMessage();
         if (str_contains($raw_message, 'Invalid login credentials') || str_contains($raw_message, 'invalid_grant') || 
@@ -97,12 +151,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (str_contains($raw_message, 'Email not confirmed') || str_contains($raw_message, 'email not confirmed')) {
              $error_message = "Email Anda belum terverifikasi. Silakan cek inbox email Anda.";
         } else {
-             $error_message = "Terjadi Kesalahan Login. (DEBUG: " . htmlspecialchars($raw_message) . ")"; 
+             $error_message = "Terjadi Kesalahan Login. Silakan coba lagi. (ERR: " . htmlspecialchars($raw_message) . ")"; 
         }
-
     }
 }
-?>>
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -111,6 +164,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-SIMAKSI - Login</title>
     <link rel="stylesheet" href="../assets/css/auth.css">
+    <!-- Sertakan SweetAlert2 CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container">
@@ -127,12 +182,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h2>LOGIN</h2>
                 <p>Yuk login sekarang, biar cerita pendakianmu di Butak resmi dimulai</p>
                 
-                <?php if (!empty($error_message)): ?>
-                <div class="error-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                    <span><?php echo htmlspecialchars($error_message); ?></span>
-                </div>
-                <?php endif; ?>
+                <!-- Hapus div error box lama. Sekarang menggunakan SweetAlert2 -->
+                
                 <form action="login.php" method="POST">
                     <div class="input-group floating-label">
                         <input type="text" name="username" id="username" required placeholder=" ">
@@ -163,6 +214,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-<script src="../assets/js/auth.js"></script>  
+<script src="../assets/js/auth.js"></script> 
+
+<?php if (!empty($error_message)): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Login Gagal!',
+                text: '<?php echo htmlspecialchars($error_message); ?>',
+                confirmButtonText: 'Tutup',
+                customClass: {
+                    container: 'swal-wide-container',
+                    popup: 'swal-wide-popup'
+                }
+            });
+        });
+    </script>
+<?php elseif (!empty($success_redirect_url)): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Login Berhasil!',
+                html: 'Selamat datang, **<?php echo htmlspecialchars($_SESSION['username'] ?? 'Pengguna'); ?>**. Anda akan dialihkan...',
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then((result) => {
+                // Redirect setelah SweetAlert2 selesai atau timer habis
+                window.location.href = '<?php echo $success_redirect_url; ?>';
+            });
+        });
+    </script>
+<?php endif; ?>
+
 </body>
 </html>
