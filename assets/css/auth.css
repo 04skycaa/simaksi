@@ -258,3 +258,111 @@ input[type="password"]::-moz-password-toggle {
     cursor: pointer;
     font-size: 18px;
 }
+
+.input-group input[type="text"],
+.input-group input[type="email"],
+.input-group input[type="tel"] {
+    width: 100%;
+    padding: 12px 12px 12px 45px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Floating Label Logic */
+.floating-label label {
+    position: absolute;
+    top: 50%;
+    left: 45px;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    pointer-events: none;
+    transition: 0.2s ease all;
+}
+
+.floating-label input:focus ~ label,
+.floating-label input:not(:placeholder-shown) ~ label {
+    top: 0;
+    left: 40px;
+    font-size: 0.75rem;
+    background-color: white;
+    padding: 0 5px;
+    color: #385e34;
+}
+
+.floating-label input:focus {
+    border-color: #385e34;
+    box-shadow: 0 0 0 1px #385e34;
+}
+
+.floating-label input:focus ~ .input-icon {
+    color: #385e34;
+}
+
+
+.register-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #385e34;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.register-btn:hover {
+    background-color: #385e34;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.login-link a {
+    color: #385e34;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Media Query for Mobile */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        width: 100%;
+        margin: 0;
+        min-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .left-section {
+        min-height: 150px;
+        padding: 30px 20px;
+    }
+
+    .left-section h1 {
+        font-size: 1.8rem;
+    }
+
+    .left-section p {
+        font-size: 0.9rem;
+    }
+
+    .right-section {
+        padding: 40px 20px;
+    }
+}
