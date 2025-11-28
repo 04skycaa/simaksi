@@ -1,206 +1,136 @@
 <?php
-error_reporting(E_ALL & ~E_DEPRECATED); 
+// simaksi/auth/register.php
+// Menggunakan alur pendaftaran standar (Email & Kata Sandi)
 session_start();
-// Ubah dari database.php ke config.php untuk Supabase
-include '../config/config.php'; 
+
+// Memuat konfigurasi dan fungsi Supabase
+// PASTIKAN LOKASI FILE INI BENAR:
+require_once '../config/api_connector.php';
 
 $error_message = '';
 $success_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // 1. Ambil Data dari Form
-    $nama_lengkap = $_POST['username']; // Di form Anda menggunakan 'username' untuk nama lengkap
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $peran = 'pendaki'; // Peran default
-
-    // Endpoint untuk pendaftaran (Sign Up) di Supabase Auth
-    $auth_url = rtrim($supabaseUrl, '/') . '/auth/v1/signup'; 
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $nama_lengkap = trim($_POST['nama_lengkap'] ?? '');
     
-    try {
-        // Headers untuk Auth API (Hanya memerlukan apikey, Content-Type, dan Authorization Bearer)
-        // Kita gunakan service role key untuk sign up agar tidak perlu verifikasi email,
-        // namun biasanya 'anon key' dan 'Authorization: Bearer [anon key]' sudah cukup.
-        // Karena config.php hanya menyediakan $supabaseKey (anon) dan $serviceRoleKey (service role), 
-        // kita akan menggunakan $supabaseKey untuk Auth jika ingin verifikasi email.
-        // Jika Anda ingin mengabaikan verifikasi email, gunakan $serviceRoleKey dengan 'Authorization: Bearer [serviceRoleKey]'.
-        
-        // Asumsi: Kita menggunakan anon key ($supabaseKey) untuk pendaftaran standar dengan konfirmasi email.
-        $authHeaders = [
-            'Content-Type: application/json',
-            'apikey: ' . $supabaseKey, 
-            'Authorization: Bearer ' . $supabaseKey, 
-        ];
-        
-        $authDataPayload = [
+    // Validasi dasar
+    if (empty($email) || empty($nama_lengkap) || empty($password)) {
+        $error_message = "Semua kolom wajib diisi: Email, Nama Lengkap, dan Kata Sandi.";
+    } else {
+        // 1. Panggil Supabase Auth API untuk SIGNUP
+        $payload = [
             'email' => $email,
-            'password' => $password,
-            // Opsional: Tambahkan metadata pengguna jika diperlukan
-            'data' => [
-                'nama_lengkap_temp' => $nama_lengkap
+            'password' => $password, 
+            'data' => [ 
+                'nama_lengkap' => $nama_lengkap,
             ]
         ];
 
-        // 2. Kirim Permintaan Pendaftaran ke Supabase Auth
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $auth_url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($authDataPayload));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $authHeaders);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Ganti ke true di produksi!
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        
-        $authResponse = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        curl_close($ch);
+        // Memanggil fungsi Supabase
+        $authResponse = makeSupabaseAuthRequest('signup', $payload);
 
-        if ($curlError) {
-            throw new Exception("Kesalahan koneksi: " . $curlError);
+        if (isset($authResponse['error'])) {
+            $http_status = $authResponse['http_status'] ?? 'Tidak Diketahui';
+            $detailed_error = $authResponse['detailed_error'] ?? 'Tidak ada detail error yang dikirim oleh Supabase.';
+            
+            // --- LOGGING YANG LEBIH BAIK ---
+            // Catat respons lengkap ke log server untuk debug
+            error_log("Supabase Auth Error [signup]: HTTP Status: " . $http_status . " - Detail: " . $detailed_error . " - Email: " . $email);
+
+            // Tampilkan pesan error kepada pengguna
+            $error_message = "Gagal mendaftar. Kemungkinan: Email sudah terdaftar, atau masalah koneksi Supabase. Kode Status: " . htmlspecialchars($http_status) . ". Detail: " . htmlspecialchars($detailed_error);
+
+        } else {
+            // Sukses! Supabase mengirim OTP. Arahkan ke halaman verifikasi.
+            unset($_SESSION['reg_data']);
+            header('Location: verify_otp.php?email=' . urlencode($email));
+            exit;
         }
-        
-        $authData = json_decode($authResponse, true);
-
-        // 3. Cek Respons Auth
-        if ($httpCode >= 400 || !isset($authData['user'])) {
-            $errorMessage = $authData['msg'] ?? $authData['message'] ?? "Pendaftaran Gagal. Silakan coba lagi.";
-            if (str_contains($errorMessage, 'User already registered')) {
-                $errorMessage = "Email sudah terdaftar! Silakan gunakan email lain.";
-            }
-            throw new Exception($errorMessage);
-        }
-        
-        $user = $authData['user'];
-        $user_id = $user['id'];
-
-        // 4. Masukkan Data Profil ke Tabel 'profiles' (Gunakan makeSupabaseRequest)
-        // Pastikan Anda memiliki tabel 'profiles' di Supabase yang terhubung ke 'auth.users' melalui kolom 'id'
-        // dan memiliki RLS yang mengizinkan INSERT.
-        
-        // Data yang akan dimasukkan ke tabel 'profiles'
-        $profileData = [
-            'id' => $user_id, // ID Auth pengguna
-            'nama_lengkap' => $nama_lengkap,
+    }
+    
+    // Jika ada error, simpan kembali data (kecuali password) ke sesi
+    if ($error_message) {
+        $_SESSION['reg_data'] = [
             'email' => $email,
-            'peran' => $peran,
-            // 'dibuat_pada' tidak perlu jika ada default value/timestamp di tabel
+            'nama_lengkap' => $nama_lengkap,
         ];
-
-        $profileEndpoint = 'profiles'; // Nama tabel Anda di Supabase
-        // PENTING: Gunakan Service Role Key di makeSupabaseRequest untuk melewati RLS
-        // Jika Anda ingin menggunakan Anon key, pastikan RLS diaktifkan dengan benar.
-        $profileResult = makeSupabaseRequest($profileEndpoint, 'POST', $profileData);
-        
-        if (isset($profileResult['error'])) {
-             // Jika gagal buat profil, hapus akun Auth (opsional tapi disarankan)
-             // ... Tambahkan logika penghapusan Auth jika diperlukan (memerlukan admin key) ...
-             
-             $errorMessage = $profileResult['error'] ?? "Pendaftaran berhasil, tetapi gagal menyimpan data profil. Hubungi admin.";
-             throw new Exception($errorMessage);
-        }
-        
-        // 5. Sukses
-        $_SESSION['register_status'] = 'success';
-        $_SESSION['register_message'] = "Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi (jika diaktifkan) dan login.";
-        header('Location: ../auth/login.php');
-        exit;
-
-    } catch (Exception $e) {
-        // 6. Gagal
-        $_SESSION['register_status'] = 'error';
-        $_SESSION['register_message'] = $e->getMessage();
-        header('Location: ../auth/register.php'); 
-        exit;
     }
 }
-?>
 
+// Ambil data dari session untuk mengisi kembali form jika ada error
+$reg_data = $_SESSION['reg_data'] ?? [];
+unset($_SESSION['reg_data']); 
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-SIMAKSI - Register</title>
+    <title>Daftar Akun Baru - SIMAKSI</title>
     <link rel="stylesheet" href="../assets/css/auth.css">
+    <script src="../assets/js/auth.js" defer></script> 
 </head>
 <body>
     <div class="container">
         <div class="left-section">
-            <h1>SELAMAT DATANG DI <br> GUNUNG BUTAK</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae eum optio debitis fugiat ad, suscipit tenetur totam labore possimus beatae itaque accusantium soluta libero quos recusandae obcaecati voluptatum temporibus enim?</p>
-            
+            <h1>Selamat Datang di SIMAKSI</h1>
+            <p>Sistem Informasi Pendaftaran dan Pelaporan Pendakian Gunung.</p>
         </div>
-
         <div class="right-section">
             <div class="register-box">
                 <div class="logo">
-                    <img src="../assets/images/logo1.png" alt="E-SIMAKSI Logo">
+                    <!-- Pastikan path gambar logo sudah benar -->
+                    <img src="../assets/images/logo1.png" alt="E-SIMAKSI Logo"> 
                 </div>
-                <h2>REGISTER</h2>
-                <p>Buat akun baru untuk melanjutkan cerita pendakianmu</p>
+                <h2>Buat Akun</h2>
+                <p>Masukkan data Anda dan buat Kata Sandi. Konfirmasi akun akan dikirim melalui email.</p>
                 
-                <?php if (isset($_SESSION['register_status']) && $_SESSION['register_status'] === 'error'): ?>
-                <div class="error-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                    <span><?php echo htmlspecialchars($_SESSION['register_message']); ?></span>
-                </div>
+                <?php if ($error_message): ?>
+                    <div class="error-message"> 
+                        <!-- Sekarang menampilkan Kode Status HTTP Supabase -->
+                        <?= htmlspecialchars($error_message) ?>
+                    </div>
                 <?php endif; ?>
 
-                <form action="register.php" method="POST">
+                <form method="POST" action="register.php">
+                    <!-- Nama Lengkap (WAJIB) -->
                     <div class="input-group floating-label">
-                        <input type="text" name="username" id="username" required placeholder=" ">
-                        <label for="username">Nama Lengkap</label> <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="6" r="4" fill="currentColor"/><path fill="currentColor" d="M20 17.5c0 2.485 0 4.5-8 4.5s-8-2.015-8-4.5S7.582 13 12 13s8 2.015 8 4.5"/></svg>
+                        <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        <input type="text" id="nama_lengkap" name="nama_lengkap" placeholder=" " required 
+                               value="<?= htmlspecialchars($reg_data['nama_lengkap'] ?? '') ?>">
+                        <label for="nama_lengkap">Nama Lengkap</label>
                     </div>
 
+                    <!-- Email (WAJIB) -->
                     <div class="input-group floating-label">
-                        <input type="email" name="email" id="email" required placeholder=" ">
+                        <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <input type="email" id="email" name="email" placeholder=" " required
+                               value="<?= htmlspecialchars($reg_data['email'] ?? '') ?>">
                         <label for="email">Email</label>
-                        <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5v2z"/></svg>
                     </div>
-
-                    <div class="input-group floating-label">
+                    
+                    <!-- Kata Sandi -->
+                    <div class="input-group floating-label password-container">
                         <input type="password" id="password" name="password" placeholder=" " autocomplete="new-password" required>
-                        <label for="password">Password</label>
+                        <label for="password">Kata Sandi</label>
+
+                        <!-- Toggle Kata Sandi: ID disesuaikan agar kompatibel dengan auth.js -->
                         <span class="input-icon toggle-password" tabindex="0" role="button" aria-label="Toggle password visibility">
                             <svg id="eye-open" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0"/></svg>
-                            <svg id="eye-close" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M2 5.27L3.28 4L20 20.72L18.73 22l-3.08-3.08c-1.15.38-2.37.58-3.65.58c-5 0-9.27-3.11-11-7.5c.69-1.76 1.79-3.31 3.19-4.54zM12 9a3 3 0 0 1 3 3a3 3 0 0 1-.17 1L11 9.17A3 3 0 0 1 12 9m0-4.5c5 0 9.27 3.11 11 7.5a11.8 11.8 0 0 1-4 5.19l-1.42-1.43A9.86 9.86 0 0 0 20.82 12A9.82 9.82 0 0 0 12 6.5c-1.09 0-2.16.18-3.16.5L7.3 5.47c1.44-.62 3.03-.97 4.7-.97M3.18 12A9.82 9.82 0 0 0 12 17.5c.69 0 1.37-.07 2-.21L11.72 15A3.064 3.064 0 0 1 9 12.28L5.6 8.87c-.99.85-1.82 1.91-2.42 3.13"/></svg>     
+                            <svg id="eye-close" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M2 5.27L3.28 4L20 20.72L18.73 22l-3.08-3.08c-1.15.38-2.37.58-3.65.58c-5 0-9.27-3.11-11-7.5c.69-1.76 1.79-3.31 3.19-4.54zM12 9a3 3 0 0 1 3 3a3 3 0 0 1-.17 1L11 9.17A3 3 0 0 1 12 9m0-4.5c5 0 9.27 3.11 11 7.5a11.8 11.8 0 0 1-4 5.19l-1.42-1.43A9.86 9.86 0 0 0 20.82 12A9.82 9.82 0 0 0 12 17.5c.69 0 1.37-.07 2-.21L11.72 15A3.064 3.064 0 0 1 9 12.28L5.6 8.87c-.99.85-1.82 1.91-2.42 3.13"/></svg>
                         </span>
                     </div>
-
-                    <button type="submit" class="register-btn">Register</button>
+                    
+                    <button type="submit" class="register-btn">Daftar Akun</button>
                 </form>
 
-                <p class="login-link">Sudah punya akun? <a href="../auth/login.php">login</a></p>
+                <div class="login-link">
+                    Sudah punya akun? <a href="login.php">Masuk di sini</a>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div id="status-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2 id="modal-title"></h2>
-        <p id="modal-message"></p>
-    </div>
-    </div>
-
-<script>
-    // Hanya menampilkan alert untuk status success/error, karena elemen error-box sudah ditambahkan
-    const registerStatus = "<?php echo isset($_SESSION['register_status']) ? $_SESSION['register_status'] : ''; ?>";
-    const registerMessage = "<?php echo isset($_SESSION['register_message']) ? $_SESSION['register_message'] : ''; ?>";
-
-    // Hapus alert jika statusnya error, karena sudah ada error-box
-    if (registerStatus === 'success' && registerMessage) {
-        alert(registerMessage); 
-    }
-</script>
-<?php
-// Hapus status session setelah ditampilkan
-unset($_SESSION['register_status']);
-unset($_SESSION['register_message']);
-?>
-
-<script src="../assets/js/auth.js"></script>
-
 </body>
 </html>
