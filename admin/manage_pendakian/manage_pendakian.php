@@ -110,7 +110,7 @@ if ($semuaPendakian && !isset($semuaPendakian['error'])) {
                         </td>
                         <td>
                             <button class="btn blue btn-edit" data-id="<?= htmlspecialchars($row['id_reservasi']) ?>">
-                                <i class="fa-solid fa-pencil"></i> Edit
+                                <i class="fa-solid fa-eye"></i> detail pendaki
                             </button>
                         </td>
                     </tr>

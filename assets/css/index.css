@@ -223,7 +223,11 @@ body {
 }
 
 .bg-primary {
-    background-color: var(--color-header-bg);
+    background-color: #75B368;
+}
+
+.dark-mode .bg-primary {
+    background-color: #35542E;
 }
 
 .container {
@@ -1089,6 +1093,8 @@ body {
 }
 
 /* dark mode */
+
+
 
 .dark-mode body {
     background-color: #1f2937;
@@ -2215,3 +2221,295 @@ footer ul li i {
         padding: 4rem;
     }
 }
+
+// untuk komentar 
+.auto-margin { margin-left: auto; margin-right: auto; }
+.container { max-width: 1200px; width: 95%; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.py-20 { padding-top: 5rem; padding-bottom: 5rem; }
+.text-center { text-align: center; }
+.mb-16 { margin-bottom: 4rem; }
+.mb-12 { margin-bottom: 3rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mt-8 { margin-top: 2rem; }
+.text-4xl { font-size: 2.25rem; }
+.text-3xl { font-size: 1.875rem; }
+.text-xl { font-size: 1.25rem; }
+.text-lg { font-size: 1.125rem; }
+.text-sm { font-size: 0.875rem; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.max-w-3xl { max-width: 48rem; }
+.leading-relaxed { line-height: 1.625; }
+.space-x-2 > * + * { margin-left: 0.5rem; }
+.space-x-1 > * + * { margin-left: 0.25rem; }
+.space-y-6 > * + * { margin-top: 1.5rem; }
+.shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+.rounded-3xl { border-radius: 1.5rem; }
+.rounded-2xl { border-radius: 1rem; }
+.rounded-full { border-radius: 9999px; }
+.p-8 { padding: 2rem; }
+.p-3 { padding: 0.75rem; }
+.pt-4 { padding-top: 1rem; }
+.px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+.py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.hidden { display: none !important; }
+.relative { position: relative; }
+.absolute { position: absolute; }
+.top-1/2 { top: 50%; }
+.left-4 { left: 1rem; }
+.right-4 { right: 1rem; }
+.transform { transform: translate(0, 0); } /* Base */
+.-translate-y-1/2 { transform: translateY(-50%); }
+.z-10 { z-index: 10; }
+.border { border-width: 1px; border-style: solid; }
+.border-gray-300 { border-color: #D1D5DB; }
+.border-gray-200 { border-color: #E5E7EB; }
+.border-l-4 { border-left-width: 4px; }
+.bg-white { background-color: #fff; }
+.bg-gray-100 { background-color: #F3F4F6; }
+.bg-gray-50 { background-color: #F9FAFB; }
+.bg-red-100 { background-color: #FEE2E2; }
+.bg-green-100 { background-color: #D1FAE5; }
+.text-gray-800 { color: #1F2937; }
+.text-gray-600 { color: #4B5563; }
+.text-gray-500 { color: #6B7280; }
+.text-red-700 { color: #B91C1C; }
+.text-green-700 { color: #047857; }
+.text-white { color: #fff; }
+.cursor-pointer { cursor: pointer; }
+.transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-duration: 150ms; }
+.transition-default { transition: all 300ms ease; }
+.hover-scale-105:hover { transform: scale(1.05); }
+
+/* Custom Colors (Ganti dengan warna primer/aksen Anda) */
+.text-primary { color: #4F46E5; } /* Indigo 600 */
+.hover\:bg-gray-100:hover { background-color: #F3F4F6; }
+.hover\:from-accent:hover { background-image: linear-gradient(to right, #8B5CF6, #4F46E5); } /* Purple 500 */
+.hover\:to-primary:hover { background-image: linear-gradient(to right, #8B5CF6, #4F46E5); }
+.bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)); }
+.bg-gradient-primary-accent { background-image: linear-gradient(to right, #4F46E5, #8B5CF6); }
+
+/* Layouts */
+.flex-display { display: flex; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.overflow-hidden { overflow: hidden; }
+
+/* Testimonial Slider */
+#testimoni-container {
+    display: flex;
+    white-space: nowrap; /* Penting untuk slider horizontal */
+}
+.transition-transform { transition-property: transform; transition-duration: 500ms; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+
+.testimonial-card {
+    min-width: 33.3333%; /* Menampilkan 3 kartu per view */
+    flex-shrink: 0;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+/* Responsivitas Slider (Ganti nilai jika perlu) */
+@media (max-width: 1024px) {
+    .testimonial-card {
+        min-width: 50%; /* Menampilkan 2 kartu di tablet */
+    }
+}
+
+@media (max-width: 640px) {
+    .testimonial-card {
+        min-width: 100%; /* Menampilkan 1 kartu di mobile */
+        padding: 0; /* Hapus padding agar slider mengisi penuh di mobile */
+    }
+    .left-4 { left: 0.5rem; }
+    .right-4 { right: 0.5rem; }
+}
+
+/* Rating Star Styling (CSS Native) */
+.rating > label {
+    text-shadow: 1px 1px 0 #888;
+}
+.rating > input:checked ~ label,
+.rating:not(:checked) > label:hover,
+.rating:not(:checked) > label:hover ~ label { 
+    color: #ffc107; /* Bintang berwarna kuning saat dipilih/hover */
+}
+.rating > input:checked + label:hover,
+.rating > input:checked ~ label:hover,
+.rating > label:hover ~ input:checked ~ label,
+.rating > input:checked ~ label:hover ~ label {
+    color: #ffd700; /* Warna sedikit berbeda saat hover di atas yang sudah dipilih */
+}
+
+// untuk waktu terbaik 
+.dark-mode {
+    background-color: #2c4426; /* Sedikit lebih terang dari latar belakang utama untuk kontras */
+}
+
+.dark-mode .py-20 {
+    background-image: linear-gradient(to bottom right, #35542E, #75B368);
+}
+
+/* === DARK MODE STYLES (UPDATED WITH #35542E and #75B368) === */
+.dark-mode {
+    /* MENGATUR SELURUH LATAR BELAKANG HALAMAN */
+    /* Mengubah background body menjadi #35542E untuk konsistensi */
+    background-color: #35542E; 
+    color: #e0eee0; /* Mengatur warna teks default menjadi terang */
+}
+
+.dark-mode .py-20 {
+    /* Latar Belakang Bagian Utama: Gradasi Hijau dari #75B368 ke #35542E */
+    /* Ini adalah kode untuk gradasi dari hijau sedang ke hijau tua yang Anda minta */
+    background-image: linear-gradient(to bottom right, #75B368, #35542E);
+}
+
+.dark-mode .section-location {
+    /* MENGATUR LATAR BELAKANG UNTUK BAGIAN LOKASI */
+    /* Diubah menjadi #75B368 (Hijau Sedang) agar ada perbedaan visual yang lebih jelas */
+    background-color: #75B368; 
+}
+
+.dark-mode h2, 
+.dark-mode h3, 
+.dark-mode strong,
+.dark-mode .header h1,
+.dark-mode .card-list-item p {
+    /* Teks Primer: Terang */
+    color: #35542E !important; /* Diubah menjadi Hijau Tua untuk kontras yang lebih baik pada background #75B368 */
+}
+
+.dark-mode .text-gray-600,
+.dark-mode .card-header p,
+.dark-mode .header p,
+.dark-mode .loading p {
+    /* Teks Sekunder: Hijau Muda yang Diredam */
+    color: #4a6c42 !important; /* Warna teks sekunder yang lebih gelap pada background #75B368 */
+}
+
+.dark-mode .time-card, 
+.dark-mode .main-card {
+    /* Latar Belakang Kartu: Permukaan Gelap */
+    background-color: #35542E; /* Hijau Tua */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4), 0 10px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid #4a6c42; /* Batas sedikit lebih terang untuk definisi */
+}
+
+.dark-mode .main-icon-container {
+    /* Warna Ikon Utama: Aksen Cerah (Hijau Sedang) */
+    color: #75B368;
+}
+
+/* Warna Ikon Spesifik (Mode Gelap) - Memastikan kontras yang baik */
+/* Tanda centang menggunakan warna aksen utama */
+.dark-mode .checkmark-circle { background-color: #75B368; } 
+
+/* Ikon waktu disesuaikan untuk kontras palet hijau */
+.dark-mode .time-icon.yellow { background-color: #fcd34d; color: #35542E; } 
+.dark-mode .time-icon.orange { background-color: #fb923c; color: #35542E; }
+.dark-mode .time-icon.red { background-color: #f87171; color: #35542E; }
+.dark-mode .time-icon.indigo { background-color: #818cf8; color: #35542E; }
+
+.dark-mode .spinner {
+    border: 4px solid #4a6c42;
+    border-top: 4px solid #75B368; /* Spinner Hijau Sedang */
+}
+
+/* Gaya Tombol Dark Mode Toggle */
+#darkModeToggle {
+    background-color: #75B368; 
+    color: white;
+}
+
+#darkModeToggle:hover {
+    background-color: #619c53; 
+}
+
+.dark-mode #darkModeToggle {
+    background-color: #e0eee0; 
+    color: #35542E;
+}
+.dark-mode #darkModeToggle:hover {
+    background-color: #ffffff;
+}
+
+.main-container {
+            width: 100%;
+            max-width: 960px; /* max-w-4xl */
+        }
+
+        .header-title {
+            font-size: 2.25rem; /* text-3xl */
+            font-weight: 800; /* font-extrabold */
+            text-align: center;
+            margin-bottom: 2.5rem; /* mb-10 */
+        }
+
+        /* Grid Statistik */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* grid-cols-1 (Mobile) */
+            gap: 2rem; /* gap-8 */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Media Query untuk Desktop (md:grid-cols-3) */
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Styling Glassmorphism Card */
+        .glass-card {
+            padding: 1.5rem; /* p-6 */
+            border-radius: 0.75rem; /* rounded-xl */
+            border: 1px solid rgba(255, 255, 255, 0.3); /* border & border-opacity-30 */
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.3s ease-in-out;
+            text-align: center;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Ikon */
+        .card-icon {
+            font-size: 2.5rem; /* text-4xl */
+            color: #38bdf8; /* Warna Biru Muda Aksen */
+            margin-bottom: 0.75rem; /* mb-3 */
+        }
+
+        /* Angka Statistik */
+        .stat-number {
+            font-size: 2.25rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        
+        /* Gradien Teks */
+        .gradient-text {
+            background-image: linear-gradient(45deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        /* Label Teks */
+        .stat-label {
+            font-size: 1.125rem; /* text-lg */
+            opacity: 0.9; /* opacity-90 */
+        }

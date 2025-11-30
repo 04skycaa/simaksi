@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -78,22 +80,30 @@
                 </a>
             </div>
             
-            <div class="grid-cols-1 md-grid-cols-3 gap-8 max-w-4xl auto-margin hero-content">
-                <div class="glass-card rounded-xl p-6 border border-white border-opacity-30 card-hover">
-                    <i class="fas fa-users text-3xl text-accent mb-3"></i>
-                    <div class="text-3xl font-bold mb-2 gradient-text">2000+</div>
-                    <div class="text-lg opacity-90" data-translate-key="climbers_this_year">Pendaki Tahun Ini</div>
-                </div>
-                <div class="glass-card rounded-xl p-6 border border-white border-opacity-30 card-hover">
-                    <i class="fas fa-star text-3xl text-accent mb-3"></i>
-                    <div class="text-3xl font-bold mb-2 gradient-text">4.9/5</div>
-                    <div class="text-lg opacity-90" data-translate-key="experience_rating">Rating Pengalaman</div>
-                </div>
-                <div class="glass-card rounded-xl p-6 border border-white border-opacity-30 card-hover">
-                    <i class="fas fa-calendar-check text-3xl text-accent mb-3"></i>
-                    <div class="text-3xl font-bold mb-2 gradient-text">5+</div>
-                    <div class="text-lg opacity-90" data-translate-key="years_of_operation">Tahun Operasional</div>
-                </div>
+            <div class="stats-grid">
+            
+            <!-- 1. TOTAL PENDAKI TAHUN INI -->
+            <div class="glass-card card-hover">
+                <i class="card-icon fas fa-users"></i>
+                <!-- Default value: Loading... -->
+                <div class="stat-number gradient-text" id="total-pendaki">...</div> 
+                <div class="stat-label" data-translate-key="climbers_this_year">Total Rombongan Tahun Ini</div>
+            </div>
+            
+            <!-- 2. RATING PENGALAMAN -->
+            <div class="glass-card card-hover">
+                <i class="card-icon fas fa-star"></i>
+                <!-- Default value: Loading... -->
+                <div class="stat-number gradient-text" id="rating-pengalaman">...</div>
+                <div class="stat-label" data-translate-key="experience_rating">Rating Pengalaman</div>
+            </div>
+            
+            <!-- 3. TAHUN OPERASIONAL (Statik) -->
+            <div class="glass-card card-hover">
+                <i class="card-icon fas fa-calendar-check"></i>
+                <div class="stat-number gradient-text">5+</div>
+                <div class="stat-label" data-translate-key="years_of_operation">Tahun Operasional</div>
+            </div>
             </div>
         </div>
         
@@ -441,106 +451,105 @@
                 </p>
             </div>
             
-            <div class="time-card-grid">
-        
-        <!-- Card 1: Musim Kemarau -->
-        <div class="time-card season-card">
-            <div class="card-header text-center">
-                <div class="main-icon-container">
-                    <i class="fas fa-cloud-sun"></i>
+            <div class="time-card-grid">       
+                <!-- Card 1: Musim Kemarau -->
+                <div class="time-card season-card">
+                    <div class="card-header text-center">
+                        <div class="main-icon-container">
+                            <i class="fas fa-cloud-sun"></i>
+                        </div>
+                        <h3>Musim Kemarau</h3>
+                        <p>April - Oktober</p>
+                    </div>
+                    <ul class="card-list">
+                        <!-- Item 1 -->
+                        <li class="card-list-item">
+                            <div class="list-icon-wrapper checkmark-circle">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <p><strong>Jalur pendakian stabil</strong> tanpa hambatan genangan air</p>
+                            </div>
+                        </li>
+                        <!-- Item 2 -->
+                        <li class="card-list-item">
+                            <div class="list-icon-wrapper checkmark-circle">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <p><strong>Visibilitas sangat baik</strong> untuk menikmati pemandangan</p>
+                            </div>
+                        </li>
+                        <!-- Item 3 -->
+                        <li class="card-list-item">
+                            <div class="list-icon-wrapper checkmark-circle">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <p><strong>Suhu sejuk dan nyaman</strong> untuk pendakian</p>
+                            </div>
+                        </li>
+                        <!-- Item 4 -->
+                        <li class="card-list-item">
+                            <div class="list-icon-wrapper checkmark-circle">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <p><strong>Kondisi jalan kering</strong> memudahkan perjalanan</p>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
-                <h3>Musim Kemarau</h3>
-                <p>April - Oktober</p>
-            </div>
-            <ul class="card-list">
-                <!-- Item 1 -->
-                <li class="card-list-item">
-                    <div class="list-icon-wrapper checkmark-circle">
-                        <i class="fas fa-check"></i>
+                
+                <!-- Card 2: Waktu Ideal Sehari -->
+                <div class="time-card daily-time-card">
+                    <div class="card-header text-center">
+                        <div class="main-icon-container">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>Waktu Ideal Sehari</h3>
+                        <p>Pendakian Harian</p>
                     </div>
-                    <div>
-                        <p><strong>Jalur pendakian stabil</strong> tanpa hambatan genangan air</p>
-                    </div>
-                </li>
-                <!-- Item 2 -->
-                <li class="card-list-item">
-                    <div class="list-icon-wrapper checkmark-circle">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <div>
-                        <p><strong>Visibilitas sangat baik</strong> untuk menikmati pemandangan</p>
-                    </div>
-                </li>
-                <!-- Item 3 -->
-                <li class="card-list-item">
-                    <div class="list-icon-wrapper checkmark-circle">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <div>
-                        <p><strong>Suhu sejuk dan nyaman</strong> untuk pendakian</p>
-                    </div>
-                </li>
-                <!-- Item 4 -->
-                <li class="card-list-item">
-                    <div class="list-icon-wrapper checkmark-circle">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <div>
-                        <p><strong>Kondisi jalan kering</strong> memudahkan perjalanan</p>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        
-        <!-- Card 2: Waktu Ideal Sehari -->
-        <div class="time-card daily-time-card">
-            <div class="card-header text-center">
-                <div class="main-icon-container">
-                    <i class="fas fa-clock"></i>
+                    <ul class="card-list">
+                        <!-- Item 1 (Pagi Hari - Yellow) - Menggunakan fa-cloud-sun -->
+                        <li class="card-list-item">
+                            <div class="list-icon-wrapper time-icon yellow">
+                                <i class="fas fa-cloud-sun"></i> 
+                            </div>
+                            <div>
+                                <p><strong>Pagi hari (04:00-06:00):</strong> Udara segar dan suhu nyaman</p>
+                            </div>
+                        </li>
+                        <!-- Item 2 (Matahari Terbit - Orange) - Menggunakan fa-sun -->
+                        <li class="card-list-item">
+                            <div class="list-icon-wrapper time-icon orange">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div>
+                                <p><strong>Matahari terbit:</strong> Pemandangan menakjubkan dari puncak</p>
+                            </div>
+                        </li>
+                        <!-- Item 3 (Hindari Siang - Red) -->
+                        <li class="card-list-item">
+                            <div class="list-icon-wrapper time-icon red">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div>
+                                <p><strong>Hindari siang (10:00-15:00):</strong> Suhu panas yang melelahkan</p>
+                            </div>
+                        </li>
+                        <!-- Item 4 (Malam Hari - Indigo) -->
+                        <li class="card-list-item">
+                            <div class="list-icon-wrapper time-icon indigo">
+                                <i class="fas fa-moon"></i>
+                            </div>
+                            <div>
+                                <p><strong>Malam hari:</strong> Sempurna untuk stargazing</p>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
-                <h3>Waktu Ideal Sehari</h3>
-                <p>Pendakian Harian</p>
             </div>
-            <ul class="card-list">
-                <!-- Item 1 (Pagi Hari - Yellow) - Menggunakan fa-cloud-sun -->
-                <li class="card-list-item">
-                    <div class="list-icon-wrapper time-icon yellow">
-                        <i class="fas fa-cloud-sun"></i> 
-                    </div>
-                    <div>
-                        <p><strong>Pagi hari (04:00-06:00):</strong> Udara segar dan suhu nyaman</p>
-                    </div>
-                </li>
-                <!-- Item 2 (Matahari Terbit - Orange) - Menggunakan fa-sun -->
-                <li class="card-list-item">
-                    <div class="list-icon-wrapper time-icon orange">
-                        <i class="fas fa-sun"></i>
-                    </div>
-                    <div>
-                        <p><strong>Matahari terbit:</strong> Pemandangan menakjubkan dari puncak</p>
-                    </div>
-                </li>
-                <!-- Item 3 (Hindari Siang - Red) -->
-                <li class="card-list-item">
-                    <div class="list-icon-wrapper time-icon red">
-                        <i class="fas fa-sun"></i>
-                    </div>
-                    <div>
-                        <p><strong>Hindari siang (10:00-15:00):</strong> Suhu panas yang melelahkan</p>
-                    </div>
-                </li>
-                <!-- Item 4 (Malam Hari - Indigo) -->
-                <li class="card-list-item">
-                    <div class="list-icon-wrapper time-icon indigo">
-                        <i class="fas fa-moon"></i>
-                    </div>
-                    <div>
-                        <p><strong>Malam hari:</strong> Sempurna untuk stargazing</p>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
             
             <!-- Weather Forecast Section -->
             <div class="weather-container">
@@ -556,9 +565,8 @@
                             <p>Memuat perkiraan cuaca Gunung Butak...</p>
                         </div>
                     </div>
-
                 </div>
-    </div>
+            </div>
         </div>
     </section>
 
@@ -701,22 +709,8 @@
             <div class="relative mb-16">
                 <div class="overflow-hidden">
                     <div id="testimoni-container" class="flex-display transition-transform duration-500 ease-in-out">
-                        <!-- Testimonials will be loaded here -->
-                        <div class="testimonial-card animate-pulse w-full flex-shrink-0 px-4">
-                            <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
-                                <div class="bg-gray-200 h-64 rounded-2xl"></div>
-                            </div>
-                        </div>
-                        <div class="testimonial-card animate-pulse w-full flex-shrink-0 px-4">
-                            <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
-                                <div class="bg-gray-200 h-64 rounded-2xl"></div>
-                            </div>
-                        </div>
-                        <div class="testimonial-card animate-pulse w-full flex-shrink-0 px-4">
-                            <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
-                                <div class="bg-gray-200 h-64 rounded-2xl"></div>
-                            </div>
-                        </div>
+                        <!-- Testimonials akan dimuat di sini oleh JavaScript -->
+                        <p id="loading-message" class="text-center w-full text-gray-500">Memuat testimonial...</p>
                     </div>
                 </div>
                 
@@ -733,7 +727,7 @@
             </div>
             
             <!-- Form Komentar untuk Pengguna yang Login -->
-            <div id="komentar-form-section" class="hidden">
+            <div id="komentar-form-section">
                 <div class="max-w-2xl auto-margin mb-16">
                     <div class="text-center mb-12">
                         <h2 class="text-3xl font-bold text-primary animated-border auto-margin mb-4" data-translate-key="share_experience_title">Bagikan Pengalaman Anda</h2>
@@ -747,6 +741,8 @@
                                 <div id="komentar-success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 px-6 py-4 rounded-lg mb-6"></div>
                                 
                                 <form id="komentarForm" class="space-y-6">
+                                    <!-- ID Pengguna HARUS diambil dari sesi Auth Supabase di script.js -->
+                                    <input type="hidden" id="user-id" value="anon_user_placeholder"> 
                                     <div>
                                         <label class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="comment_label">Komentar:</label>
                                         <textarea id="isi-komentar" class="w-full px-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Tulis pengalaman Anda mendaki Gunung Butak..." data-translate-key="placeholder_comment_area"></textarea>
@@ -757,15 +753,15 @@
                                         <div class="flex-display items-center">
                                             <div class="rating flex-display space-x-1">
                                                 <input type="radio" id="star5" name="rating" value="5" class="hidden" />
-                                                <label for="star5" class="text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition-colors">★</label>
+                                                <label for="star5" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
                                                 <input type="radio" id="star4" name="rating" value="4" class="hidden" />
-                                                <label for="star4" class="text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition-colors">★</label>
+                                                <label for="star4" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
                                                 <input type="radio" id="star3" name="rating" value="3" class="hidden" />
-                                                <label for="star3" class="text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition-colors">★</label>
+                                                <label for="star3" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
                                                 <input type="radio" id="star2" name="rating" value="2" class="hidden" />
-                                                <label for="star2" class="text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition-colors">★</label>
+                                                <label for="star2" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
                                                 <input type="radio" id="star1" name="rating" value="1" class="hidden" />
-                                                <label for="star1" class="text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition-colors">★</label>
+                                                <label for="star1" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
                                             </div>
                                             <span id="rating-value" class="ml-4 text-xl text-gray-600" data-translate-key="select_rating">Pilih rating</span>
                                         </div>
@@ -1581,20 +1577,19 @@
         
     </script>
     
-    <!-- Include index.js -->
     <script src="assets/js/index.js"></script>
     
-    <!-- Include sliding-komentar.js first to ensure sliding functions are available -->
     <script src="assets/js/sliding-komentar.js"></script>
     
-    <!-- Include main.js -->
     <script src="assets/js/main.js"></script>
     
-    <!-- Include weather forecast -->
     <script src="assets/js/weather-forecast.js"></script>
     
-    <!-- Include poster slider -->
     <script src="assets/js/poster-slider.js"></script>
+
+    <script src="assets/stats_loader.js"></script>
+
+    <script src="assets/js/komentar.js"></script>
     
     <!-- Close the main content div -->
     </div>
