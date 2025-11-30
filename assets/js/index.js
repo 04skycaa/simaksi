@@ -137,9 +137,12 @@ const testimonialObserver = new IntersectionObserver((entries) => {
     });
 }, { threshold: 0.1 });
 
-document.querySelectorAll('.testimonial-card').forEach(card => {
-    testimonialObserver.observe(card);
-});
+const testimonialCards = document.querySelectorAll('.testimonial-card');
+if (testimonialCards.length > 0) {
+    testimonialCards.forEach(card => {
+        testimonialObserver.observe(card);
+    });
+}
 
 // Enhanced parallax effect to hero background
 window.addEventListener('scroll', function() {
@@ -272,19 +275,19 @@ addScrollProgress();
 // Add enhanced navigation highlighting
 function highlightNavOnScroll() {
     const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('nav a');
-    
+    const navLinks = document.querySelectorAll('nav a, header a');
+
     let current = '';
-    
+
     sections.forEach(section => {
         const sectionTop = section.offsetTop;
         const sectionHeight = section.clientHeight;
-        
+
         if (pageYOffset >= (sectionTop - 200)) {
             current = section.getAttribute('id');
         }
     });
-    
+
     navLinks.forEach(link => {
         link.classList.remove('text-accent');
         if (link.getAttribute('href') === `#${current}`) {
@@ -296,21 +299,23 @@ function highlightNavOnScroll() {
 window.addEventListener('scroll', highlightNavOnScroll);
 
 // Add glassmorphism effect to navbar on scroll
-const navbar = document.querySelector('nav');
-window.addEventListener('scroll', function() {
-    if (window.scrollY > 50) {
-        navbar.classList.add('navbar-scrolled');
-    } else {
-        navbar.classList.remove('navbar-scrolled');
-    }
-});
+const navbar = document.querySelector('nav') || document.querySelector('header');
+if (navbar) {
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+            navbar.classList.add('navbar-scrolled');
+        } else {
+            navbar.classList.remove('navbar-scrolled');
+        }
+    });
 
-// Ensure navbar remains visible on all scroll positions
-window.addEventListener('scroll', function() {
-    // Always ensure the navbar has appropriate contrast
-    if (window.scrollY > 50) {
-        navbar.classList.add('navbar-scrolled');
-    } else {
-        navbar.classList.remove('navbar-scrolled');
-    }
-});
+    // Ensure navbar remains visible on all scroll positions
+    window.addEventListener('scroll', function() {
+        // Always ensure the navbar has appropriate contrast
+        if (window.scrollY > 50) {
+            navbar.classList.add('navbar-scrolled');
+        } else {
+            navbar.classList.remove('navbar-scrolled');
+        }
+    });
+}
