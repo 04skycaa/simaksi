@@ -56,17 +56,17 @@ async function loadAllPosters() {
 function updateSlidingPosters(posterList) {
     const container = document.getElementById('poster-container');
     const dotsContainer = document.getElementById('poster-dots');
-    
+
     // Check if container exists before trying to access it
     if (!container) {
         console.error('poster-container not found');
         return;
     }
-    
+
     // Clear containers
     container.innerHTML = '';
     if (dotsContainer) dotsContainer.innerHTML = '';
-    
+
     if (!posterList || posterList.length === 0) {
         container.innerHTML = `
             <div class="w-full text-center py-12">
@@ -75,27 +75,33 @@ function updateSlidingPosters(posterList) {
         `;
         return;
     }
-    
+
     // Create poster cards
     posterList.forEach((poster, index) => {
         // Create a card for the poster
         const card = document.createElement('div');
         card.className = 'poster-card w-full flex-shrink-0 px-4 card-hover';
         card.style.minWidth = '100%'; // Ensure each card takes full width
-        
-        // Generate the image URL from Supabase storage
+
+        // Generate the image URL - use the stored URL directly or try to construct it
         let imageUrl = poster.url_gambar;
-        // If the url_gambar is a path in the storage bucket, generate the proper URL
-        if (poster.url_gambar && poster.url_gambar.startsWith('poster-promosi/')) {
-            const { data } = supabase.storage.from('poster-promosi').getPublicUrl(poster.url_gambar);
-            if (data && data.publicUrl) {
-                imageUrl = data.publicUrl;
+
+        // If supabase client exists and the URL is a path in storage bucket, construct public URL
+        if (window.supabase && imageUrl && imageUrl.startsWith('poster-promosi/')) {
+            try {
+                const { data } = supabase.storage.from('poster-promosi').getPublicUrl(imageUrl);
+                if (data && data.publicUrl) {
+                    imageUrl = data.publicUrl;
+                }
+            } catch (e) {
+                // If there's an error generating public URL, use the original URL
+                console.warn('Error generating public URL for poster:', e);
             }
         }
-        
+
         // Create card content with image, title, description, and optional link
         let cardContent = '';
-        
+
         if (poster.url_tautan) {
             // If there's a link, make the whole card clickable
             cardContent = `
@@ -128,10 +134,10 @@ function updateSlidingPosters(posterList) {
                 </div>
             `;
         }
-        
+
         card.innerHTML = cardContent;
         container.appendChild(card);
-        
+
         // Create pagination dot
         if (dotsContainer) {
             const dot = document.createElement('button');
@@ -141,7 +147,7 @@ function updateSlidingPosters(posterList) {
             dotsContainer.appendChild(dot);
         }
     });
-    
+
     // Initialize current slide
     window.posterCurrentSlide = 0;
     window.posterTotalSlides = posterList.length; // Set total slides after loading posters
@@ -175,18 +181,36 @@ window.posterAutoRotationInterval = null;
 function updateSlidePosition() {
     const container = document.getElementById('poster-container');
     if (!container) return;
-    
+
     window.posterTotalSlides = container.children.length;
     const offset = -window.posterCurrentSlide * 100;
     container.style.transform = `translateX(${offset}%)`;
-    
+
+    // Update active slide card
+    const cards = container.querySelectorAll('.poster-card');
+    cards.forEach((card, index) => {
+        if (index === window.posterCurrentSlide) {
+            card.classList.add('active', 'animate');
+            // Remove animation class after animation completes for future animations
+            setTimeout(() => {
+                card.classList.remove('animate');
+            }, 500);
+        } else {
+            card.classList.remove('active', 'animate');
+        }
+    });
+
     // Update active dot
     const dots = document.querySelectorAll('.poster-dot');
     dots.forEach((dot, index) => {
         if (index === window.posterCurrentSlide) {
-            dot.className = 'poster-dot w-4 h-4 rounded-full bg-primary transition-colors';
+            dot.classList.remove('bg-gray-300');
+            dot.classList.add('bg-primary');
+            dot.classList.add('active');
         } else {
-            dot.className = 'poster-dot w-4 h-4 rounded-full bg-gray-300 transition-colors';
+            dot.classList.remove('bg-primary');
+            dot.classList.remove('active');
+            dot.classList.add('bg-gray-300');
         }
     });
 }

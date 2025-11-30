@@ -70,20 +70,20 @@ async function loadAllKomentar() {
 function updateSlidingTestimonials(komentarList) {
     const container = document.getElementById('testimoni-container');
     const dotsContainer = document.getElementById('testimonial-dots');
-    
+
     // Check if container exists before trying to access it
     if (!container) {
         console.error('testimoni-container not found');
         return;
     }
-    
+
     // Clear all loading placeholders first - remove any elements with animate-pulse class
     const placeholders = container.querySelectorAll('.animate-pulse');
     placeholders.forEach(placeholder => placeholder.remove());
-    
+
     // Clear remaining containers
     if (dotsContainer) dotsContainer.innerHTML = '';
-    
+
     if (!komentarList || komentarList.length === 0) {
         container.innerHTML = `
             <div class="w-full text-center py-12">
@@ -94,14 +94,14 @@ function updateSlidingTestimonials(komentarList) {
         updateStats(0, 0);
         return;
     }
-    
+
     // Calculate stats
     const totalComments = komentarList.length;
     const avgRating = komentarList.reduce((sum, komentar) => sum + komentar.rating, 0) / totalComments;
-    
+
     // Update stats display
     updateStats(totalComments, avgRating);
-    
+
     // Create testimonial cards
     komentarList.forEach((komentar, index) => {
         // Format the date
@@ -110,19 +110,24 @@ function updateSlidingTestimonials(komentarList) {
             month: 'long',
             day: 'numeric'
         });
-        
+
         // Create a card for the comment
         const card = document.createElement('div');
         card.className = 'testimonial-card w-full flex-shrink-0 px-4';
         card.style.minWidth = '100%'; // Ensure each card takes full width
+
+        // Check if profiles exists before accessing its properties
+        const namaLengkap = komentar.profiles ? komentar.profiles.nama_lengkap : 'Pendaki';
+        const inisial = namaLengkap.charAt(0).toUpperCase();
+
         card.innerHTML = `
             <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
                 <div class="flex items-center mb-6">
                     <div class="w-20 h-20 bg-gradient-to-r from-accent to-primary rounded-full flex items-center justify-center text-white font-bold text-2xl mr-6">
-                        ${komentar.profiles.nama_lengkap.charAt(0).toUpperCase()}
+                        ${inisial}
                     </div>
                     <div>
-                        <h4 class="font-bold text-2xl text-gray-800">${komentar.profiles.nama_lengkap}</h4>
+                        <h4 class="font-bold text-2xl text-gray-800">${namaLengkap}</h4>
                         <div class="flex items-center mt-2">
                             <div class="rating-display text-yellow-400 flex text-2xl">
                                 ${generateStars(komentar.rating)}
@@ -135,9 +140,9 @@ function updateSlidingTestimonials(komentarList) {
                 <div class="text-gray-500 text-lg">- ${formattedDate}</div>
             </div>
         `;
-        
+
         container.appendChild(card);
-        
+
         // Create pagination dot
         if (dotsContainer) {
             const dot = document.createElement('button');
@@ -147,7 +152,7 @@ function updateSlidingTestimonials(komentarList) {
             dotsContainer.appendChild(dot);
         }
     });
-    
+
     // Initialize current slide
     currentSlide = 0;
     totalSlides = komentarList.length; // Set total slides after loading comments
@@ -214,18 +219,36 @@ let autoRotationInterval;
 function updateSlidePosition() {
     const container = document.getElementById('testimoni-container');
     if (!container) return;
-    
+
     totalSlides = container.children.length;
     const offset = -currentSlide * 100;
     container.style.transform = `translateX(${offset}%)`;
-    
+
+    // Update active slide card
+    const cards = container.querySelectorAll('.testimonial-card');
+    cards.forEach((card, index) => {
+        if (index === currentSlide) {
+            card.classList.add('active', 'animate');
+            // Remove animation class after animation completes for future animations
+            setTimeout(() => {
+                card.classList.remove('animate');
+            }, 500);
+        } else {
+            card.classList.remove('active', 'animate');
+        }
+    });
+
     // Update active dot
     const dots = document.querySelectorAll('.testimonial-dot');
     dots.forEach((dot, index) => {
         if (index === currentSlide) {
-            dot.className = 'testimonial-dot w-4 h-4 rounded-full bg-primary transition-colors';
+            dot.classList.remove('bg-gray-300');
+            dot.classList.add('bg-primary');
+            dot.classList.add('active');
         } else {
-            dot.className = 'testimonial-dot w-4 h-4 rounded-full bg-gray-300 transition-colors';
+            dot.classList.remove('bg-primary');
+            dot.classList.remove('active');
+            dot.classList.add('bg-gray-300');
         }
     });
 }

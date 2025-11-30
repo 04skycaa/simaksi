@@ -702,7 +702,7 @@ body {
 /* tampilan mengapa mendaki gunung butak */
 
 /* mode light */
-.bg-gradient-primary-accent {/
+.bg-gradient-primary-accent {
     background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
 }
 
@@ -1391,7 +1391,7 @@ body {
 .header-section .title-main {
     font-size: 2.5rem; 
     font-weight: 700; 
-    color: #35542E; /
+    color: #35542E;
     margin: 0 auto 0.5rem;
     position: relative;
     padding-bottom: 0.5rem;
@@ -1802,7 +1802,7 @@ body {
 }
 
 .dark-mode #testimoni h2.text-4xl {
-    color: #f3f4f6 !important; \
+    color: #f3f4f6 !important;
 }
 
 .dark-mode #testimoni h2.text-4xl,
@@ -1836,7 +1836,7 @@ body {
 }
 .dark-mode .glow-button {
     background: linear-gradient(45deg, #35542E 0%, #75B368 100%) !important;
-    color: #203A1F !important; rgba(1, 2, 1, 1)
+    color: #203A1F !important;
 }
 
 /* bagian poster */
@@ -2136,11 +2136,9 @@ footer ul li i {
     font-size: 1.2rem;
 }
 
-// untuk bagian bawah kepuasan user
-
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(20px); 
+    to { opacity: 1; transform: translateY(0);
 }
 
 @keyframes pulse {
@@ -2213,5 +2211,7 @@ footer ul li i {
     }
     .stats-container {
         padding: 4rem;
+    }
+}
     }
 }
