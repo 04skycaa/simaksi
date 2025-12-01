@@ -2143,8 +2143,8 @@ footer ul li i {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); 
-    to { opacity: 1; transform: translateY(0);
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0);}
 }
 
 @keyframes pulse {
@@ -2219,7 +2219,6 @@ footer ul li i {
         padding: 4rem;
     }
 }
-<<<<<<< HEAD
 
 // untuk komentar 
 .auto-margin { margin-left: auto; margin-right: auto; }
@@ -2437,6 +2436,7 @@ footer ul li i {
     background-color: #ffffff;
 }
 
+
 .main-container {
             width: 100%;
             max-width: 960px; /* max-w-4xl */
@@ -2512,5 +2512,3 @@ footer ul li i {
             font-size: 1.125rem; /* text-lg */
             opacity: 0.9; /* opacity-90 */
         }
-    }
-}
