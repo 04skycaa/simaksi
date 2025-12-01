@@ -145,6 +145,13 @@ CREATE TABLE public.reservasi (
   tanggal_keluar date,
   id_kuota bigint,
   jumlah_parkir smallint,
+  alasan_batal text,
+  bank_refund text,
+  no_rek_refund text,
+  atas_nama_refund text,
+  persentase_refund integer DEFAULT 0,
+  nominal_refund numeric DEFAULT 0,
+  bukti_refund text,
   CONSTRAINT reservasi_pkey PRIMARY KEY (id_reservasi),
   CONSTRAINT reservasi_id_pengguna_fkey FOREIGN KEY (id_pengguna) REFERENCES public.profiles(id),
   CONSTRAINT fk_reservasi_ke_kuota FOREIGN KEY (id_kuota) REFERENCES public.kuota_harian(id_kuota)

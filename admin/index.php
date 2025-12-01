@@ -57,9 +57,12 @@ switch ($page) {
     case 'manage_pendakian':
         $content = '../admin/manage_pendakian/manage_pendakian.php';
         break;
+    case 'refund_management':
+        $content = '../admin/refund_management/refund_management.php';
+        break;
     case 'dashboard':
     default:
-        $content = 'dashboard.php'; 
+        $content = 'dashboard.php';
         break;
 }
 
@@ -100,6 +103,7 @@ $menu_titles = [
     'poster' => 'Poster',
     'pembukuan' => 'Keuangan',
     'manage_pendakian' => 'Manage Pendakian',
+    'refund_management' => 'Manajemen Refund',
     'user' => 'Management User'
 ];
 
@@ -189,6 +193,15 @@ $current_title = isset($menu_titles[$page]) ? $menu_titles[$page] : 'Dashboard';
                             <?php echo $icon_svg['manage_pendakian']; ?>
                         </span>
                         <span class="title">Manage Pendakian</span>
+                    </a>
+                </li>
+
+                <li data-menu-name="Manajemen Refund" class="<?php echo $page == 'refund_management' ? 'hovered' : ''; ?>">
+                    <a href="index.php?page=refund_management">
+                        <span class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21a9 9 0 1 1 0-18a9 9 0 0 1 0 18m.5-8.5V9.5h-1v4l3.5 3.5l.7-.7l-3.2-3.3"/></svg>
+                        </span>
+                        <span class="title">Manajemen Refund</span>
                     </a>
                 </li>
 
