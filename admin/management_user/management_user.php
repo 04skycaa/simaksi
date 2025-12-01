@@ -1,4 +1,17 @@
 <?php
+// Hanya mulai session jika belum aktif
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Cek apakah pengguna adalah admin - hanya lakukan pengecekan jika file diakses langsung
+if (basename($_SERVER['SCRIPT_FILENAME']) === basename(__FILE__)) {
+    if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || $_SESSION['user_peran'] !== 'admin') {
+        header('Location: ../../auth/login.php');
+        exit;
+    }
+}
+
 include __DIR__ . '/../../config/supabase.php';
 
 $filterNama = trim($_GET['filter_nama'] ?? '');
@@ -134,7 +147,7 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
     </form>
 
     <!-- TOMBOL DIPINDAHKAN DAN DIUBAH TEKSNYA -->
-    <button class="btn green" id="tambahUser">Tambah Admin</button>
+    <button class="btn green" id="tambahUser">Tambah Pengguna</button>
   </div>
 
   <div class="table-container">

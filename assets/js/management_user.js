@@ -120,12 +120,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // --- SELESAI PENAMBAHAN FUNGSI ---
 
 
-    // Event listener untuk tombol "Tambah Pengguna" (sekarang "Tambah Admin")
+    // Event listener untuk tombol "Tambah Pengguna"
     const tambahBtn = document.getElementById("tambahUser");
     if (tambahBtn) {
         tambahBtn.addEventListener("click", () => {
-            // Judul modal diubah di sini
-            openModal('/simaksi/admin/management_user/form_user.php', 'Tambah Admin');
+            // Arahkan ke halaman register_user melalui sistem routing admin
+            window.location.href = 'index.php?page=register_user';
         });
     }
 
