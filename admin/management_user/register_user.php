@@ -101,10 +101,36 @@ function createSupabaseUser($email, $password, $nama_lengkap, $peran = 'pendaki'
         return ['error' => true, 'detailed_error' => 'Supabase tidak mengembalikan data pengguna yang valid.', 'http_status' => $http_status];
     }
 
-    // Kita tidak akan update tabel profiles karena menyebabkan konflik dengan fungsi handle_new_user
-    // Profil seharusnya sudah dibuat oleh fungsi handle_new_user secara otomatis
-    // Proses pembuatan profil oleh handle_new_user akan otomatis mencocokkan struktur yang benar
-    // Jika update profil diperlukan, bisa dilakukan secara terpisah
+    // Setelah user dibuat, kita perlu mengupdate tabel profiles untuk memastikan peran dan data lainnya benar
+    // karena fungsi handle_new_user hanya menetapkan peran ke 'pendaki' secara default
+    if (isset($userData['id'])) {
+        $userId = $userData['id'];
+
+        // Gunakan makeSupabaseRequest untuk mengupdate profil
+        // Kita abaikan error dari update profil karena user sudah berhasil dibuat
+        $profileUpdateData = [
+            'peran' => $peran,
+            'nama_lengkap' => $nama_lengkap
+        ];
+
+        // Tambahkan field lain jika ada
+        if (!empty($nomor_telepon)) $profileUpdateData['nomor_telepon'] = $nomor_telepon;
+        if (!empty($alamat)) $profileUpdateData['alamat'] = $alamat;
+        if (!empty($nik)) $profileUpdateData['nik'] = $nik;
+        if (!empty($tanggal_lahir)) $profileUpdateData['tanggal_lahir'] = $tanggal_lahir;
+
+        // Update profil
+        error_log("Updating profile for user $userId with data: " . print_r($profileUpdateData, true));
+        $profiles_result = makeSupabaseRequest('profiles?id=eq.' . $userId, 'PATCH', $profileUpdateData);
+        error_log("Profile update result for user $userId: " . print_r($profiles_result, true));
+
+        // Log error jika terjadi, tapi jangan kembalikan error ke pengguna
+        if (isset($profiles_result['error'])) {
+            error_log("Profile update failed for user $userId: " . print_r($profiles_result['error'], true));
+        } else {
+            error_log("Profile update successful for user $userId with role: " . $peran);
+        }
+    }
 
     return ['error' => false, 'data' => $userData, 'http_status' => $http_status];
 }
