@@ -458,7 +458,7 @@ if (isset($_GET['msg'])) {
         
         // Cek jika elemen ada sebelum menggunakannya
         if (modalTitle) {
-            modalTitle.innerHTML = `<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Memuat Data...`;
+            modalTitle.innerHTML = '<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Memuat Data...';
         } else {
             console.error("OPEN EDIT ERROR: Element 'editModalTitle' tidak ditemukan.");
             return; // Hentikan jika HTML modal tidak ada
@@ -474,15 +474,15 @@ if (isset($_GET['msg'])) {
 
         try {
             // Fetch data from an API endpoint
-            const fetchUrl = `promo_ajax.php?action=fetch_json&id=${id}&_cache=${new Date().getTime()}`;
+            const fetchUrl = 'promo_ajax.php?action=fetch_json&id=' + id + '&_cache=' + new Date().getTime();
             console.log("OPEN EDIT: Mengambil data dari URL:", fetchUrl);
 
             const response = await fetch(fetchUrl);
-            
+
             console.log("OPEN EDIT: Response status dari server:", response.status);
             if (!response.ok) {
                 console.error("OPEN EDIT FETCH ERROR: Network response was not ok.", response);
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error('HTTP error! status: ' + response.status);
             }
             
             const responseText = await response.text();
@@ -526,8 +526,8 @@ if (isset($_GET['msg'])) {
             document.getElementById('modal_kondisi_max_pendaki').value = data.kondisi_max_pendaki || '';
             document.getElementById('modal_is_aktif').checked = data.is_aktif === 1 || data.is_aktif === true;
 
-            modalTitle.innerHTML = `<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Edit Promosi: ${data.nama_promosi || 'ID: ' + id}`;
-            
+            modalTitle.innerHTML = '<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Edit Promosi: ' + (data.nama_promosi || 'ID: ' + id);
+
             console.log("OPEN EDIT: Sukses. Modal seharusnya sudah terisi penuh.");
 
         } catch (error) {

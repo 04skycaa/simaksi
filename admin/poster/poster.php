@@ -232,6 +232,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action_type = $_POST['action'] ?? null;
     $id_promosi = isset($_POST['id_promosi']) ? (int)$_POST['id_promosi'] : null;
 
+    // Tambahkan logging untuk debugging
+    if ($action_type === 'delete_promosi' || $action_type === 'delete_poster') {
+        error_log("DEBUG DELETE: Form action received: " . $action_type);
+        error_log("DEBUG DELETE: POST data: " . print_r($_POST, true));
+    }
+
     // --- LOGIKA INSERT & UPDATE ---
     if (in_array($action_type, ['tambah_promosi', 'edit_promosi'])) {
         // Determine if this is a poster or promo based on the presence of specific fields
@@ -246,8 +252,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($is_promo) {
             // This is a promo
+            // For edit operations from unified modal, the title field is 'judul_nama' (not 'nama_promosi')
+            $nama_promosi_value = isset($_POST['nama_promosi']) ? trim(htmlspecialchars($_POST['nama_promosi'])) : '';
+            if (empty($nama_promosi_value)) {
+                // If 'nama_promosi' is empty, try 'judul_nama' (used in unified modal edit for promo)
+                $nama_promosi_value = trim(htmlspecialchars($_POST['judul_nama'] ?? ''));
+            }
+
             $data = [
-                'nama_promosi' => trim(htmlspecialchars($_POST['nama_promosi'] ?? '')),
+                'nama_promosi' => $nama_promosi_value,
                 'deskripsi_promosi' => trim(htmlspecialchars($_POST['deskripsi_promosi'] ?? '')),
                 'tipe_promosi' => trim(htmlspecialchars($_POST['tipe_promosi'] ?? '')),
                 'nilai_promosi' => (float)($_POST['nilai_promosi'] ?? 0),
@@ -628,6 +641,98 @@ if (isset($_GET['msg'])) {
         font-size: 12px;
         font-weight: 500;
     }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        display: none !important;
+        justify-content: center !important;
+        align-items: center !important;
+        z-index: 99999 !important;
+        overflow: auto !important;
+        inset: 0 !important;
+        pointer-events: auto !important;
+    }
+
+    .modal-overlay.show {
+        display: flex !important;
+        pointer-events: auto !important;
+    }
+
+    .modal-container {
+        background-color: white !important;
+        border-radius: 8px !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+        max-width: 500px !important;
+        width: 90% !important;
+        animation: modalFadeIn 0.3s ease-out !important;
+        margin: auto !important;
+        position: relative !important;
+        pointer-events: auto !important;
+        min-width: 300px !important;
+    }
+
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(-50px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 16px 24px !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        border-radius: 8px 8px 0 0 !important;
+    }
+
+    .modal-header h3 {
+        margin: 0 !important;
+        font-size: 18px !important;
+        font-weight: 600 !important;
+        color: #1f2937 !important;
+    }
+
+    .modal-close-btn {
+        background: none !important;
+        border: none !important;
+        font-size: 24px !important;
+        cursor: pointer !important;
+        color: #6b7280 !important;
+        padding: 0 !important;
+        width: 30px !important;
+        height: 30px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .modal-close-btn:hover {
+        color: #ef4444 !important;
+    }
+
+    .modal-body {
+        padding: 24px !important;
+        pointer-events: auto !important;
+    }
+
+    /* Pastikan tidak ada overflow hidden di container utama */
+    .poster-container {
+        overflow: visible !important;
+    }
+
+    .card {
+        overflow: visible !important;
+    }
+
+    .card-shadow {
+        overflow: visible !important;
+    }
 </style>
 <div class="poster-container">
     <!-- Area Tab Header -->
@@ -718,7 +823,7 @@ if (isset($_GET['msg'])) {
                                     <button onclick="openEditModal(<?php echo json_encode($promosi['id']); ?>, 'promo')" class="btn btn-yellow" style="padding: 4px 12px; font-size: 12px; margin-right: 8px;">
                                         <iconify-icon icon="mdi:pencil-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Edit
                                     </button>
-                                    <button onclick="openDeleteModal(<?php echo json_encode($promosi['id']); ?>, <?php echo json_encode(htmlspecialchars($promosi['judul'] ?? 'Promosi ini')); ?>, 'promo')" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
+                                    <button onclick="safeDeleteModal(<?php echo json_encode($promosi['id']); ?>, <?php echo json_encode(htmlspecialchars($promosi['judul'] ?? 'Promosi ini')); ?>, 'promo')" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
                                         <iconify-icon icon="mdi:trash-can-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Hapus
                                     </button>
                                 </td>
@@ -795,7 +900,7 @@ if (isset($_GET['msg'])) {
                                         <button onclick="openEditModal(<?php echo json_encode($poster['id']); ?>, 'poster')" class="btn btn-yellow" style="padding: 4px 12px; font-size: 12px; margin-right: 8px;">
                                             <iconify-icon icon="mdi:pencil-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Edit
                                         </button>
-                                        <button onclick="openDeleteModal(<?php echo json_encode($poster['id']); ?>, <?php echo json_encode(htmlspecialchars($poster['judul'] ?? 'Poster ini')); ?>, 'poster')" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
+                                        <button onclick="safeDeleteModal(<?php echo json_encode($poster['id']); ?>, <?php echo json_encode(htmlspecialchars($poster['judul'] ?? 'Poster ini')); ?>, 'poster')" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
                                             <iconify-icon icon="mdi:trash-can-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Hapus
                                         </button>
                                     </td>
@@ -1052,6 +1157,7 @@ if (isset($_GET['msg'])) {
             <form method="POST" style="display:inline;" id="deleteForm">
                 <input type="hidden" name="action" id="delete_action" value="">
                 <input type="hidden" name="id_promosi_delete" id="delete_id_target">
+                <input type="hidden" name="id_poster_delete" id="delete_poster_id_target">
                 <input type="hidden" name="item_type" id="delete_item_type" value="">
                 <button type="button" class="btn" onclick="closeDeleteModal()">&times; Batal</button>
                 <button type="submit" class="btn btn-red">
@@ -1087,7 +1193,7 @@ if (isset($_GET['msg'])) {
 
         // Cek jika elemen ada sebelum menggunakannya
         if (modalTitle) {
-            modalTitle.innerHTML = `<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Memuat Data Poster...`;
+            modalTitle.innerHTML = '<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Memuat Data Poster...';
         } else {
             console.error("OPEN EDIT POSTER ERROR: Element 'editPosterModalTitle' tidak ditemukan.");
             return; // Hentikan jika HTML modal tidak ada
@@ -1107,7 +1213,7 @@ if (isset($_GET['msg'])) {
         // =================================================================
         try {
             // Path 'poster/poster_ajax.php' sudah benar *relatif* terhadap halaman admin
-            const fetchUrl = `poster/poster_ajax.php?action=fetch_json&id=${id}&_cache=${new Date().getTime()}`;
+            const fetchUrl = 'poster/poster_ajax.php?action=fetch_json&id=' + id + '&_cache=' + new Date().getTime();
             console.log("OPEN EDIT POSTER: Mengambil data dari URL:", fetchUrl);
 
             const response = await fetch(fetchUrl);
@@ -1115,7 +1221,7 @@ if (isset($_GET['msg'])) {
             console.log("OPEN EDIT POSTER: Response status dari server:", response.status);
             if (!response.ok) {
                 console.error("OPEN EDIT POSTER FETCH ERROR: Network response was not ok.", response);
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error('HTTP error! status: ' + response.status);
             }
 
             const responseText = await response.text();
@@ -1155,7 +1261,7 @@ if (isset($_GET['msg'])) {
             }
             imgElement.onerror = function() { this.src = defaultImg; };
 
-            modalTitle.innerHTML = `<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Edit Poster: ${data.judul_poster || 'ID: ' + id}`;
+            modalTitle.innerHTML = '<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Edit Poster: ' + (data.judul_poster || 'ID: ' + id);
 
             console.log("OPEN EDIT POSTER: Sukses. Modal seharusnya sudah terisi penuh.");
 
@@ -1188,7 +1294,7 @@ if (isset($_GET['msg'])) {
 
         // Cek jika elemen ada sebelum menggunakannya
         if (modalTitle) {
-            modalTitle.innerHTML = `<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Memuat Data Promosi...`;
+            modalTitle.innerHTML = '<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Memuat Data Promosi...';
         } else {
             console.error("OPEN EDIT PROMO ERROR: Element 'editPromoModalTitle' tidak ditemukan.");
             return; // Hentikan jika HTML modal tidak ada
@@ -1205,7 +1311,7 @@ if (isset($_GET['msg'])) {
 
         try {
             // Fetch data from the promo AJAX endpoint
-            const fetchUrl = `promo_ajax.php?action=fetch_json&id=${id}&_cache=${new Date().getTime()}`;
+            const fetchUrl = 'promo_ajax.php?action=fetch_json&id=' + id + '&_cache=' + new Date().getTime();
             console.log("OPEN EDIT PROMO: Mengambil data dari URL:", fetchUrl);
 
             const response = await fetch(fetchUrl);
@@ -1213,7 +1319,7 @@ if (isset($_GET['msg'])) {
             console.log("OPEN EDIT PROMO: Response status dari server:", response.status);
             if (!response.ok) {
                 console.error("OPEN EDIT PROMO FETCH ERROR: Network response was not ok.", response);
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error('HTTP error! status: ' + response.status);
             }
 
             const responseText = await response.text();
@@ -1257,7 +1363,7 @@ if (isset($_GET['msg'])) {
             document.getElementById('modal_promo_max_pendaki').value = data.kondisi_max_pendaki || '';
             document.getElementById('modal_promo_status').checked = data.is_aktif === 1 || data.is_aktif === true;
 
-            modalTitle.innerHTML = `<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Edit Promosi: ${data.nama_promosi || 'ID: ' + id}`;
+            modalTitle.innerHTML = '<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Edit Promosi: ' + (data.nama_promosi || 'ID: ' + id);
 
             console.log("OPEN EDIT PROMO: Sukses. Modal promosi seharusnya sudah terisi penuh.");
 
@@ -1371,7 +1477,7 @@ if (isset($_GET['msg'])) {
 
         // Cek jika elemen ada sebelum menggunakannya
         if (modalTitle) {
-            modalTitle.innerHTML = `<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Memuat Data...`;
+            modalTitle.innerHTML = '<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Memuat Data...';
         } else {
             console.error("OPEN EDIT ERROR: Element 'editModalTitle' tidak ditemukan.");
             return; // Hentikan jika HTML modal tidak ada
@@ -1401,7 +1507,7 @@ if (isset($_GET['msg'])) {
 
         try {
             // Fetch data from unified AJAX endpoint with item type parameter
-            const fetchUrl = `/simaksi/admin/poster/poster_ajax.php?action=fetch_json&type=${itemType}&id=${id}&_cache=${new Date().getTime()}`;
+            const fetchUrl = '/simaksi/admin/poster/poster_ajax.php?action=fetch_json&type=' + itemType + '&id=' + id + '&_cache=' + new Date().getTime();
             console.log("OPEN EDIT: Mengambil data dari URL:", fetchUrl);
 
             const response = await fetch(fetchUrl);
@@ -1409,7 +1515,7 @@ if (isset($_GET['msg'])) {
             console.log("OPEN EDIT: Response status dari server:", response.status);
             if (!response.ok) {
                 console.error("OPEN EDIT FETCH ERROR: Network response was not ok.", response);
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error('HTTP error! status: ' + response.status);
             }
 
             const responseText = await response.text();
@@ -1455,7 +1561,7 @@ if (isset($_GET['msg'])) {
                 document.getElementById('modal_max_pendaki').value = data.kondisi_max_pendaki || '';
                 document.getElementById('modal_status').checked = data.is_aktif === 1 || data.is_aktif === true;
 
-                modalTitle.innerHTML = `<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Edit Promosi: ${data.nama_promosi || 'ID: ' + id}`;
+                modalTitle.innerHTML = '<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Edit Promosi: ' + (data.nama_promosi || 'ID: ' + id);
             } else {
                 // Fill poster data
                 document.getElementById('modal_id_promosi').value = data.id_promosi_poster || '';
@@ -1475,7 +1581,7 @@ if (isset($_GET['msg'])) {
                 }
                 imgElement.onerror = function() { this.src = defaultImg; };
 
-                modalTitle.innerHTML = `<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Edit Poster: ${data.judul_poster || 'ID: ' + id}`;
+                modalTitle.innerHTML = '<iconify-icon icon="mdi:pencil-outline"></iconify-icon> Edit Poster: ' + (data.judul_poster || 'ID: ' + id);
             }
 
             console.log("OPEN EDIT: Sukses. Modal seharusnya sudah terisi penuh.");
@@ -1491,39 +1597,138 @@ if (isset($_GET['msg'])) {
     function closeDeleteModal() {
         console.log("CLOSE DELETE: Menutup modal hapus...");
         const modal = document.getElementById('deleteModalOverlay');
-        if(modal) modal.classList.remove('show');
+        if(modal) {
+            modal.classList.remove('show');
+            console.log("CLOSE DELETE: Modal sekarang ditutup.");
+        } else {
+            console.error("CLOSE DELETE ERROR: Element 'deleteModalOverlay' tidak ditemukan.");
+        }
     }
 
     function openDeleteModal(id, title, itemType) {
-        console.log("OPEN DELETE: Tombol hapus diklik untuk type:", itemType, "dengan ID:", id, "dan Judul:", title);
-        if (!id || !title) {
-            console.error("OPEN DELETE ERROR: ID atau Judul tidak valid.");
-            return;
-        }
+        try {
+            console.log("OPEN DELETE: Tombol hapus diklik untuk type:", itemType, "dengan ID:", id, "dan Judul:", title);
 
-        // Set the hidden fields
-        document.getElementById('delete_id_target').value = id;
-        document.getElementById('delete_judul_target').textContent = title;
-        document.getElementById('delete_item_type').value = itemType;
+            // Tambahkan pengecekan untuk memastikan elemen-elemen ada sebelum digunakan
+            const deleteIdTarget = document.getElementById('delete_id_target');
+            const deletePosterIdTarget = document.getElementById('delete_poster_id_target');
+            const deleteJudulTarget = document.getElementById('delete_judul_target');
+            const deleteItemType = document.getElementById('delete_item_type');
+            const deleteAction = document.getElementById('delete_action');
+            const itemTypeDelete = document.getElementById('item_type_delete');
+            const deleteForm = document.getElementById('deleteForm');
+            const modal = document.getElementById('deleteModalOverlay');
 
-        // Set the action based on item type
-        const actionType = itemType === 'promo' ? 'delete_promosi' : 'delete_poster';
-        document.getElementById('delete_action').value = actionType;
+            if (!id || !title) {
+                console.error("OPEN DELETE ERROR: ID atau Judul tidak valid.");
+                return;
+            }
 
-        // Update the type text in the modal
-        const typeText = itemType === 'promo' ? 'promosi' : 'poster';
-        document.getElementById('item_type_delete').textContent = typeText;
+            if (!deleteIdTarget || !deletePosterIdTarget || !deleteJudulTarget || !deleteItemType ||
+                !deleteAction || !itemTypeDelete || !deleteForm || !modal) {
+                console.error("OPEN DELETE ERROR: Salah satu elemen tidak ditemukan.");
+                console.log("deleteIdTarget:", !!deleteIdTarget);
+                console.log("deletePosterIdTarget:", !!deletePosterIdTarget);
+                console.log("deleteJudulTarget:", !!deleteJudulTarget);
+                console.log("deleteItemType:", !!deleteItemType);
+                console.log("deleteAction:", !!deleteAction);
+                console.log("itemTypeDelete:", !!itemTypeDelete);
+                console.log("deleteForm:", !!deleteForm);
+                console.log("modal:", !!modal);
+                return;
+            }
 
-        // Set form action to current page
-        document.getElementById('deleteForm').action = window.location.pathname + window.location.search;
+            // Set the hidden fields
+            deleteIdTarget.value = id;
+            deletePosterIdTarget.value = id;  // Also set this field for consistency
+            deleteJudulTarget.textContent = title;
+            deleteItemType.value = itemType;
 
-        const modal = document.getElementById('deleteModalOverlay');
-        if(modal) {
+            // Set the action based on item type
+            const actionType = itemType === 'promo' ? 'delete_promosi' : 'delete_poster';
+            deleteAction.value = actionType;
+
+            // Update the type text in the modal
+            const typeText = itemType === 'promo' ? 'promosi' : 'poster';
+            itemTypeDelete.textContent = typeText;
+
+            // Set form action to current page
+            deleteForm.action = window.location.pathname + window.location.search;
+
+            // Hapus event listener sebelumnya untuk mencegah penambahan ganda
+            modal.removeEventListener('click', handleModalClickOutside);
+            // Tambahkan event listener untuk menutup modal saat klik di luar konten
+            modal.addEventListener('click', handleModalClickOutside);
+
+            // Tampilkan modal
             modal.classList.add('show');
             console.log("OPEN DELETE: Sukses. Modal hapus seharusnya terlihat.");
-        } else {
-            console.error("OPEN DELETE ERROR: Element 'deleteModalOverlay' tidak ditemukan.");
+            console.log("OPEN DELETE: Modal classList:", modal.classList);
+        } catch (error) {
+            console.error('Error in openDeleteModal:', error);
         }
+    }
+
+    // Fungsi helper untuk event listener klik di luar modal
+    function handleModalClickOutside(event) {
+        const modal = document.getElementById('deleteModalOverlay');
+        if (event.target === modal) {
+            closeDeleteModal();
+        }
+    }
+
+    // Tambahkan pengecekan saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, checking if openDeleteModal function exists:', typeof openDeleteModal);
+        if(typeof openDeleteModal !== 'function') {
+            console.error('ERROR: openDeleteModal function is not defined!');
+        } else {
+            console.log('SUCCESS: openDeleteModal function is available');
+        }
+
+        // Tambahkan event listener ke semua tombol hapus
+        setupDeleteButtons();
+    });
+
+    // Wrapper function yang lebih aman untuk dipanggil dari tombol HTML
+    function safeDeleteModal(id, title, itemType) {
+        try {
+            if (typeof openDeleteModal === 'function') {
+                openDeleteModal(id, title, itemType);
+            } else {
+                console.error('openDeleteModal function is not available');
+                alert('Fungsi hapus tidak tersedia. Silakan refresh halaman.');
+            }
+        } catch (error) {
+            console.error('Error in safeDeleteModal:', error);
+            alert('Terjadi kesalahan saat membuka modal hapus: ' + error.message);
+        }
+    }
+
+    function setupDeleteButtons() {
+        // Cari semua tombol hapus dan tambahkan event listener
+        const deleteButtons = document.querySelectorAll('button[onclick*="openDeleteModal"]');
+
+        deleteButtons.forEach((button, index) => {
+            // Jika onclick attribute sudah ada, kita coba untuk tidak menggantinya
+            // Tapi tambahkan event listener tambahan untuk debug
+            console.log('Found delete button ' + index + ':', button);
+
+            // Tambahkan event listener tambahan yang akan dijalankan pertama
+            button.addEventListener('click', function(e) {
+                console.log('Delete button clicked, event:', e);
+
+                // Tambahkan logging untuk mendiagnosis apa yang terjadi
+                const onclick = button.getAttribute('onclick');
+                console.log('Button onclick attribute:', onclick);
+
+                if (typeof openDeleteModal === 'undefined') {
+                    console.error('openDeleteModal is not defined when button clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        });
     }
 </script>
 
