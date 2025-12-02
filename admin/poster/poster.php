@@ -144,10 +144,19 @@ function insert_promosi_poster($data) {
 // Update promosi poster
 function update_promosi_poster($id, $data) {
     global $serviceRoleKey;
-    // Menggunakan 'id_poster'
+    // Menggunakan 'id_poster' dengan format yang sesuai Supabase
     $endpoint = "promosi_poster?id_poster=eq.{$id}";
     $headers = ['X-Override-Key' => $serviceRoleKey];
-    return supabase_request('PATCH', $endpoint, $data, $headers);
+    error_log("DEBUG update_promosi_poster: Endpoint=" . $endpoint . ", Data=" . print_r($data, true));
+    $response = supabase_request('PATCH', $endpoint, $data, $headers);
+    error_log("DEBUG update_promosi_poster: Response=" . print_r($response, true));
+    // Tambahkan logging tambahan untuk memastikan response
+    if (isset($response['error'])) {
+        error_log("DEBUG update_promosi_poster: Error detail=" . print_r($response['error'], true));
+    } else {
+        error_log("DEBUG update_promosi_poster: Success response=" . print_r($response, true));
+    }
+    return $response;
 }
 
 // Delete promosi poster
@@ -233,21 +242,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_promosi = isset($_POST['id_promosi']) ? (int)$_POST['id_promosi'] : null;
 
     // Tambahkan logging untuk debugging
+    error_log("DEBUG: Form action received: " . $action_type);
+    error_log("DEBUG: POST data: " . print_r($_POST, true));
     if ($action_type === 'delete_promosi' || $action_type === 'delete_poster') {
         error_log("DEBUG DELETE: Form action received: " . $action_type);
         error_log("DEBUG DELETE: POST data: " . print_r($_POST, true));
     }
 
     // --- LOGIKA INSERT & UPDATE ---
-    if (in_array($action_type, ['tambah_promosi', 'edit_promosi'])) {
+        if (in_array($action_type, ['tambah_promosi', 'edit_promosi', 'edit_poster'])) {
+        error_log("DEBUG: Processing action: " . $action_type);
+        error_log("DEBUG: Action type is edit_promosi: " . ($action_type === 'edit_promosi' ? 'YES' : 'NO'));
+        error_log("DEBUG: id_promosi is set: " . (isset($_POST['id_promosi']) ? 'YES' : 'NO'));
+        error_log("DEBUG: Current action field: " . ($_POST['action'] ?? 'NOT SET'));
+
         // Determine if this is a poster or promo based on the presence of specific fields
-        // For updates, we need to be more specific since form fields might be present but hidden
+        // For updates, especially unified modal, we might need to use a different approach
         if ($action_type === 'edit_promosi' && isset($_POST['id_promosi'])) {
-            // For edit operations, we can also check if specific promo fields have values
-            $is_promo = !empty($_POST['tipe_promosi']) && in_array($_POST['tipe_promosi'], ['PERSENTASE', 'POTONGAN_TETAP', 'HARGA_KHUSUS']);
+            // For edit operations in unified form, check for explicit type if available
+            // If editAction indicates 'edit_poster', then it's a poster regardless of tipe_promosi field
+            $edit_action = $_POST['action'] ?? '';
+            if ($edit_action === 'edit_poster') {
+                $is_promo = false;
+                error_log("DEBUG: Determined as poster based on edit_poster action");
+            } else {
+                // Otherwise, check for valid promo type
+                $is_promo = !empty($_POST['tipe_promosi']) && in_array($_POST['tipe_promosi'], ['PERSENTASE', 'POTONGAN_TETAP', 'HARGA_KHUSUS']);
+                error_log("DEBUG: Determined as promo based on tipe_promosi: " . ($is_promo ? 'YES' : 'NO'));
+            }
         } else {
             // For insert operations, use tipe_promosi field
             $is_promo = !empty($_POST['tipe_promosi']);
+            error_log("DEBUG: For insert operation, is_promo based on tipe_promosi: " . ($is_promo ? 'YES' : 'NO'));
         }
 
         if ($is_promo) {
@@ -293,12 +319,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         } else {
             // This is a poster
+            error_log("DEBUG: Preparing poster data for update");
+            error_log("DEBUG: judul_nama value: " . ($_POST['judul_nama'] ?? 'NOT SET'));
+            error_log("DEBUG: deskripsi_promosi value: " . ($_POST['deskripsi_promosi'] ?? 'NOT SET'));
+            error_log("DEBUG: urutan_tampil value: " . ($_POST['urutan_tampil'] ?? 'NOT SET'));
+            error_log("DEBUG: status_promosi value: " . (isset($_POST['status_promosi']) ? $_POST['status_promosi'] : 'NOT SET'));
+
             $data = [
                 'judul_poster' => trim(htmlspecialchars($_POST['judul_nama'] ?? '')),  // Changed from 'judul_promosi' to 'judul_nama' which is used in the edit form
                 'deskripsi_poster' => trim(htmlspecialchars($_POST['deskripsi_promosi'] ?? '')),
                 'urutan' => (int)($_POST['urutan_tampil'] ?? 0),
                 'is_aktif' => isset($_POST['status_promosi']) ? true : false,  // This matches the checkbox name in edit modal: status_promosi
             ];
+
+            // Jika ini adalah operasi edit, dan tidak ada file baru diupload, gunakan nama file lama
+            if ($action_type === 'edit_promosi' && isset($_POST['current_file_name']) && !empty($_POST['current_file_name'])) {
+                if (empty($_FILES['gambar_promosi']['name'])) {
+                    $data['url_gambar'] = $_POST['current_file_name'];
+                    error_log("DEBUG: Using existing file: " . $_POST['current_file_name']);
+                }
+            }
 
             // Add image information if exists
             $nama_file_gambar = $_POST['current_file_name'] ?? '';
@@ -310,6 +350,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
                 if (in_array($file_ext, $allowed_ext)) {
+                    // Hapus file lama jika ada
+                    if (!empty($nama_file_gambar) && file_exists($upload_dir . $nama_file_gambar) && strpos($nama_file_gambar, '://') === false) {
+                        unlink($upload_dir . $nama_file_gambar);
+                    }
+
                     $nama_file_gambar = uniqid('poster_') . '.' . $file_ext;
                     $target_file = $upload_dir . $nama_file_gambar;
                     if (!move_uploaded_file($file_tmp, $target_file)) {
@@ -324,6 +369,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($upload_ok) {
                 $data['url_gambar'] = $nama_file_gambar;
+            } else if (empty($nama_file_gambar) && !$upload_ok) {
+                // Jika upload gagal dan tidak ada file lama, beri error
+                $message = "<div style='padding:12px; background-color:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; border-radius:6px; margin-bottom:16px;'>Error: Gagal memproses gambar.</div>";
+                // Jangan return di sini, lanjutkan proses update tanpa mengubah gambar
             }
 
 
@@ -339,25 +388,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $redirect_url = "index.php?page=poster&tab=daftar&msg=added";
                         }
                     }
-                } elseif ($action_type === 'edit_promosi' && $id_promosi) {
-                    if (empty($nama_file_gambar) && empty($_FILES['gambar_promosi']['name'])) {
+                } elseif (in_array($action_type, ['edit_promosi', 'edit_poster']) && $id_promosi) {
+                    if (empty($_FILES['gambar_promosi']['name']) && isset($data['url_gambar'])) {
+                        // Biarkan $data['url_gambar'] tetap sesuai dengan file lama
+                    } else if (empty($_FILES['gambar_promosi']['name']) && !isset($data['url_gambar']) && !empty($nama_file_gambar)) {
+                        $data['url_gambar'] = $nama_file_gambar;
+                    } else if (empty($_FILES['gambar_promosi']['name']) && empty($nama_file_gambar)) {
                         unset($data['url_gambar']);
                     }
+                    // Jika ada file baru yang diupload, $data['url_gambar'] sudah diisi oleh proses upload sebelumnya
 
                     // For poster updates, we need to use the separate update logic that was handled in the earlier section
                     // The current $data was prepared based on $is_promo check earlier
-                    $is_promo_submitted = isset($_POST['tipe_promosi']);  // Re-check type based on submitted fields
-                    if ($is_promo_submitted) {
+                    $edit_action = $_POST['action'] ?? '';
+                    error_log("DEBUG: Edit action: " . $edit_action);
+                    error_log("DEBUG: Data prepared for update: " . print_r($data, true));
+                    error_log("DEBUG: Is tipe_promosi present: " . (isset($_POST['tipe_promosi']) ? 'YES' : 'NO'));
+                    error_log("DEBUG: Is upload_ok: " . ($upload_ok ? 'YES' : 'NO'));
+                    error_log("DEBUG: Has gambar data: " . (isset($data['url_gambar']) ? 'YES' : 'NO'));
+                    error_log("DEBUG: ID used for update: " . $id_promosi);
+                    error_log("DEBUG: Type of ID (for debugging): " . gettype($id_promosi));
+                    error_log("DEBUG: Is this poster update based on edit_action: " . ($edit_action === 'edit_poster' ? 'YES' : 'NO'));
+
+                    if ($edit_action === 'edit_poster') {
+                        // This is definitely a poster update from the unified modal
+                        if (!$upload_ok && !isset($data['url_gambar'])) {
+                            // Build a new array with only fields that should be updated
+                            $update_data = [];
+                            if (isset($data['judul_poster'])) $update_data['judul_poster'] = $data['judul_poster'];
+                            if (isset($data['deskripsi_poster'])) $update_data['deskripsi_poster'] = $data['deskripsi_poster'];
+                            if (isset($data['urutan'])) $update_data['urutan'] = $data['urutan'];
+                            if (isset($data['is_aktif'])) $update_data['is_aktif'] = $data['is_aktif'];
+
+                            error_log("DEBUG: Calling update_promosi_poster with limited data: " . print_r($update_data, true));
+                            $response = update_promosi_poster($id_promosi, $update_data);
+                        } else {
+                            // Hanya sertakan url_gambar jika ada nilai yang valid
+                            $final_data = $data;
+                            if (isset($final_data['url_gambar']) && empty($final_data['url_gambar'])) {
+                                unset($final_data['url_gambar']);
+                            }
+                            error_log("DEBUG: Calling update_promosi_poster with final data: " . print_r($final_data, true));
+                            $response = update_promosi_poster($id_promosi, $final_data);
+                        }
+                        $msg_suffix = '';
+                    } elseif (isset($_POST['tipe_promosi']) || $is_promo) {
+                        // This is a promo update
+                        error_log("DEBUG: Calling update_promo with data: " . print_r($data, true));
                         $response = update_promo($id_promosi, $data);
                         $msg_suffix = 'promo_';
                     } else {
-                        $response = update_promosi_poster($id_promosi, $data);
+                        // Fallback: treat as poster update
+                        if (!$upload_ok && !isset($data['url_gambar'])) {
+                            // Build a new array with only fields that should be updated
+                            $update_data = [];
+                            if (isset($data['judul_poster'])) $update_data['judul_poster'] = $data['judul_poster'];
+                            if (isset($data['deskripsi_poster'])) $update_data['deskripsi_poster'] = $data['deskripsi_poster'];
+                            if (isset($data['urutan'])) $update_data['urutan'] = $data['urutan'];
+                            if (isset($data['is_aktif'])) $update_data['is_aktif'] = $data['is_aktif'];
+
+                            error_log("DEBUG: Fallback calling update_promosi_poster with limited data: " . print_r($update_data, true));
+                            $response = update_promosi_poster($id_promosi, $update_data);
+                        } else {
+                            // Hanya sertakan url_gambar jika ada nilai yang valid
+                            $final_data = $data;
+                            if (isset($final_data['url_gambar']) && empty($final_data['url_gambar'])) {
+                                unset($final_data['url_gambar']);
+                            }
+                            error_log("DEBUG: Fallback calling update_promosi_poster with final data: " . print_r($final_data, true));
+                            $response = update_promosi_poster($id_promosi, $final_data);
+                        }
                         $msg_suffix = '';
                     }
 
                     if (isset($response['error'])) {
+                        error_log("DEBUG: Update failed with error: " . print_r($response['error'], true));
+                        error_log("DEBUG: Response status code might be in headers or body");
                         $message = "<div style='padding:12px; background-color:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; border-radius:6px; margin-bottom:16px;'>Error Supabase UPDATE: " . ($response['error']['message'] ?? 'Unknown error') . "</div>";
                     } else {
+                        error_log("DEBUG: Update succeeded: " . print_r($response, true));
                         $redirect_url = "index.php?page=poster&tab=daftar&msg={$msg_suffix}updated";
                     }
                 }
@@ -839,11 +948,11 @@ if (isset($_GET['msg'])) {
                 </table>
             </div>
 
-            
+
             <!-- Tabel Poster -->
             <div>
 
-            
+
                             <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 16px; border-bottom: 2px solid #3b82f6; padding-bottom: 8px; display: inline-block;">
                     <iconify-icon icon="mdi:image-outline" style="width: 20px; height: 20px; margin-right: 8px;"></iconify-icon>
                     Tabel Poster (Total: <?php echo count($promosi_poster_list); ?>)
