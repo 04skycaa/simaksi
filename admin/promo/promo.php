@@ -247,7 +247,7 @@ if (isset($_GET['msg'])) {
                                     <button onclick="openEditModal(<?php echo $promosi['id_promosi'] ?? 'null'; ?>)" class="btn btn-yellow" style="padding: 4px 12px; font-size: 12px; margin-right: 8px;">
                                         <iconify-icon icon="mdi:pencil-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Edit
                                     </button>
-                                    <button onclick="openDeleteModal(<?php echo $promosi['id_promosi'] ?? 'null'; ?>, '<?php echo htmlspecialchars($promosi['nama_promosi'] ?? 'Promosi ini'); ?>')" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
+                                    <button onclick="safeDeleteModal(<?php echo $promosi['id_promosi'] ?? 'null'; ?>, '<?php echo htmlspecialchars($promosi['nama_promosi'] ?? 'Promosi ini'); ?>')" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
                                         <iconify-icon icon="mdi:trash-can-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Hapus
                                     </button>
                                 </td>
@@ -537,11 +537,16 @@ if (isset($_GET['msg'])) {
         }
     }
 
-    // --- Fungsi Modal Hapus ---
+// --- Fungsi Modal Hapus ---
     function closeDeleteModal() {
         console.log("CLOSE DELETE: Menutup modal hapus...");
         const modal = document.getElementById('deleteModalOverlay');
-        if(modal) modal.classList.remove('show');
+        if(modal) {
+            modal.style.display = 'none';
+            console.log("CLOSE DELETE: Modal sekarang ditutup.");
+        } else {
+            console.error("CLOSE DELETE ERROR: Element 'deleteModalOverlay' tidak ditemukan.");
+        }
     }
 
     function openDeleteModal(id, name) {
@@ -554,14 +559,68 @@ if (isset($_GET['msg'])) {
 
         document.getElementById('delete_id_target').value = id;
         document.getElementById('delete_nama_target').textContent = name;
-        
+
         const modal = document.getElementById('deleteModalOverlay');
         if(modal) {
-            modal.classList.add('show');
-            console.log("OPEN DELETE: Sukses. Modal hapus seharusnya terlihat.");
+            modal.style.display = 'flex';
+            console.log("OPEN DELETE: Sukses. Modal hapus sekarang terlihat.");
         } else {
             console.error("OPEN DELETE ERROR: Element 'deleteModalOverlay' tidak ditemukan.");
         }
+    }
+
+    // Tambahkan pengecekan saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, checking if openDeleteModal function exists:', typeof openDeleteModal);
+        if(typeof openDeleteModal !== 'function') {
+            console.error('ERROR: openDeleteModal function is not defined!');
+        } else {
+            console.log('SUCCESS: openDeleteModal function is available');
+        }
+
+        // Tambahkan event listener ke semua tombol hapus
+        setupDeleteButtons();
+    });
+
+    // Wrapper function yang lebih aman untuk dipanggil dari tombol HTML
+    function safeDeleteModal(id, title) {
+        try {
+            if (typeof openDeleteModal === 'function') {
+                openDeleteModal(id, title);
+            } else {
+                console.error('openDeleteModal function is not available');
+                alert('Fungsi hapus tidak tersedia. Silakan refresh halaman.');
+            }
+        } catch (error) {
+            console.error('Error in safeDeleteModal:', error);
+            alert('Terjadi kesalahan saat membuka modal hapus: ' + error.message);
+        }
+    }
+
+    function setupDeleteButtons() {
+        // Cari semua tombol hapus dan tambahkan event listener
+        const deleteButtons = document.querySelectorAll('button[onclick*="openDeleteModal"]');
+
+        deleteButtons.forEach((button, index) => {
+            // Jika onclick attribute sudah ada, kita coba untuk tidak menggantinya
+            // Tapi tambahkan event listener tambahan untuk debug
+            console.log('Found delete button ' + index + ':', button);
+
+            // Tambahkan event listener tambahan yang akan dijalankan pertama
+            button.addEventListener('click', function(e) {
+                console.log('Delete button clicked, event:', e);
+
+                // Tambahkan logging untuk mendiagnosis apa yang terjadi
+                const onclick = button.getAttribute('onclick');
+                console.log('Button onclick attribute:', onclick);
+
+                if (typeof openDeleteModal === 'undefined') {
+                    console.error('openDeleteModal is not defined when button clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        });
     }
 </script>
 
@@ -581,3 +640,5 @@ if (isset($redirect_url)) {
 <!-- SCRIPT ICONIFY (DIMUAT TERAKHIR) -->
 <!-- ============================================== -->
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+</body>
+</html>

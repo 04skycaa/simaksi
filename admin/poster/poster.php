@@ -823,9 +823,14 @@ if (isset($_GET['msg'])) {
                                     <button onclick="openEditModal(<?php echo json_encode($promosi['id']); ?>, 'promo')" class="btn btn-yellow" style="padding: 4px 12px; font-size: 12px; margin-right: 8px;">
                                         <iconify-icon icon="mdi:pencil-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Edit
                                     </button>
-                                    <button onclick="safeDeleteModal(<?php echo json_encode($promosi['id']); ?>, <?php echo json_encode(htmlspecialchars($promosi['judul'] ?? 'Promosi ini')); ?>, 'promo')" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
+                                    <form method="POST" action="" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus promosi <?php echo addslashes(htmlspecialchars($promosi['judul'] ?? 'ini')); ?>? Tindakan ini tidak dapat dibatalkan.')">
+                                    <input type="hidden" name="action" value="delete_promosi">
+                                    <input type="hidden" name="id_promosi_delete" value="<?php echo $promosi['id']; ?>">
+                                    <input type="hidden" name="item_type" value="promo">
+                                    <button type="submit" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
                                         <iconify-icon icon="mdi:trash-can-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Hapus
                                     </button>
+                                </form>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -834,9 +839,12 @@ if (isset($_GET['msg'])) {
                 </table>
             </div>
 
+            
             <!-- Tabel Poster -->
             <div>
-                <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 16px; border-bottom: 2px solid #3b82f6; padding-bottom: 8px; display: inline-block;">
+
+            
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 16px; border-bottom: 2px solid #3b82f6; padding-bottom: 8px; display: inline-block;">
                     <iconify-icon icon="mdi:image-outline" style="width: 20px; height: 20px; margin-right: 8px;"></iconify-icon>
                     Tabel Poster (Total: <?php echo count($promosi_poster_list); ?>)
                 </h3>
@@ -900,9 +908,14 @@ if (isset($_GET['msg'])) {
                                         <button onclick="openEditModal(<?php echo json_encode($poster['id']); ?>, 'poster')" class="btn btn-yellow" style="padding: 4px 12px; font-size: 12px; margin-right: 8px;">
                                             <iconify-icon icon="mdi:pencil-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Edit
                                         </button>
-                                        <button onclick="safeDeleteModal(<?php echo json_encode($poster['id']); ?>, <?php echo json_encode(htmlspecialchars($poster['judul'] ?? 'Poster ini')); ?>, 'poster')" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
-                                            <iconify-icon icon="mdi:trash-can-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Hapus
-                                        </button>
+                                        <form method="POST" action="" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus poster <?php echo addslashes(htmlspecialchars($poster['judul'] ?? 'ini')); ?>? Tindakan ini tidak dapat dibatalkan.')">
+                                    <input type="hidden" name="action" value="delete_poster">
+                                    <input type="hidden" name="id_poster_delete" value="<?php echo $poster['id']; ?>">
+                                    <input type="hidden" name="item_type" value="poster">
+                                    <button type="submit" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
+                                        <iconify-icon icon="mdi:trash-can-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Hapus
+                                    </button>
+                                </form>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -1143,30 +1156,9 @@ if (isset($_GET['msg'])) {
 </div>
 
 <!-- ============================================== -->
-<!-- MODAL HAPUS (Unified) -->
+<!-- MODAL HAPUS (Unified) - GABUNGKAN DENGAN YANG DIATAS -->
 <!-- ============================================== -->
-<div class="modal-overlay" id="deleteModalOverlay">
-    <div class="modal-container" style="max-width: 480px; text-align: center;">
-        <div class="modal-header">
-            <h3>Konfirmasi Penghapusan</h3>
-            <button class="modal-close-btn" onclick="closeDeleteModal()">&times;</button>
-        </div>
-        <div class="modal-body">
-            <iconify-icon icon="mdi:alert-decagram" style="width: 64px; height: 64px; color: #f59e0b; margin-bottom: 16px;"></iconify-icon>
-            <p style="color: #6b7280; margin-bottom: 24px;">Apakah Anda yakin ingin menghapus <span id="item_type_delete">item</span> **<span id="delete_judul_target" style="font-weight: 600;"></span>**? Tindakan ini tidak dapat dibatalkan.</p>
-            <form method="POST" style="display:inline;" id="deleteForm">
-                <input type="hidden" name="action" id="delete_action" value="">
-                <input type="hidden" name="id_promosi_delete" id="delete_id_target">
-                <input type="hidden" name="id_poster_delete" id="delete_poster_id_target">
-                <input type="hidden" name="item_type" id="delete_item_type" value="">
-                <button type="button" class="btn" onclick="closeDeleteModal()">&times; Batal</button>
-                <button type="submit" class="btn btn-red">
-                    <iconify-icon icon="mdi:trash-can-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Hapus Permanen
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- Modal hapus sudah didefinisikan sebelumnya di atas tabel promosi -->
 
 <!-- ============================================== -->
 <!-- SCRIPT LOKAL (Modal, dll) - HARUS DI ATAS ICONIFY -->
@@ -1594,22 +1586,11 @@ if (isset($_GET['msg'])) {
     }
 
     // --- Fungsi Modal Hapus (Unified) ---
-    function closeDeleteModal() {
-        console.log("CLOSE DELETE: Menutup modal hapus...");
-        const modal = document.getElementById('deleteModalOverlay');
-        if(modal) {
-            modal.classList.remove('show');
-            console.log("CLOSE DELETE: Modal sekarang ditutup.");
-        } else {
-            console.error("CLOSE DELETE ERROR: Element 'deleteModalOverlay' tidak ditemukan.");
-        }
-    }
-
     function openDeleteModal(id, title, itemType) {
         try {
             console.log("OPEN DELETE: Tombol hapus diklik untuk type:", itemType, "dengan ID:", id, "dan Judul:", title);
 
-            // Tambahkan pengecekan untuk memastikan elemen-elemen ada sebelum digunakan
+            // Gunakan elemen modal dari yang didefinisikan di atas tabel promosi
             const deleteIdTarget = document.getElementById('delete_id_target');
             const deletePosterIdTarget = document.getElementById('delete_poster_id_target');
             const deleteJudulTarget = document.getElementById('delete_judul_target');
@@ -1655,82 +1636,27 @@ if (isset($_GET['msg'])) {
             // Set form action to current page
             deleteForm.action = window.location.pathname + window.location.search;
 
-            // Hapus event listener sebelumnya untuk mencegah penambahan ganda
-            modal.removeEventListener('click', handleModalClickOutside);
-            // Tambahkan event listener untuk menutup modal saat klik di luar konten
-            modal.addEventListener('click', handleModalClickOutside);
+            // Tampilkan modal dengan mengganti display menjadi 'flex'
+            modal.style.display = 'flex';
 
-            // Tampilkan modal
-            modal.classList.add('show');
             console.log("OPEN DELETE: Sukses. Modal hapus seharusnya terlihat.");
-            console.log("OPEN DELETE: Modal classList:", modal.classList);
         } catch (error) {
             console.error('Error in openDeleteModal:', error);
         }
     }
 
-    // Fungsi helper untuk event listener klik di luar modal
-    function handleModalClickOutside(event) {
+    // Fungsi close modal yang sesuai dengan modal yang didefinisikan di atas
+    function closeDeleteModal() {
         const modal = document.getElementById('deleteModalOverlay');
-        if (event.target === modal) {
-            closeDeleteModal();
-        }
-    }
-
-    // Tambahkan pengecekan saat halaman dimuat
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM loaded, checking if openDeleteModal function exists:', typeof openDeleteModal);
-        if(typeof openDeleteModal !== 'function') {
-            console.error('ERROR: openDeleteModal function is not defined!');
+        if(modal) {
+            modal.style.display = 'none';
+            console.log("CLOSE DELETE: Modal sekarang ditutup.");
         } else {
-            console.log('SUCCESS: openDeleteModal function is available');
-        }
-
-        // Tambahkan event listener ke semua tombol hapus
-        setupDeleteButtons();
-    });
-
-    // Wrapper function yang lebih aman untuk dipanggil dari tombol HTML
-    function safeDeleteModal(id, title, itemType) {
-        try {
-            if (typeof openDeleteModal === 'function') {
-                openDeleteModal(id, title, itemType);
-            } else {
-                console.error('openDeleteModal function is not available');
-                alert('Fungsi hapus tidak tersedia. Silakan refresh halaman.');
-            }
-        } catch (error) {
-            console.error('Error in safeDeleteModal:', error);
-            alert('Terjadi kesalahan saat membuka modal hapus: ' + error.message);
+            console.error("CLOSE DELETE ERROR: Element 'deleteModalOverlay' tidak ditemukan.");
         }
     }
 
-    function setupDeleteButtons() {
-        // Cari semua tombol hapus dan tambahkan event listener
-        const deleteButtons = document.querySelectorAll('button[onclick*="openDeleteModal"]');
-
-        deleteButtons.forEach((button, index) => {
-            // Jika onclick attribute sudah ada, kita coba untuk tidak menggantinya
-            // Tapi tambahkan event listener tambahan untuk debug
-            console.log('Found delete button ' + index + ':', button);
-
-            // Tambahkan event listener tambahan yang akan dijalankan pertama
-            button.addEventListener('click', function(e) {
-                console.log('Delete button clicked, event:', e);
-
-                // Tambahkan logging untuk mendiagnosis apa yang terjadi
-                const onclick = button.getAttribute('onclick');
-                console.log('Button onclick attribute:', onclick);
-
-                if (typeof openDeleteModal === 'undefined') {
-                    console.error('openDeleteModal is not defined when button clicked!');
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-        });
-    }
-</script>
+        </script>
 
 <!-- ============================================== -->
 <!-- PERBAIKAN BARU: Blok JavaScript untuk Redirect -->
@@ -1748,3 +1674,5 @@ if (isset($redirect_url)) {
 <!-- SCRIPT ICONIFY (DIMUAT TERAKHIR) -->
 <!-- ============================================== -->
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+</body>
+</html>
