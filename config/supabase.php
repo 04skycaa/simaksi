@@ -10,16 +10,27 @@ function supabase_request($method, $endpoint, $data = null, $extra_headers = [])
     $headers = [
         "apikey: {$supabaseKey}",
         "Authorization: Bearer {$supabaseKey}",
-        "Accept: application/json" 
+        "Accept: application/json"
     ];
 
     $headers = array_merge($headers, $extra_headers);
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30); 
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method); 
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+
+    // Konfigurasi SSL untuk koneksi lebih stabil
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Nonaktifkan verifikasi SSL sementara
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+    // Konfigurasi timeout untuk menghindari koneksi terputus
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_MAXREDIRS, 3);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'); // Set a user agent
+    curl_setopt($ch, CURLOPT_ENCODING, '');
 
     if (($method === 'POST' || $method === 'PATCH') && $data !== null) {
         $payload = json_encode($data);
@@ -29,7 +40,7 @@ function supabase_request($method, $endpoint, $data = null, $extra_headers = [])
         }
         $headers[] = 'Content-Type: application/json';
         $headers[] = 'Content-Length: ' . strlen($payload);
-        $headers[] = 'Prefer: return=representation'; 
+        $headers[] = 'Prefer: return=representation';
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
     } elseif ($method === 'DELETE') {
         $headers[] = 'Prefer: return=minimal';
@@ -38,14 +49,18 @@ function supabase_request($method, $endpoint, $data = null, $extra_headers = [])
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     $response_body = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); 
-    error_log("DEBUG - Supabase Raw Response (Code: {$http_code}): " . $response_body);
-    $curl_error = curl_error($ch); 
-    curl_close($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_error = curl_error($ch);
+    $totalTime = curl_getinfo($ch, CURLINFO_TOTAL_TIME);
+
+    error_log("DEBUG - Supabase Raw Response (Code: {$http_code}, Total Time: {$totalTime}s): " . $response_body);
 
     if ($curl_error) {
+        error_log("CURL Error in Supabase Request: " . $curl_error . " (Total time: {$totalTime}s)");
         return ["error" => ["message" => "Kesalahan cURL: " . $curl_error]];
     }
+
+    curl_close($ch);
 
     $decoded_response = json_decode($response_body, true);
     if (json_last_error() !== JSON_ERROR_NONE && !empty(trim($response_body))) {
@@ -56,7 +71,7 @@ function supabase_request($method, $endpoint, $data = null, $extra_headers = [])
         if ($http_code === 204) {
             return [];
         }
-        return $decoded_response ?? []; 
+        return $decoded_response ?? [];
     } else {
         $errorMessage = $decoded_response['message'] ?? 'Terjadi kesalahan tidak diketahui dari server.';
         error_log("Supabase Request Error ({$http_code}) to {$endpoint}: " . print_r($decoded_response, true));

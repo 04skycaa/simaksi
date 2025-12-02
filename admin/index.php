@@ -3,11 +3,7 @@ session_start();
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
 
-// Redirect lama 'poster' ke 'promosi'
-if ($page === 'poster') {
-    $page = 'promosi';
-    $_GET['page'] = 'promosi';
-}
+// No redirect needed as we'll handle separate routes for promosi and poster
 
 // Cek apakah pengguna sudah login
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
@@ -23,15 +19,15 @@ if ($page === 'reservasi' && isset($_GET['action'])) {
         if (ob_get_level() === 0) {
             ob_start();
         }
-        
+
         // Memuat konten file reservasi
         include $content_path;
-        
+
         // Menghentikan output buffer untuk mencegah output yang tidak diinginkan
         ob_end_clean();
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'Internal server error: AJAX logic did did not exit properly.']);
-        die(); 
+        die();
     } else {
         header('Content-Type: application/json');
         echo json_encode(['success' => false, 'message' => 'Endpoint file tidak ditemukan.']);
@@ -60,6 +56,7 @@ switch ($page) {
         $content = '../admin/pengumuman/pengumuman.php';
         break;
     case 'promosi':
+    case 'poster':
         $content = '../admin/poster/poster.php';
         break;
     case 'manage_pendakian':
@@ -84,7 +81,7 @@ switch ($page) {
 }
 
 // Menentukan salam berdasarkan waktu
-$hour = date('H'); 
+$hour = date('H');
 $greeting = 'Selamat Datang';
 
 if ($hour >= 5 && $hour < 11) {
@@ -178,7 +175,7 @@ $current_title = isset($menu_titles[$page]) ? $menu_titles[$page] : 'Dashboard';
                         <span class="title">Reservasi & Validasi</span>
                     </a>
                 </li>
-                
+
                 <li data-menu-name="Pengumuman" class="<?php echo $page == 'pengumuman' ? 'hovered' : ''; ?>">
                     <a href="index.php?page=pengumuman">
                         <span class="icon">
@@ -234,7 +231,7 @@ $current_title = isset($menu_titles[$page]) ? $menu_titles[$page] : 'Dashboard';
                 </li>
             </ul>
         </div>
-        
+
         <div class="main active">
             <div class="topbar">
                 <div class="topbar-left">
@@ -254,8 +251,8 @@ $current_title = isset($menu_titles[$page]) ? $menu_titles[$page] : 'Dashboard';
                     <a href="index.php?page=user_profile" class="topbar-user">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/></svg>
                         <span><?php echo $logged_in_user_name; ?></span>
-                        
-                    </a> 
+
+                    </a>
 
                     <a href="../auth/logout.php" class="btn-logout">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 14 14"><path fill="currentColor" fill-rule="evenodd" d="M2.5.351a40.5 40.5 0 0 1 5.74 0c1.136.081 2.072.874 2.264 1.932a2.25 2.25 0 0 0-2.108 2.28H4.754a2.25 2.25 0 0 0 0 4.5h3.642a2.25 2.25 0 0 0 2.145 2.281l-.004.085c-.06 1.2-1.06 2.132-2.296 2.22a40.5 40.5 0 0 1-5.742 0C1.263 13.561.263 12.63.203 11.43a91 91 0 0 1 0-8.859C.263 1.372 1.263.439 2.5.351m7.356 5.462L9.661 4.7a1 1 0 0 1 1.432-1.067c1.107.553 2.178 1.624 2.731 2.731a1 1 0 0 1 0 .895c-.553 1.107-1.624 2.178-2.731 2.731A1 1 0 0 1 9.66 8.924l.195-1.111H4.754a1 1 0 1 1 0-2z" clip-rule="evenodd"/></svg>
@@ -263,7 +260,7 @@ $current_title = isset($menu_titles[$page]) ? $menu_titles[$page] : 'Dashboard';
                     </a>
                 </div>
             </div>
-            <div class="content-area"> 
+            <div class="content-area">
                 <?php include $content; ?>
             </div>
         </div>

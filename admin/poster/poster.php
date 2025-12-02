@@ -27,7 +27,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_json') {
         exit;
     }
 
-    if ($item_type === 'promo') {
+    if ($item_type === 'promo' || $item_type === 'promosi') {
         // Fetch from promosi table
         $filter = urlencode("id_promosi=eq.{$id_to_fetch}");
         $headers = ['X-Override-Key' => $serviceRoleKey];
@@ -190,6 +190,17 @@ function fetch_promo_by_id($id) {
     return $response[0] ?? null;
 }
 
+function fetch_promosi_poster_by_id($id) {
+    global $serviceRoleKey;
+    $filter = urlencode("id_poster=eq.{$id}");
+    $headers = ['X-Override-Key' => $serviceRoleKey];
+    $response = supabase_request('GET', "promosi_poster?{$filter}", null, $headers);
+    if (isset($response['error']) || empty($response) || !is_array($response)) {
+        return null;
+    }
+    return $response[0] ?? null;
+}
+
 // Insert promosi
 function insert_promo($data) {
     global $serviceRoleKey;
@@ -224,7 +235,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // --- LOGIKA INSERT & UPDATE ---
     if (in_array($action_type, ['tambah_promosi', 'edit_promosi'])) {
         // Determine if this is a poster or promo based on the presence of specific fields
-        $is_promo = isset($_POST['tipe_promosi']);  // If tipe_promosi is set, it's a promo
+        // For updates, we need to be more specific since form fields might be present but hidden
+        if ($action_type === 'edit_promosi' && isset($_POST['id_promosi'])) {
+            // For edit operations, we can also check if specific promo fields have values
+            $is_promo = !empty($_POST['tipe_promosi']) && in_array($_POST['tipe_promosi'], ['PERSENTASE', 'POTONGAN_TETAP', 'HARGA_KHUSUS']);
+        } else {
+            // For insert operations, use tipe_promosi field
+            $is_promo = !empty($_POST['tipe_promosi']);
+        }
 
         if ($is_promo) {
             // This is a promo
@@ -237,7 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'kondisi_max_pendaki' => !empty($_POST['kondisi_max_pendaki']) ? (int)$_POST['kondisi_max_pendaki'] : null,
                 'tanggal_mulai' => trim($_POST['tanggal_mulai'] ?? ''),
                 'tanggal_akhir' => trim($_POST['tanggal_akhir'] ?? ''),
-                'is_aktif' => isset($_POST['is_promosi_aktif']) ? true : false,
+                'is_aktif' => isset($_POST['status_promosi']) ? true : false,
                 'kode_promo' => trim(htmlspecialchars($_POST['kode_promo'] ?? ''))
             ];
 
@@ -263,12 +281,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // This is a poster
             $data = [
-                'judul_poster' => trim(htmlspecialchars($_POST['judul_promosi'] ?? '')),
+                'judul_poster' => trim(htmlspecialchars($_POST['judul_nama'] ?? '')),  // Changed from 'judul_promosi' to 'judul_nama' which is used in the edit form
                 'deskripsi_poster' => trim(htmlspecialchars($_POST['deskripsi_promosi'] ?? '')),
                 'urutan' => (int)($_POST['urutan_tampil'] ?? 0),
-                'is_aktif' => isset($_POST['status_promosi']) ? true : false,
+                'is_aktif' => isset($_POST['status_promosi']) ? true : false,  // This matches the checkbox name in edit modal: status_promosi
             ];
 
+            // Add image information if exists
             $nama_file_gambar = $_POST['current_file_name'] ?? '';
             $upload_ok = true;
 
@@ -290,7 +309,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            $data['url_gambar'] = $nama_file_gambar;
+            if ($upload_ok) {
+                $data['url_gambar'] = $nama_file_gambar;
+            }
+
 
             if ($upload_ok) {
                 if ($action_type === 'tambah_promosi') {
@@ -308,11 +330,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (empty($nama_file_gambar) && empty($_FILES['gambar_promosi']['name'])) {
                         unset($data['url_gambar']);
                     }
-                    $response = update_promosi_poster($id_promosi, $data);
+
+                    // For poster updates, we need to use the separate update logic that was handled in the earlier section
+                    // The current $data was prepared based on $is_promo check earlier
+                    $is_promo_submitted = isset($_POST['tipe_promosi']);  // Re-check type based on submitted fields
+                    if ($is_promo_submitted) {
+                        $response = update_promo($id_promosi, $data);
+                        $msg_suffix = 'promo_';
+                    } else {
+                        $response = update_promosi_poster($id_promosi, $data);
+                        $msg_suffix = '';
+                    }
+
                     if (isset($response['error'])) {
                         $message = "<div style='padding:12px; background-color:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; border-radius:6px; margin-bottom:16px;'>Error Supabase UPDATE: " . ($response['error']['message'] ?? 'Unknown error') . "</div>";
                     } else {
-                        $redirect_url = "index.php?page=poster&tab=daftar&msg=updated";
+                        $redirect_url = "index.php?page=poster&tab=daftar&msg={$msg_suffix}updated";
                     }
                 }
             }
@@ -324,7 +357,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id_delete = (int)$_POST['id_promosi_delete'];
         $item_type = $_POST['item_type'] ?? ''; // Determine if it's a poster or promo
 
-        if ($item_type === 'promo') {
+        if ($item_type === 'promo' || $item_type === 'promosi') {
             // Delete promo
             $response = delete_promo($id_delete);
             if (isset($response['error'])) {
@@ -334,7 +367,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         } else {
             // Delete poster
-            $poster_to_delete = fetch_promosi_by_id($id_delete);
+            $poster_to_delete = fetch_promosi_poster_by_id($id_delete); // Use correct function to get poster data
             $file_to_delete = $poster_to_delete['url_gambar'] ?? null;
             $response = delete_promosi_poster($id_delete);
             if (isset($response['error'])) {
@@ -349,7 +382,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action_type === 'delete_poster' && isset($_POST['id_poster_delete'])) {
         // Also handle the old action type for poster deletion to ensure compatibility
         $id_delete = (int)$_POST['id_poster_delete'];
-        $poster_to_delete = fetch_promosi_by_id($id_delete);
+        $poster_to_delete = fetch_promosi_poster_by_id($id_delete); // Use correct function to get poster data
         $file_to_delete = $poster_to_delete['url_gambar'] ?? null;
         $response = delete_promosi_poster($id_delete);
         if (isset($response['error'])) {
@@ -390,6 +423,7 @@ foreach ($promosi_poster_raw_list as $row) {
         'status' => $poster_data['is_aktif'],
         'urutan' => $poster_data['urutan'],
         'url_gambar' => $poster_data['url_gambar'],
+        'url_tautan' => $poster_data['url_tautan'],
         'type' => 'poster' // Mark as poster
     ];
     $gambar_file = $poster['url_gambar'];
@@ -617,65 +651,74 @@ if (isset($_GET['msg'])) {
         <?php if ($active_tab === 'daftar'): ?>
             <h2 style="font-size: 20px; font-weight: 600; color: #1f2937; margin-bottom: 24px;" class="flex items-center">
                 <iconify-icon icon="mdi:monitor-dashboard" style="width: 24px; height: 24px; margin-right: 8px; color: #059669;"></iconify-icon>
-                Daftar Promosi & Poster (Total: <?php echo count($all_items); ?>)
+                Daftar Promosi & Poster
             </h2>
-            <div class="table-container" style="overflow-x: auto;">
-                <table class="data-table">
-                    <thead class="table-head">
-                        <tr>
-                            <th>GAMBAR</th>
-                            <th>JENIS</th>
-                            <th>NAMA/JUDUL</th>
-                            <th>DESKRIPSI</th>
-                            <th>STATUS</th>
-                            <th>AKSI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($all_items)): ?>
+
+            <!-- Tabel Promosi -->
+            <div style="margin-bottom: 40px;">
+                <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 16px; border-bottom: 2px solid #059669; padding-bottom: 8px; display: inline-block;">
+                    <iconify-icon icon="mdi:ticket-percent-outline" style="width: 20px; height: 20px; margin-right: 8px;"></iconify-icon>
+                    Tabel Promosi (Total: <?php echo count($promosi_list); ?>)
+                </h3>
+                <div class="table-container" style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead class="table-head">
                             <tr>
-                                <td colspan="5" style="padding: 16px; text-align: center; color: #6b7280;">Tidak ada data. Silakan tambahkan item baru.</td>
+                                <th>NAMA PROMOSI</th>
+                                <th>KODE PROMO</th>
+                                <th>TIPE</th>
+                                <th>NILAI</th>
+                                <th>TANGGAL MULAI</th>
+                                <th>TANGGAL AKHIR</th>
+                                <th>STATUS</th>
+                                <th style="text-align: center;">AKSI</th>
+                            </tr>
+                        </thead>
+                    <tbody>
+                        <?php if (empty($promosi_list)): ?>
+                            <tr>
+                                <td colspan="8" style="padding: 16px; text-align: center; color: #6b7280;">Tidak ada data promosi. Silakan tambahkan promosi baru.</td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach ($all_items as $item): ?>
+                            <?php foreach ($promosi_list as $promosi): ?>
                             <tr class="data-row">
-                                <td>
-                                    <?php if ($item['type'] === 'poster'): ?>
-                                        <img
-                                            src="<?php echo $item['gambar_url']; ?>"
-                                            alt="Poster"
-                                            style="width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb;"
-                                            onerror="this.onerror=null;this.src='https://placehold.co/50x50/CCCCCC/000000?text=IMG';">
-                                    <?php else: ?>
-                                        <img
-                                            src="https://placehold.co/48x48/CCCCCC/000000?text=-"
-                                            alt="No Image"
-                                            style="width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb;">
-                                    <?php endif; ?>
-                                </td>
-                                <td style="font-weight: 500; color: #1f2937; text-transform: capitalize;">
-                                    <?php echo htmlspecialchars($item['type']); ?>
-                                </td>
                                 <td style="font-weight: 500; color: #1f2937;">
-                                    <?php echo htmlspecialchars($item['judul'] ?? 'N/A'); ?>
+                                    <?php echo htmlspecialchars($promosi['judul'] ?? 'N/A'); ?>
+                                </td>
+                                <td style="color: #6b7280;">
+                                    <?php echo htmlspecialchars($promosi['kode'] ?? '-'); ?>
+                                </td>
+                                <td style="color: #6b7280; text-transform: capitalize;">
+                                    <?php echo htmlspecialchars($promosi['tipe'] ?? 'N/A'); ?>
                                 </td>
                                 <td style="color: #6b7280;">
                                     <?php
-                                        $description = $item['deskripsi'] ?? '';
-                                        echo strlen($description) > 50 ? substr($description, 0, 50) . '...' : $description;
+                                        if ($promosi['tipe'] === 'PERSENTASE') {
+                                            echo htmlspecialchars($promosi['nilai']) . '%';
+                                        } elseif ($promosi['tipe'] === 'POTONGAN_TETAP') {
+                                            echo 'Rp ' . number_format($promosi['nilai'] ?? 0, 0, ',', '.');
+                                        } else {
+                                            echo 'Rp ' . number_format($promosi['nilai'] ?? 0, 0, ',', '.');
+                                        }
                                     ?>
                                 </td>
+                                <td style="color: #6b7280;">
+                                    <?php echo $promosi['tanggal_mulai'] ? date('d M Y', strtotime($promosi['tanggal_mulai'])) : '-'; ?>
+                                </td>
+                                <td style="color: #6b7280;">
+                                    <?php echo $promosi['tanggal_akhir'] ? date('d M Y', strtotime($promosi['tanggal_akhir'])) : '-'; ?>
+                                </td>
                                 <td>
-                                    <?php $status = ($item['status'] === true || $item['status'] === 't') ? 1 : 0; ?>
+                                    <?php $status = ($promosi['status'] === true || $promosi['status'] === 't') ? 1 : 0; ?>
                                     <span class="<?php echo $status ? 'status-active' : 'status-inactive'; ?>">
                                         <?php echo $status ? 'Aktif' : 'Nonaktif'; ?>
                                     </span>
                                 </td>
                                 <td style="text-align: center;">
-                                    <button onclick="openEditModal(<?php echo $item['id'] ?? 'null'; ?>, '<?php echo $item['type']; ?>')" class="btn btn-yellow" style="padding: 4px 12px; font-size: 12px; margin-right: 8px;">
+                                    <button onclick="openEditModal(<?php echo json_encode($promosi['id']); ?>, 'promo')" class="btn btn-yellow" style="padding: 4px 12px; font-size: 12px; margin-right: 8px;">
                                         <iconify-icon icon="mdi:pencil-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Edit
                                     </button>
-                                    <button onclick="openDeleteModal(<?php echo $item['id'] ?? 'null'; ?>, '<?php echo htmlspecialchars($item['judul'] ?? 'Item ini'); ?>', '<?php echo $item['type']; ?>')" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
+                                    <button onclick="openDeleteModal(<?php echo json_encode($promosi['id']); ?>, <?php echo json_encode(htmlspecialchars($promosi['judul'] ?? 'Promosi ini')); ?>, 'promo')" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
                                         <iconify-icon icon="mdi:trash-can-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Hapus
                                     </button>
                                 </td>
@@ -684,6 +727,84 @@ if (isset($_GET['msg'])) {
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Tabel Poster -->
+            <div>
+                <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 16px; border-bottom: 2px solid #3b82f6; padding-bottom: 8px; display: inline-block;">
+                    <iconify-icon icon="mdi:image-outline" style="width: 20px; height: 20px; margin-right: 8px;"></iconify-icon>
+                    Tabel Poster (Total: <?php echo count($promosi_poster_list); ?>)
+                </h3>
+                <div class="table-container" style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead class="table-head">
+                            <tr>
+                                <th>GAMBAR</th>
+                                <th>JUDUL POSTER</th>
+                                <th>DESKRIPSI</th>
+                                <th>TAUTAN</th>
+                                <th>URUTAN</th>
+                                <th>STATUS</th>
+                                <th>AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($promosi_poster_list)): ?>
+                                <tr>
+                                    <td colspan="7" style="padding: 16px; text-align: center; color: #6b7280;">Tidak ada data poster. Silakan tambahkan poster baru.</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($promosi_poster_list as $poster): ?>
+                                <tr class="data-row">
+                                    <td>
+                                        <?php if (!empty($poster['url_gambar'])): ?>
+                                            <img
+                                                src="<?php echo $poster['gambar_url']; ?>"
+                                                alt="<?php echo htmlspecialchars($poster['judul'] ?? ''); ?>"
+                                                style="width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb;"
+                                                onerror="this.onerror=null;this.src='https://placehold.co/50x50/CCCCCC/000000?text=IMG';">
+                                        <?php else: ?>
+                                            <img
+                                                src="https://placehold.co/48x48/CCCCCC/000000?text=-"
+                                                alt="No Image"
+                                                style="width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb;">
+                                        <?php endif; ?>
+                                    </td>
+                                    <td style="font-weight: 500; color: #1f2937;">
+                                        <?php echo htmlspecialchars($poster['judul'] ?? 'N/A'); ?>
+                                    </td>
+                                    <td style="color: #6b7280;">
+                                        <?php
+                                            $description = $poster['deskripsi'] ?? '';
+                                            echo strlen($description) > 50 ? substr($description, 0, 50) . '...' : $description;
+                                        ?>
+                                    </td>
+                                    <td style="color: #6b7280;">
+                                        <?php echo htmlspecialchars($poster['url_tautan'] ?? '-'); ?>
+                                    </td>
+                                    <td style="color: #6b7280; font-weight: 500;">
+                                        <?php echo (int)($poster['urutan'] ?? 0); ?>
+                                    </td>
+                                    <td>
+                                        <?php $status = ($poster['status'] === true || $poster['status'] === 't') ? 1 : 0; ?>
+                                        <span class="<?php echo $status ? 'status-active' : 'status-inactive'; ?>">
+                                            <?php echo $status ? 'Aktif' : 'Nonaktif'; ?>
+                                        </span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <button onclick="openEditModal(<?php echo json_encode($poster['id']); ?>, 'poster')" class="btn btn-yellow" style="padding: 4px 12px; font-size: 12px; margin-right: 8px;">
+                                            <iconify-icon icon="mdi:pencil-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Edit
+                                        </button>
+                                        <button onclick="openDeleteModal(<?php echo json_encode($poster['id']); ?>, <?php echo json_encode(htmlspecialchars($poster['judul'] ?? 'Poster ini')); ?>, 'poster')" class="btn btn-red" style="padding: 4px 12px; font-size: 12px;">
+                                            <iconify-icon icon="mdi:trash-can-outline" style="width: 16px; height: 16px; margin-right: 4px;"></iconify-icon> Hapus
+                                        </button>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         <?php else: // $active_tab === 'tambah' ?>
@@ -828,7 +949,7 @@ if (isset($_GET['msg'])) {
             <button class="modal-close-btn" onclick="closeEditModal()">&times;</button>
         </div>
         <div class="modal-body">
-            <form method="POST" id="editForm" enctype="multipart/form-data" action="index.php?page=poster&tab=daftar">
+            <form method="POST" id="editForm" enctype="multipart/form-data">
                 <input type="hidden" name="action" id="editAction" value="edit_promosi">
                 <input type="hidden" name="id_promosi" id="modal_id_promosi">
                 <input type="hidden" name="current_file_name" id="modal_current_file_name">
@@ -928,8 +1049,8 @@ if (isset($_GET['msg'])) {
         <div class="modal-body">
             <iconify-icon icon="mdi:alert-decagram" style="width: 64px; height: 64px; color: #f59e0b; margin-bottom: 16px;"></iconify-icon>
             <p style="color: #6b7280; margin-bottom: 24px;">Apakah Anda yakin ingin menghapus <span id="item_type_delete">item</span> **<span id="delete_judul_target" style="font-weight: 600;"></span>**? Tindakan ini tidak dapat dibatalkan.</p>
-            <form method="POST" style="display:inline;" id="deleteForm" action="index.php?page=poster&tab=daftar">
-                <input type="hidden" name="action" value="delete_promosi">
+            <form method="POST" style="display:inline;" id="deleteForm">
+                <input type="hidden" name="action" id="delete_action" value="">
                 <input type="hidden" name="id_promosi_delete" id="delete_id_target">
                 <input type="hidden" name="item_type" id="delete_item_type" value="">
                 <button type="button" class="btn" onclick="closeDeleteModal()">&times; Batal</button>
@@ -1265,7 +1386,7 @@ if (isset($_GET['msg'])) {
         }
 
         // Show appropriate fields based on item type
-        if (itemType === 'promo') {
+        if (itemType === 'promo' || itemType === 'promosi') {
             document.getElementById('poster_fields').style.display = 'none';
             document.getElementById('promo_fields').style.display = 'block';
             document.getElementById('editAction').value = 'edit_promosi';
@@ -1275,9 +1396,12 @@ if (isset($_GET['msg'])) {
             document.getElementById('editAction').value = 'edit_poster';
         }
 
+        // Set form action to current page
+        document.getElementById('editForm').action = window.location.pathname + window.location.search;
+
         try {
             // Fetch data from unified AJAX endpoint with item type parameter
-            const fetchUrl = `./poster/poster.php?action=fetch_json&type=${itemType}&id=${id}&_cache=${new Date().getTime()}`;
+            const fetchUrl = `/simaksi/admin/poster/poster_ajax.php?action=fetch_json&type=${itemType}&id=${id}&_cache=${new Date().getTime()}`;
             console.log("OPEN EDIT: Mengambil data dari URL:", fetchUrl);
 
             const response = await fetch(fetchUrl);
@@ -1308,7 +1432,7 @@ if (isset($_GET['msg'])) {
             }
 
             // === PENGISIAN FORM BERDASARKAN TIPE ITEM ===
-            if (itemType === 'promo') {
+            if (itemType === 'promo' || itemType === 'promosi') {
                 // Fill promo data
                 document.getElementById('modal_id_promosi').value = data.id_promosi || '';
                 document.getElementById('modal_judul').value = data.nama_promosi || '';
@@ -1382,9 +1506,16 @@ if (isset($_GET['msg'])) {
         document.getElementById('delete_judul_target').textContent = title;
         document.getElementById('delete_item_type').value = itemType;
 
+        // Set the action based on item type
+        const actionType = itemType === 'promo' ? 'delete_promosi' : 'delete_poster';
+        document.getElementById('delete_action').value = actionType;
+
         // Update the type text in the modal
         const typeText = itemType === 'promo' ? 'promosi' : 'poster';
         document.getElementById('item_type_delete').textContent = typeText;
+
+        // Set form action to current page
+        document.getElementById('deleteForm').action = window.location.pathname + window.location.search;
 
         const modal = document.getElementById('deleteModalOverlay');
         if(modal) {
