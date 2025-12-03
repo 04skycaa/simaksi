@@ -328,7 +328,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 </div>
                 
                 <div class="grid-cols-1 md-grid-cols-2 gap-10">
-                    <div class="bg-gradient-primary-green700 rounded-2xl p-8 text-white feature-badge card-hover">
+                    <div class="bg-gradient-primary-green700 rounded-2xl p-8 text-white feature-badge">
                         <h3 class="text-2xl font-bold mb-6" data-translate-key="fun_facts_title">Fakta Menarik</h3>
                         <ul class="space-y-4">
                             <li class="flex-display items-start">
@@ -350,7 +350,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         </ul>
                     </div>
                     
-                    <div class="bg-gradient-accent-blue500 rounded-2xl p-8 text-white feature-badge card-hover">
+                    <div class="bg-gradient-accent-blue500 rounded-2xl p-8 text-white feature-badge">
                         <h3 class="text-2xl font-bold mb-6" data-translate-key="our_advantages_title">Keunggulan Kami</h3>
                         <ul class="space-y-4">
                             <li class="flex-display items-start">

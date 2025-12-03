@@ -2282,14 +2282,6 @@ footer ul li i {
 .transition-default { transition: all 300ms ease; }
 .hover-scale-105:hover { transform: scale(1.05); }
 
-/* Custom Colors (Ganti dengan warna primer/aksen Anda) */
-.text-primary { color: #4F46E5; } /* Indigo 600 */
-.hover\:bg-gray-100:hover { background-color: #F3F4F6; }
-.hover\:from-accent:hover { background-image: linear-gradient(to right, #8B5CF6, #4F46E5); } /* Purple 500 */
-.hover\:to-primary:hover { background-image: linear-gradient(to right, #8B5CF6, #4F46E5); }
-.bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)); }
-.bg-gradient-primary-accent { background-image: linear-gradient(to right, #4F46E5, #8B5CF6); }
-
 /* Layouts */
 .flex-display { display: flex; }
 .justify-center { justify-content: center; }
@@ -2512,3 +2504,5 @@ footer ul li i {
             font-size: 1.125rem; /* text-lg */
             opacity: 0.9; /* opacity-90 */
         }
+
+        
