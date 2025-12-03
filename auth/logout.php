@@ -3,5 +3,13 @@ session_start();
 session_unset();    // hapus semua isi session
 session_destroy();  // hancurkan session
 
-header("Location: /simaksi/auth/login.php");
+// Check if there's a redirect parameter, otherwise default to login
+$redirect = $_GET['redirect'] ?? 'login';
+if ($redirect === 'index') {
+    $location = '/simaksi/index.php';
+} else {
+    $location = '/simaksi/auth/login.php';
+}
+
+header("Location: $location");
 exit;

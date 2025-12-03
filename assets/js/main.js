@@ -956,26 +956,20 @@ function updateAuthUI() {
 // Function to handle logout
 async function handleLogout() {
     try {
+        // First logout from Supabase
         const { error } = await supabase.auth.signOut();
         if (error) {
-            console.error('Logout error:', error);
-            showAuthMessage('login-error', 'Terjadi kesalahan saat logout');
-        } else {
-            // Clear any user-specific UI elements
-            const komentarFormSection = document.getElementById('komentar-form-section');
-            if (komentarFormSection) {
-                komentarFormSection.classList.add('hidden');
-            }
-            
-            // Update UI to reflect logged out state
-            updateAuthUI();
-            
-            // Show success message
-            showAuthMessage('login-success', 'Berhasil logout');
+            console.error('Supabase logout error:', error);
         }
+
+        // Then redirect to PHP logout script which will destroy the session and redirect to index
+        window.location.href = '/simaksi/auth/logout.php?redirect=index';
     } catch (err) {
         console.error('Logout error:', err);
         showAuthMessage('login-error', 'Terjadi kesalahan saat logout');
+
+        // Even if there's an error, redirect to logout script to ensure session is cleared
+        window.location.href = '/simaksi/auth/logout.php?redirect=index';
     }
 }
 

@@ -1,5 +1,11 @@
 
 
+<?php
+session_start();
+$is_logged_in = isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true;
+$user_name = $is_logged_in ? ($_SESSION['username'] ?? 'Pendaki') : null;
+$user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -7,16 +13,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-translate-key="page_title">Gunung Butak </title>
     <link rel="icon" type="image/x-icon" href="assets/images/LOGO_WEB.png">
-    
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Supabase Client Library (If needed, keep it) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+
     <!-- Native CSS (Jalur Absolut sudah terpasang) -->
     <link rel="stylesheet" href="/simaksi/assets/css/index.css">
 </head>
@@ -40,22 +46,41 @@
                         <button id="theme-toggle" class="text-xl transition-default" title="Ganti Tema">
                             <i class="fas fa-moon" id="theme-icon"></i>
                         </button>
-                        <div id="auth-container">
-                            <a href="/simaksi/auth/login.php" class="login-button">
-                                Login
+                        <?php if ($is_logged_in && $user_name): ?>
+                            <!-- User is logged in - hide login, show user greeting -->
+                            <div id="auth-container" class="hidden">
+                                <a href="/simaksi/auth/login.php" class="login-button">
+                                    Login
+                                </a>
+                            </div>
+                            <a href="#" id="logout-link" class="border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default" data-translate-key="logout_button">
+                                Logout
                             </a>
-                        </div>
+                            <div id="user-greeting" class="flex-display items-center space-x-3">
+                                <span id="greeting-text" class="text-sm" data-translate-key="greeting_text">Selamat datang,</span>
+                                <span id="user-fullname" class="font-semibold text-sm"><?php echo htmlspecialchars($user_name); ?></span>
+                                <a href="#" id="logout-link-header" class="border border-white px-3 py-1 rounded-full text-xs hover-bg-white text-white transition-default" data-translate-key="logout_button_header">
+                                    Logout
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <!-- User is not logged in - show login, hide logout -->
+                            <div id="auth-container">
+                                <a href="/simaksi/auth/login.php" class="login-button">
+                                    Login
+                                </a>
+                            </div>
                             <a href="#" id="logout-link" class="border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default hidden" data-translate-key="logout_button">
                                 Logout
                             </a>
-                        </div>
-                        <div id="user-greeting" class="hidden flex-display items-center space-x-3">
-                            <span id="greeting-text" class="text-sm" data-translate-key="greeting_text">Selamat datang,</span>
-                            <span id="user-fullname" class="font-semibold text-sm"></span>
-                            <a href="#" id="logout-link-header" class="border border-white px-3 py-1 rounded-full text-xs hover-bg-white text-white transition-default" data-translate-key="logout_button_header">
-                                Logout
-                            </a>
-                        </div>
+                            <div id="user-greeting" class="hidden flex-display items-center space-x-3">
+                                <span id="greeting-text" class="text-sm" data-translate-key="greeting_text">Selamat datang,</span>
+                                <span id="user-fullname" class="font-semibold text-sm"></span>
+                                <a href="#" id="logout-link-header" class="border border-white px-3 py-1 rounded-full text-xs hover-bg-white text-white transition-default" data-translate-key="logout_button_header">
+                                    Logout
+                                </a>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -1502,57 +1527,104 @@
                 });
             });
             
-            // Supabase/Auth/Firestore MOCKS (unchanged)
-            const SUPABASE_URL = 'https://your-supabase-url.supabase.co';
-            const SUPABASE_ANON_KEY = 'your-anon-key';
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            const authContainer = document.getElementById('auth-container');
-            const userGreeting = document.getElementById('user-greeting');
-            const logoutLinkHeader = document.getElementById('logout-link-header');
-            const komentarFormSection = document.getElementById('komentar-form-section');
+            // Initialize the authentication UI based on PHP session status
+            async function initializeAuthUI() {
+                const authContainer = document.getElementById('auth-container');
+                const userGreeting = document.getElementById('user-greeting');
+                const userFullname = document.getElementById('user-fullname');
+                const greetingText = document.getElementById('greeting-text');
 
-            function updateAuthState(session) {
-                if (session) {
-                    authContainer.classList.add('hidden');
-                    userGreeting.classList.remove('hidden');
-                    komentarFormSection.classList.remove('hidden');
-                    document.getElementById('greeting-text').textContent = 'Selamat datang,';
-                    document.getElementById('user-fullname').textContent = 'Pendaki Hebat';
+                // First, check if Supabase auth session exists
+                let isLoggedIn = false;
+                let userName = null;
+
+                try {
+                    const { data: { session }, error } = await supabase.auth.getSession();
+                    if (session) {
+                        isLoggedIn = true;
+
+                        // Try to get user name from Supabase profile
+                        const { data: profileData, error: profileError } = await supabase
+                            .from('profiles')
+                            .select('nama_lengkap')
+                            .eq('id', session.user.id)
+                            .single();
+
+                        if (profileData) {
+                            userName = profileData.nama_lengkap;
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error checking Supabase session:', err);
+                }
+
+                // Fallback to PHP session data if Supabase doesn't have a valid session
+                if (!isLoggedIn) {
+                    const phpIsLoggedIn = <?php echo $is_logged_in ? 'true' : 'false'; ?>;
+                    const phpUserName = <?php echo json_encode($user_name); ?>;
+
+                    if (phpIsLoggedIn && phpUserName) {
+                        isLoggedIn = true;
+                        userName = phpUserName;
+                    }
+                }
+
+                if (isLoggedIn && userName) {
+                    // User is logged in - show user greeting and hide login button
+                    if (authContainer) {
+                        authContainer.classList.add('hidden');
+                    }
+                    if (userGreeting) {
+                        userGreeting.classList.remove('hidden');
+                    }
+                    if (userFullname) {
+                        userFullname.textContent = userName;
+                    }
+                    if (greetingText) {
+                        greetingText.textContent = 'Selamat datang,';
+                    }
                 } else {
-                    authContainer.classList.remove('hidden');
-                    userGreeting.classList.add('hidden');
-                    komentarFormSection.classList.add('hidden');
+                    // User is not logged in - show login button and hide user greeting
+                    if (authContainer) {
+                        authContainer.classList.remove('hidden');
+                    }
+                    if (userGreeting) {
+                        userGreeting.classList.add('hidden');
+                    }
                 }
             }
-            supabase.auth.onAuthStateChange((event, session) => { updateAuthState(session); });
-            updateAuthState(null);
-            logoutLinkHeader.addEventListener('click', async (e) => {
-                e.preventDefault();
-                updateAuthState(null);
-                console.log('User logged out (mock)');
+
+            // Initialize the auth UI when the DOM is loaded
+            document.addEventListener('DOMContentLoaded', async function() {
+                // Load Supabase module first
+                if (typeof window.supabase === 'undefined') {
+                    const configModule = await import('./assets/js/config.js');
+                    window.supabase = configModule.supabase;
+                }
+
+                await initializeAuthUI();
+
+                // Set up auth state change listener to keep UI updated
+                if (typeof supabase !== 'undefined') {
+                    supabase.auth.onAuthStateChange((event, session) => {
+                        console.log('Auth state changed:', event);
+                        initializeAuthUI(); // Reinitialize UI when auth state changes
+                    });
+                }
             });
             
             document.getElementById('registerForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = document.getElementById('register-email').value;
-                document.getElementById('register-success-message').textContent = `Pendaftaran berhasil untuk ${email}. Silakan login.`;
-                document.getElementById('register-success-message').classList.remove('hidden');
-                document.getElementById('register-error-message').classList.add('hidden');
-                switchAuthTab('login');
+                // Call the handleRegister function from main.js
+                if (typeof handleRegister === 'function') {
+                    handleRegister(e);
+                }
             });
             document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                if (email === 'test@example.com' && password === 'password') {
-                     updateAuthState({ user: { email: email } });
-                     document.getElementById('login-success-message').textContent = `Login berhasil!`;
-                     document.getElementById('login-success-message').classList.remove('hidden');
-                     document.getElementById('login-error-message').classList.add('hidden');
-                } else {
-                     document.getElementById('login-error-message').textContent = `Email atau password salah.`;
-                     document.getElementById('login-error-message').classList.remove('hidden');
-                     document.getElementById('login-success-message').classList.add('hidden');
+                // Call the handleLogin function from main.js
+                if (typeof handleLogin === 'function') {
+                    handleLogin(e);
                 }
             });
             document.getElementById('komentarForm').addEventListener('submit', async (e) => {
@@ -1573,8 +1645,30 @@
                 ratingValueSpan.textContent = 'Pilih rating';
                 setTimeout(() => { loadTestimonials(true); }, 1000);
             });
+
+            // Add click handlers for header logout buttons to use main.js handleLogout function
+            const logoutLink = document.getElementById('logout-link');
+            const logoutLinkHeader = document.getElementById('logout-link-header');
+
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (typeof handleLogout === 'function') {
+                        handleLogout();
+                    }
+                });
+            }
+
+            if (logoutLinkHeader) {
+                logoutLinkHeader.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (typeof handleLogout === 'function') {
+                        handleLogout();
+                    }
+                });
+            }
         });
-        
+
     </script>
     
     <script src="assets/js/index.js"></script>
