@@ -111,7 +111,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
             <div class="glass-card card-hover">
                 <i class="card-icon fas fa-users"></i>
                 <!-- Default value: Loading... -->
-                <div class="stat-number gradient-text" id="total-pendaki">...</div> 
+                <div class="stat-number gradient-text" id="total-pendaki">1000+</div> 
                 <div class="stat-label" data-translate-key="climbers_this_year">Total Rombongan Tahun Ini</div>
             </div>
             
@@ -119,7 +119,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
             <div class="glass-card card-hover">
                 <i class="card-icon fas fa-star"></i>
                 <!-- Default value: Loading... -->
-                <div class="stat-number gradient-text" id="rating-pengalaman">...</div>
+                <div class="stat-number gradient-text" id="rating-pengalaman">3,6/5</div>
                 <div class="stat-label" data-translate-key="experience_rating">Rating Pengalaman</div>
             </div>
             
