@@ -2304,64 +2304,54 @@ footer ul li i {
     box-sizing: border-box;
 }
 
-/* Responsivitas Slider (Ganti nilai jika perlu) */
 @media (max-width: 1024px) {
     .testimonial-card {
-        min-width: 50%; /* Menampilkan 2 kartu di tablet */
+        min-width: 50%; 
     }
 }
 
 @media (max-width: 640px) {
     .testimonial-card {
-        min-width: 100%; /* Menampilkan 1 kartu di mobile */
-        padding: 0; /* Hapus padding agar slider mengisi penuh di mobile */
+        min-width: 100%; 
+        padding: 0; 
     }
     .left-4 { left: 0.5rem; }
     .right-4 { right: 0.5rem; }
 }
 
-/* Rating Star Styling (CSS Native) */
 .rating > label {
     text-shadow: 1px 1px 0 #888;
 }
 .rating > input:checked ~ label,
 .rating:not(:checked) > label:hover,
 .rating:not(:checked) > label:hover ~ label { 
-    color: #ffc107; /* Bintang berwarna kuning saat dipilih/hover */
+    color: #ffc107;
 }
 .rating > input:checked + label:hover,
 .rating > input:checked ~ label:hover,
 .rating > label:hover ~ input:checked ~ label,
 .rating > input:checked ~ label:hover ~ label {
-    color: #ffd700; /* Warna sedikit berbeda saat hover di atas yang sudah dipilih */
+    color: #ffd700;
 }
 
-// untuk waktu terbaik 
 .dark-mode {
-    background-color: #2c4426; /* Sedikit lebih terang dari latar belakang utama untuk kontras */
+    background-color: #2c4426; 
 }
 
 .dark-mode .py-20 {
     background-image: linear-gradient(to bottom right, #35542E, #75B368);
 }
 
-/* === DARK MODE STYLES (UPDATED WITH #35542E and #75B368) === */
 .dark-mode {
-    /* MENGATUR SELURUH LATAR BELAKANG HALAMAN */
-    /* Mengubah background body menjadi #35542E untuk konsistensi */
     background-color: #35542E; 
-    color: #e0eee0; /* Mengatur warna teks default menjadi terang */
+    color: #e0eee0; 
 }
 
 .dark-mode .py-20 {
-    /* Latar Belakang Bagian Utama: Gradasi Hijau dari #75B368 ke #35542E */
-    /* Ini adalah kode untuk gradasi dari hijau sedang ke hijau tua yang Anda minta */
     background-image: linear-gradient(to bottom right, #75B368, #35542E);
 }
 
 .dark-mode .section-location {
-    /* MENGATUR LATAR BELAKANG UNTUK BAGIAN LOKASI */
-    /* Diubah menjadi #75B368 (Hijau Sedang) agar ada perbedaan visual yang lebih jelas */
     background-color: #75B368; 
 }
 
@@ -2370,36 +2360,28 @@ footer ul li i {
 .dark-mode strong,
 .dark-mode .header h1,
 .dark-mode .card-list-item p {
-    /* Teks Primer: Terang */
-    color: #35542E !important; /* Diubah menjadi Hijau Tua untuk kontras yang lebih baik pada background #75B368 */
+    color: #35542E !important; 
 }
 
 .dark-mode .text-gray-600,
 .dark-mode .card-header p,
 .dark-mode .header p,
 .dark-mode .loading p {
-    /* Teks Sekunder: Hijau Muda yang Diredam */
-    color: #4a6c42 !important; /* Warna teks sekunder yang lebih gelap pada background #75B368 */
+    color: #4a6c42 !important; 
 }
 
 .dark-mode .time-card, 
 .dark-mode .main-card {
-    /* Latar Belakang Kartu: Permukaan Gelap */
-    background-color: #35542E; /* Hijau Tua */
+    background-color: #35542E;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4), 0 10px 15px rgba(0, 0, 0, 0.3);
-    border: 1px solid #4a6c42; /* Batas sedikit lebih terang untuk definisi */
+    border: 1px solid #4a6c42;
 }
 
 .dark-mode .main-icon-container {
-    /* Warna Ikon Utama: Aksen Cerah (Hijau Sedang) */
     color: #75B368;
 }
 
-/* Warna Ikon Spesifik (Mode Gelap) - Memastikan kontras yang baik */
-/* Tanda centang menggunakan warna aksen utama */
 .dark-mode .checkmark-circle { background-color: #75B368; } 
-
-/* Ikon waktu disesuaikan untuk kontras palet hijau */
 .dark-mode .time-icon.yellow { background-color: #fcd34d; color: #35542E; } 
 .dark-mode .time-icon.orange { background-color: #fb923c; color: #35542E; }
 .dark-mode .time-icon.red { background-color: #f87171; color: #35542E; }
@@ -2407,10 +2389,9 @@ footer ul li i {
 
 .dark-mode .spinner {
     border: 4px solid #4a6c42;
-    border-top: 4px solid #75B368; /* Spinner Hijau Sedang */
+    border-top: 4px solid #75B368; 
 }
 
-/* Gaya Tombol Dark Mode Toggle */
 #darkModeToggle {
     background-color: #75B368; 
     color: white;
@@ -2431,37 +2412,34 @@ footer ul li i {
 
 .main-container {
             width: 100%;
-            max-width: 960px; /* max-w-4xl */
+            max-width: 960px; 
         }
 
         .header-title {
-            font-size: 2.25rem; /* text-3xl */
-            font-weight: 800; /* font-extrabold */
+            font-size: 2.25rem;
+            font-weight: 800; 
             text-align: center;
-            margin-bottom: 2.5rem; /* mb-10 */
+            margin-bottom: 2.5rem; 
         }
 
-        /* Grid Statistik */
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr; /* grid-cols-1 (Mobile) */
-            gap: 2rem; /* gap-8 */
+            grid-template-columns: 1fr; \
+            gap: 2rem; \
             margin-left: auto;
             margin-right: auto;
         }
 
-        /* Media Query untuk Desktop (md:grid-cols-3) */
         @media (min-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
 
-        /* Styling Glassmorphism Card */
         .glass-card {
-            padding: 1.5rem; /* p-6 */
-            border-radius: 0.75rem; /* rounded-xl */
-            border: 1px solid rgba(255, 255, 255, 0.3); /* border & border-opacity-30 */
+            padding: 1.5rem; 
+            border-radius: 0.75rem; 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
             background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
             backdrop-filter: blur(8px);
@@ -2476,21 +2454,18 @@ footer ul li i {
             background: rgba(255, 255, 255, 0.15);
         }
 
-        /* Ikon */
         .card-icon {
-            font-size: 2.5rem; /* text-4xl */
-            color: #38bdf8; /* Warna Biru Muda Aksen */
-            margin-bottom: 0.75rem; /* mb-3 */
+            font-size: 2.5rem;
+            color: #38bdf8; 
+            margin-bottom: 0.75rem; 
         }
 
-        /* Angka Statistik */
         .stat-number {
-            font-size: 2.25rem; /* text-3xl */
-            font-weight: 700; /* font-bold */
-            margin-bottom: 0.5rem; /* mb-2 */
+            font-size: 2.25rem; 
+            font-weight: 700; 
+            margin-bottom: 0.5rem; 
         }
         
-        /* Gradien Teks */
         .gradient-text {
             background-image: linear-gradient(45deg, #38bdf8, #818cf8);
             -webkit-background-clip: text;
@@ -2499,10 +2474,83 @@ footer ul li i {
             text-fill-color: transparent;
         }
 
-        /* Label Teks */
         .stat-label {
-            font-size: 1.125rem; /* text-lg */
-            opacity: 0.9; /* opacity-90 */
-        }
-
+            font-size: 1.125rem; 
+            opacity: 0.9; 
+        }     
         
+.login-button,
+#logout-link-header {
+    border-radius: 9999px; 
+    background-color: #75B368; 
+    color: white; 
+    border: none;
+    outline: 1px solid white; 
+    outline-offset: -1px; 
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    white-space: nowrap; 
+    transition: all 0.3s ease;
+}
+
+.login-button {
+    padding: 1rem 1.25rem;
+    font-size: 1rem; 
+    font-weight: bold; 
+}
+
+#logout-link-header {
+    padding: 0.5rem 0.8rem; 
+    font-size: 0.75rem; 
+}
+
+#auth-display { display: flex; align-items: center; gap: 0.75rem; }
+.login-button:hover, #logout-link-header:hover { background-color: #ffffff; outline: 2px solid white; }
+
+#auth-display a {
+    &.login-button {
+        height: 40px !important; 
+        line-height: 40px !important; 
+        border-radius: 20px !important; 
+        padding: 0 20px !important;
+        font-size: 1rem !important; 
+        font-weight: bold !important; 
+    }
+    
+    &#logout-link-header {
+        height: 30px !important; 
+        line-height: 30px !important; 
+        border-radius: 15px !important; 
+        padding: 0 12px !important; 
+        font-size: 0.75rem !important; 
+    }
+
+    background-color: #75B368 !important;
+    color: white !important; 
+    border: none !important;
+    outline: 1px solid white !important; 
+    outline-offset: -1px !important; 
+    text-decoration: none !important;
+    display: inline-block !important; 
+    text-align: center !important;
+    white-space: nowrap !important; 
+    transition: all 0.3s ease !important;
+}
+
+/* Teks Sapaan */
+#greeting-text, #user-fullname {
+    font-size: 0.875rem; 
+    color: white;
+}
+
+#user-fullname {
+    font-weight: 600; 
+}
+
+/* Hover */
+#auth-display a:hover {
+    background-color: #ffffff !important; 
+    color: #35542E !important;
+    outline: 2px solid white !important; 
+}

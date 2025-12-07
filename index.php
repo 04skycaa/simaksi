@@ -38,46 +38,25 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         <h1 class="text-xl font-bold" data-translate-key="header_title">Gunung Butak</h1>
                     </div>
                     <div class="flex-display items-center space-x-4">
-                        <!-- Tombol Toggle Bahasa -->
                         <button id="lang-toggle" class="text-xl transition-default" title="Ganti Bahasa">
                             <i class="fas fa-language"></i>
                         </button>
-                        <!-- Tombol Toggle Mode Gelap/Terang -->
                         <button id="theme-toggle" class="text-xl transition-default" title="Ganti Tema">
                             <i class="fas fa-moon" id="theme-icon"></i>
                         </button>
+                        
                         <?php if ($is_logged_in && $user_name): ?>
-                            <!-- User is logged in - hide login, show user greeting -->
-                            <div id="auth-container" class="hidden">
-                                <a href="/simaksi/auth/login.php" class="login-button">
-                                    Login
-                                </a>
-                            </div>
-                            <a href="#" id="logout-link" class="border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default" data-translate-key="logout_button">
-                                Logout
-                            </a>
-                            <div id="user-greeting" class="flex-display items-center space-x-3">
+                            <div id="auth-display">
                                 <span id="greeting-text" class="text-sm" data-translate-key="greeting_text">Selamat datang,</span>
                                 <span id="user-fullname" class="font-semibold text-sm"><?php echo htmlspecialchars($user_name); ?></span>
-                                <a href="#" id="logout-link-header" class="border border-white px-3 py-1 rounded-full text-xs hover-bg-white text-white transition-default" data-translate-key="logout_button_header">
+                                <a href="/simaksi/auth/relogin.php" id="logout-link-header" class="border border-white px-3 py-1 rounded-full text-xs hover-bg-white text-white transition-default" data-translate-key="logout_button_header">
                                     Logout
                                 </a>
                             </div>
                         <?php else: ?>
-                            <!-- User is not logged in - show login, hide logout -->
-                            <div id="auth-container">
-                                <a href="/simaksi/auth/login.php" class="login-button">
+                            <div id="auth-display">
+                                <a href="/simaksi/auth/login.php" class="login-button border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default" data-translate-key="login_button">
                                     Login
-                                </a>
-                            </div>
-                            <a href="#" id="logout-link" class="border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default hidden" data-translate-key="logout_button">
-                                Logout
-                            </a>
-                            <div id="user-greeting" class="hidden flex-display items-center space-x-3">
-                                <span id="greeting-text" class="text-sm" data-translate-key="greeting_text">Selamat datang,</span>
-                                <span id="user-fullname" class="font-semibold text-sm"></span>
-                                <a href="#" id="logout-link-header" class="border border-white px-3 py-1 rounded-full text-xs hover-bg-white text-white transition-default" data-translate-key="logout_button_header">
-                                    Logout
                                 </a>
                             </div>
                         <?php endif; ?>
@@ -818,7 +797,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         <p class="stat-label" data-translate-key="total_reviews">Total Ulasan</p>
                     </div>                   
                 </div>
-            </div>           
+            </div>    
         </div>
     </section>
 
@@ -1680,8 +1659,6 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
     <script src="assets/js/weather-forecast.js"></script>
     
     <script src="assets/js/poster-slider.js"></script>
-
-    <script src="assets/stats_loader.js"></script>
 
     <script src="assets/js/komentar.js"></script>
     
