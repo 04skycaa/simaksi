@@ -716,100 +716,115 @@ $asset_url = $base_url . '/assets';
         </div>
     </section>
 
-    <!-- Testimoni Pendaki -->
-    <section id="testimoni" class="py-20 bg-gradient-to-br from-gray-100 to-white">
+    <!-- Forum Komentar Pendaki -->
+    <section id="forum-komentar" class="py-20 bg-gradient-to-br from-gray-100 to-white">
         <div class="container auto-margin px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-primary mb-4 animated-border auto-margin" data-translate-key="testimonials_title">Apa Kata Mereka?</h2>
-                <p class="text-xl text-gray-600 max-w-3xl auto-margin leading-relaxed mb-12" data-translate-key="testimonials_subtitle">
-                    Pendapat para pendaki yang telah menaklukkan puncak Gunung Butak
+                <h2 class="text-4xl font-bold text-primary mb-4 animated-border auto-margin" data-translate-key="discussion_forum_title">Forum Diskusi Pendakian</h2>
+                <p class="text-xl text-gray-600 max-w-3xl auto-margin leading-relaxed mb-12" data-translate-key="discussion_forum_subtitle">
+                    Bagikan pengalaman, tips, dan saran Anda dengan pendaki lainnya
                 </p>
             </div>
 
-            <!-- Sliding Testimonials Section -->
-            <div class="relative mb-16">
-                <div class="overflow-hidden">
-                    <div id="testimoni-container" class="flex-display transition-transform duration-500 ease-in-out">
-                        <!-- Testimonials akan dimuat di sini oleh JavaScript -->
-                        <p id="loading-message" class="text-center w-full text-gray-500">Memuat testimonial...</p>
-                    </div>
-                </div>
-
-                <!-- Navigation Arrows -->
-                <button id="prev-testimonial" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg z-10 hover:bg-gray-100 transition-colors">
-                    <i class="fas fa-chevron-left text-primary text-xl"></i>
-                </button>
-                <button id="next-testimonial" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg z-10 hover:bg-gray-100 transition-colors">
-                    <i class="fas fa-chevron-right text-primary text-xl"></i>
-                </button>
-
-                <!-- Pagination Dots -->
-                <div id="testimonial-dots" class="flex-display justify-center mt-8 space-x-2"></div>
-            </div>
-
-            <!-- Form Komentar untuk Pengguna yang Login -->
-            <div id="komentar-form-section">
-                <div class="max-w-2xl auto-margin mb-16">
-                    <div class="text-center mb-12">
-                        <h2 class="text-3xl font-bold text-primary animated-border auto-margin mb-4" data-translate-key="share_experience_title">Bagikan Pengalaman Anda</h2>
-                        <p class="text-gray-600" data-translate-key="share_experience_subtitle">Tulis komentar dan beri penilaian untuk membantu pendaki lain</p>
+            <!-- Form Tambah Komentar untuk Pengguna yang Login -->
+            <div id="form-tambah-komentar" class="mb-16">
+                <div class="max-w-4xl auto-margin">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-primary animated-border auto-margin mb-4" data-translate-key="add_comment_title">Tambahkan Komentar Baru</h3>
+                        <p class="text-gray-600" data-translate-key="add_comment_subtitle">Bantu pendaki lain dengan pengalaman dan saran Anda</p>
                     </div>
 
-                    <div class="feature-badge card-hover">
-                        <div class="bg-gradient-primary-accent rounded-3xl p-1">
-                            <div class="bg-white rounded-3xl shadow-2xl p-8">
-                                <div id="komentar-error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6"></div>
-                                <div id="komentar-success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 px-6 py-4 rounded-lg mb-6"></div>
+                    <div class="bg-white rounded-3xl shadow-2xl p-8 border border-gray-200">
+                        <div id="komentar-error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6"></div>
+                        <div id="komentar-success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 px-6 py-4 rounded-lg mb-6"></div>
 
-                                <form id="komentarForm" class="space-y-6">
-                                    <!-- ID Pengguna HARUS diambil dari sesi Auth Supabase di script.js -->
-                                    <input type="hidden" id="user-id" value="anon_user_placeholder">
-                                    <div>
-                                        <label class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="comment_label">Komentar:</label>
-                                        <textarea id="isi-komentar" class="w-full px-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Tulis pengalaman Anda mendaki Gunung Butak..." data-translate-key="placeholder_comment_area"></textarea>
+                        <form id="komentarForm" class="space-y-6">
+                            <!-- ID Pengguna HARUS diambil dari sesi Auth Supabase di script.js -->
+                            <input type="hidden" id="user-id" value="anon_user_placeholder">
+                            <div>
+                                <label class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="comment_label">Komentar:</label>
+                                <textarea id="isi-komentar" class="w-full px-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Tulis pengalaman, tips, atau saran Anda tentang pendakian Gunung Butak..." data-translate-key="placeholder_comment_area" rows="4"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="rating_label">Rating:</label>
+                                <div class="flex-display items-center">
+                                    <div class="rating flex-display space-x-1">
+                                        <input type="radio" id="star5" name="rating" value="5" class="hidden" />
+                                        <label for="star5" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
+                                        <input type="radio" id="star4" name="rating" value="4" class="hidden" />
+                                        <label for="star4" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
+                                        <input type="radio" id="star3" name="rating" value="3" class="hidden" />
+                                        <label for="star3" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
+                                        <input type="radio" id="star2" name="rating" value="2" class="hidden" />
+                                        <label for="star2" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
+                                        <input type="radio" id="star1" name="rating" value="1" class="hidden" />
+                                        <label for="star1" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
                                     </div>
-
-                                    <div>
-                                        <label class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="rating_label">Rating:</label>
-                                        <div class="flex-display items-center">
-                                            <div class="rating flex-display space-x-1">
-                                                <input type="radio" id="star5" name="rating" value="5" class="hidden" />
-                                                <label for="star5" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
-                                                <input type="radio" id="star4" name="rating" value="4" class="hidden" />
-                                                <label for="star4" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
-                                                <input type="radio" id="star3" name="rating" value="3" class="hidden" />
-                                                <label for="star3" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
-                                                <input type="radio" id="star2" name="rating" value="2" class="hidden" />
-                                                <label for="star2" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
-                                                <input type="radio" id="star1" name="rating" value="1" class="hidden" />
-                                                <label for="star1" class="text-3xl cursor-pointer text-gray-300 transition-colors">★</label>
-                                            </div>
-                                            <span id="rating-value" class="ml-4 text-xl text-gray-600" data-translate-key="select_rating">Pilih rating</span>
-                                        </div>
-                                    </div>
-
-                                    <button type="submit" class="w-full bg-gradient-primary-accent hover:from-accent hover:to-primary text-white font-bold py-4 px-6 rounded-2xl transition-default hover-scale-105 shadow-2xl text-xl glow-button" data-translate-key="submit_comment">
-                                        <i class="fas fa-paper-plane mr-3"></i>Kirim Komentar
-                                    </button>
-                                </form>
-
-                                <!-- Message for non-logged in users -->
-                                <div id="login-to-comment-message" class="hidden text-center py-8">
-                                    <i class="fas fa-lock text-4xl text-gray-400 mb-4"></i>
-                                    <h3 class="text-xl font-bold text-gray-700 mb-2">Login Diperlukan</h3>
-                                    <p class="text-gray-600 mb-4">Anda harus login untuk dapat memberikan komentar dan penilaian</p>
-                                    <a href="auth/login.php" class="inline-block bg-gradient-primary-accent hover:from-accent hover:to-primary text-white font-bold py-3 px-6 rounded-2xl transition-default hover-scale-105 shadow-xl text-lg">
-                                        Login Sekarang
-                                    </a>
+                                    <span id="rating-value" class="ml-4 text-xl text-gray-600" data-translate-key="select_rating">Pilih rating</span>
                                 </div>
                             </div>
+
+                            <button type="submit" class="w-full bg-gradient-primary-accent hover:from-accent hover:to-primary text-white font-bold py-4 px-6 rounded-2xl transition-default hover-scale-105 shadow-2xl text-xl glow-button" data-translate-key="submit_comment">
+                                <i class="fas fa-paper-plane mr-3"></i>Kirim Komentar
+                            </button>
+                        </form>
+
+                        <!-- Message for non-logged in users -->
+                        <div id="login-to-comment-message" class="hidden text-center py-8">
+                            <i class="fas fa-lock text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-xl font-bold text-gray-700 mb-2">Login Diperlukan</h3>
+                            <p class="text-gray-600 mb-4">Anda harus login untuk dapat memberikan komentar dan penilaian</p>
+                            <a href="auth/login.php" class="inline-block bg-gradient-primary-accent hover:from-accent hover:to-primary text-white font-bold py-3 px-6 rounded-2xl transition-default hover-scale-105 shadow-xl text-lg">
+                                Login Sekarang
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Daftar Komentar -->
+            <div class="max-w-6xl auto-margin">
+                <div class="flex-display justify-between items-center mb-8">
+                    <h3 class="text-2xl font-bold text-primary" data-translate-key="all_comments_title">Semua Komentar</h3>
+                    <div class="flex-display items-center space-x-4">
+                        <span class="text-gray-600" data-translate-key="sort_by">Urutkan berdasarkan:</span>
+                        <select id="sort-comments" class="border border-gray-300 rounded-full px-4 py-2">
+                            <option value="terbaru" data-translate-key="sort_newest">Terbaru</option>
+                            <option value="rating-tertinggi" data-translate-key="sort_highest_rating">Rating Tertinggi</option>
+                            <option value="rating-terendah" data-translate-key="sort_lowest_rating">Rating Terendah</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Loading indicator -->
+                <div id="loading-comments" class="flex-display justify-center items-center py-12">
+                    <div class="relative">
+                        <div class="w-12 h-12 border-4 border-t-green-500 border-r-blue-500 border-b-indigo-500 border-l-transparent rounded-full animate-spin"></div>
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <i class="fas fa-comments text-xl text-primary"></i>
+                        </div>
+                    </div>
+                    <p class="ml-4 text-gray-600 font-medium" data-translate-key="loading_comments">Memuat komentar...</p>
+                </div>
+
+                <!-- Container untuk daftar komentar -->
+                <div id="daftar-komentar" class="space-y-6">
+                    <!-- Komentar akan dimuat di sini oleh JavaScript -->
+                </div>
+
+                <!-- Pesan jika tidak ada komentar -->
+                <div id="no-comments" class="hidden text-center py-12">
+                    <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-6 auto-margin">
+                        <i class="fas fa-comments text-4xl text-gray-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3" data-translate-key="no_comments_title">Belum Ada Komentar</h3>
+                    <p class="text-gray-600 max-w-md auto-margin" data-translate-key="no_comments_subtitle">Jadilah yang pertama untuk memberikan komentar dan berbagi pengalaman Anda!</p>
+                </div>
+            </div>
+
             <!-- Stats Section -->
-            <div class="stats-container">
+            <div class="stats-container mt-20">
                 <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-value" id="total-pendaki-rating">98%</div>
@@ -821,7 +836,7 @@ $asset_url = $base_url . '/assets';
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="total-komentar">5000+</div>
-                        <p class="stat-label" data-translate-key="total_reviews">Total Ulasan</p>
+                        <p class="stat-label" data-translate-key="total_reviews">Total Komentar</p>
                     </div>
                 </div>
             </div>
@@ -1058,6 +1073,12 @@ $asset_url = $base_url . '/assets';
                 info_difficulty: "Tingkat Kesulitan: Sulit", info_duration: "Durasi: 3-4 Hari", info_height: "Ketinggian: 2.868 mdpl",
                 info_temperature: "Suhu: 15-22°C", contact_us_title: "Kontak Kami", contact_address: "Basecamp Kucur, Gunung Butak, Jawa Timur",
                 contact_chat: "Live Chat 24/7", copyright: "&copy; 2025 Gunung Butak Reservasi Pendakian. All rights reserved.",
+                discussion_forum_title: "Forum Diskusi Pendakian", discussion_forum_subtitle: "Bagikan pengalaman, tips, dan saran Anda dengan pendaki lainnya",
+                add_comment_title: "Tambahkan Komentar Baru", add_comment_subtitle: "Bantu pendaki lain dengan pengalaman dan saran Anda",
+                all_comments_title: "Semua Komentar", sort_by: "Urutkan berdasarkan:", sort_newest: "Terbaru",
+                sort_highest_rating: "Rating Tertinggi", sort_lowest_rating: "Rating Terendah", loading_comments: "Memuat komentar...",
+                no_comments_title: "Belum Ada Komentar", no_comments_subtitle: "Jadilah yang pertama untuk memberikan komentar dan berbagi pengalaman Anda!",
+                total_reviews: "Total Komentar",
             },
             'en': {
                 page_title: "Mount Butak | Climbing Reservation",
@@ -1139,6 +1160,12 @@ $asset_url = $base_url . '/assets';
                 info_difficulty: "Difficulty Level: Difficult", info_duration: "Duration: 3-4 Days", info_height: "Height: 2,868 masl",
                 info_temperature: "Temperature: 15-22°C", contact_us_title: "Contact Us", contact_address: "Kucur Basecamp, Mount Butak, East Java",
                 contact_chat: "Live Chat 24/7", copyright: "&copy; 2025 Mount Butak Climbing Reservation. All rights reserved.",
+                discussion_forum_title: "Climbing Discussion Forum", discussion_forum_subtitle: "Share your experiences, tips, and suggestions with other climbers",
+                add_comment_title: "Add New Comment", add_comment_subtitle: "Help other climbers with your experience and suggestions",
+                all_comments_title: "All Comments", sort_by: "Sort by:", sort_newest: "Newest",
+                sort_highest_rating: "Highest Rating", sort_lowest_rating: "Lowest Rating", loading_comments: "Loading comments...",
+                no_comments_title: "No Comments Yet", no_comments_subtitle: "Be the first to share your experience and give comments!",
+                total_reviews: "Total Comments",
             }
         };
 
@@ -1673,21 +1700,34 @@ $asset_url = $base_url . '/assets';
 
                     // Try to get user from Supabase - this is what we need for database operations
                     try {
-                        const { data: { user }, error } = await supabaseClient.auth.getUser();
+                        const { data, error } = await supabaseClient.auth.getSession();
                         if (error) {
-                            console.warn('Could not get user from Supabase:', error.message);
-                            // User is not logged in via Supabase, which is required for comments
-                            userIdField.value = 'anon_user_placeholder';
+                            console.warn('Could not get session from Supabase:', error.message);
+                            // Fallback to checking PHP session status
+                            <?php if ($is_logged_in && isset($_SESSION['user_id'])): ?>
+                                userIdField.value = '<?php echo $_SESSION['user_id']; ?>';
+                                console.log('Using PHP session user ID');
+                            <?php else: ?>
+                                userIdField.value = 'anon_user_placeholder';
+                            <?php endif; ?>
                             return;
                         }
 
-                        if (user) {
-                            userIdField.value = user.id;
+                        if (data && data.session && data.session.user) {
+                            userIdField.value = data.session.user.id;
+                            console.log('Using Supabase session user ID');
                         } else {
-                            userIdField.value = 'anon_user_placeholder';
+                            // If no session in Supabase, try to check if user should be logged in
+                            // Fallback to PHP session if available
+                            <?php if ($is_logged_in && isset($_SESSION['user_id'])): ?>
+                                userIdField.value = '<?php echo $_SESSION['user_id']; ?>';
+                                console.log('Using PHP session user ID as fallback');
+                            <?php else: ?>
+                                userIdField.value = 'anon_user_placeholder';
+                            <?php endif; ?>
                         }
                     } catch (error) {
-                        console.error('Error getting user from Supabase:', error);
+                        console.error('Error getting session from Supabase:', error);
                         userIdField.value = 'anon_user_placeholder';
                     }
                 } catch (error) {
@@ -1723,26 +1763,51 @@ $asset_url = $base_url . '/assets';
                             throw new Error('Koneksi ke database tidak tersedia.');
                         }
 
-                        // Get user from Supabase - this is required for database operations
+                        // Get session from Supabase - this is required for database operations
                         let user = null;
+                        let userId = null;
+
                         try {
-                            const supabaseResult = await supabaseClient.auth.getUser();
+                            const supabaseResult = await supabaseClient.auth.getSession();
                             if (supabaseResult.error) {
-                                throw new Error('Anda harus login terlebih dahulu untuk mengirim komentar. Silakan login dan coba kembali.');
+                                console.warn('Could not get session from Supabase:', supabaseResult.error.message);
+                                // Fallback to PHP session if available
+                                <?php if ($is_logged_in && isset($_SESSION['user_id'])): ?>
+                                    userId = '<?php echo $_SESSION['user_id']; ?>';
+                                    console.log('Using PHP session user ID for comment submission');
+                                <?php else: ?>
+                                    throw new Error('Anda harus login terlebih dahulu untuk mengirim komentar. Silakan login dan coba kembali.');
+                                <?php endif; ?>
+                            } else if (supabaseResult.data.session && supabaseResult.data.session.user) {
+                                user = supabaseResult.data.session.user;
+                                userId = user.id;
+                            } else {
+                                // Fallback to PHP session if available
+                                <?php if ($is_logged_in && isset($_SESSION['user_id'])): ?>
+                                    userId = '<?php echo $_SESSION['user_id']; ?>';
+                                    console.log('Using PHP session user ID for comment submission');
+                                <?php else: ?>
+                                    throw new Error('Anda harus login terlebih dahulu untuk mengirim komentar. Silakan login dan coba kembali.');
+                                <?php endif; ?>
                             }
-                            user = supabaseResult.data.user;
                         } catch (supabaseError) {
-                            console.error('Error getting user from Supabase:', supabaseError);
-                            throw new Error('Gagal mengakses informasi pengguna. Silakan login kembali.');
+                            console.error('Error getting session from Supabase:', supabaseError);
+                            // Fallback to PHP session if available
+                            <?php if ($is_logged_in && isset($_SESSION['user_id'])): ?>
+                                userId = '<?php echo $_SESSION['user_id']; ?>';
+                                console.log('Using PHP session user ID for comment submission after error');
+                            <?php else: ?>
+                                throw new Error('Gagal mengakses informasi pengguna. Silakan login kembali.');
+                            <?php endif; ?>
                         }
 
-                        if (!user) {
+                        if (!userId) {
                             throw new Error('Anda harus login untuk mengirim komentar.');
                         }
 
                         // Prepare the comment data
                         const commentData = {
-                            id_pengguna: user.id,
+                            id_pengguna: userId,
                             komentar: komentar,
                             rating: parseInt(rating.value)
                         };
@@ -1764,12 +1829,12 @@ $asset_url = $base_url . '/assets';
                         rating.checked = false;
                         if(document.getElementById('rating-value')) document.getElementById('rating-value').textContent = 'Pilih rating';
 
-                        // Reload testimonials to show new comment
+                        // Reload comments to show new comment
                         setTimeout(() => {
-                            if(typeof loadTestimonials === 'function') {
-                                loadTestimonials(true);
-                            } else if(typeof window.loadTestimonials === 'function') {
-                                window.loadTestimonials(true);
+                            if(typeof loadComments === 'function') {
+                                loadComments(true);
+                            } else if(typeof window.loadComments === 'function') {
+                                window.loadComments(true);
                             }
                         }, 1000);
 
@@ -1801,26 +1866,59 @@ $asset_url = $base_url . '/assets';
                         // since that's required for database operations
                         if (supabaseClient) {
                             try {
-                                const { data: { user }, error } = await supabaseClient.auth.getUser();
-                                if (!error && user) {
+                                const { data, error } = await supabaseClient.auth.getSession();
+                                if (error) {
+                                    // If there's an error getting session, try PHP session as fallback
+                                    console.warn('Could not get session from Supabase:', error.message);
+                                    <?php if ($is_logged_in): ?>
+                                        // User is logged in via PHP, show the form
+                                        commentForm.classList.remove('hidden');
+                                        loginMessage.classList.add('hidden');
+                                    <?php else: ?>
+                                        // User is not logged in, show login message
+                                        commentForm.classList.add('hidden');
+                                        loginMessage.classList.remove('hidden');
+                                    <?php endif; ?>
+                                } else if (data && data.session && data.session.user) {
                                     // User is logged in via Supabase, show the form
                                     commentForm.classList.remove('hidden');
                                     loginMessage.classList.add('hidden');
                                 } else {
-                                    // User is not logged in via Supabase, show login message
-                                    commentForm.classList.add('hidden');
-                                    loginMessage.classList.remove('hidden');
+                                    // No session in Supabase, try PHP session as fallback
+                                    <?php if ($is_logged_in): ?>
+                                        // User is logged in via PHP, show the form
+                                        commentForm.classList.remove('hidden');
+                                        loginMessage.classList.add('hidden');
+                                    <?php else: ?>
+                                        // User is not logged in, show login message
+                                        commentForm.classList.add('hidden');
+                                        loginMessage.classList.remove('hidden');
+                                    <?php endif; ?>
                                 }
                             } catch (error) {
                                 console.error('Error checking Supabase auth status:', error);
-                                // On error with Supabase auth, show login message
-                                commentForm.classList.add('hidden');
-                                loginMessage.classList.remove('hidden');
+                                // On error with Supabase auth, check PHP session as fallback
+                                <?php if ($is_logged_in): ?>
+                                    // User is logged in via PHP, show the form
+                                    commentForm.classList.remove('hidden');
+                                    loginMessage.classList.add('hidden');
+                                <?php else: ?>
+                                    // User is not logged in, show login message
+                                    commentForm.classList.add('hidden');
+                                    loginMessage.classList.remove('hidden');
+                                <?php endif; ?>
                             }
                         } else {
-                            // If Supabase client isn't available, show login message
-                            commentForm.classList.add('hidden');
-                            loginMessage.classList.remove('hidden');
+                            // If Supabase client isn't available, check PHP session as fallback
+                            <?php if ($is_logged_in): ?>
+                                // User is logged in via PHP, show the form
+                                commentForm.classList.remove('hidden');
+                                loginMessage.classList.add('hidden');
+                            <?php else: ?>
+                                // User is not logged in, show login message
+                                commentForm.classList.add('hidden');
+                                loginMessage.classList.remove('hidden');
+                            <?php endif; ?>
                         }
                     }
                 } catch (error) {
@@ -1856,6 +1954,15 @@ $asset_url = $base_url . '/assets';
                         updateCommentFormVisibility();
                     });
                 }
+
+                // Additionally, check the session status on page load
+                document.addEventListener('DOMContentLoaded', async () => {
+                    // Small delay to ensure everything is initialized
+                    setTimeout(() => {
+                        updateUserIdField();
+                        updateCommentFormVisibility();
+                    }, 500);
+                });
             });
 
             // Add click handlers for header logout buttons to use main.js handleLogout function

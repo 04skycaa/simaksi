@@ -2567,12 +2567,12 @@ footer ul li i {
 
 /* Teks Sapaan */
 #greeting-text, #user-fullname {
-    font-size: 0.875rem; 
+    font-size: 0.875rem;
     color: white;
 }
 
 #user-fullname {
-    font-weight: 600; 
+    font-weight: 600;
 }
 
 /* Hover */
@@ -2732,7 +2732,7 @@ footer ul li i {
     margin-bottom: 1.5rem;
 }
 
-#pengumuman-loading .announcement-loader::after {
+#pengumuan-loading .announcement-loader::after {
     content: '';
     position: absolute;
     top: -8px;
@@ -2770,7 +2770,7 @@ footer ul li i {
     margin-bottom: 1.5rem;
 }
 
-#pengumuman-empty .empty-icon i {
+#pengumuan-empty .empty-icon i {
     font-size: 2rem;
     color: #75B368;
 }
@@ -2814,10 +2814,177 @@ footer ul li i {
     color: #a5d6a7;
 }
 
-.dark-mode #pengumuman-empty h3 {
+.dark-mode #pengumuan-empty h3 {
     color: #e0eee0;
 }
 
-.dark-mode #pengumuman-empty p {
+.dark-mode #pengumuan-empty p {
     color: #a5d6a7;
+}
+
+/* Forum-style Comments Section Styles */
+#forum-komentar {
+    background: linear-gradient(to bottom right, #f0f9f0 0%, #ffffff 100%);
+}
+
+#forum-komentar h2.text-primary {
+    color: #35542E !important;
+}
+
+#forum-komentar p.text-gray-600 {
+    color: #4b5563 !important;
+}
+
+/* Form Styling */
+#form-tambah-komentar .bg-white {
+    background: #ffffff !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 1.5rem !important;
+}
+
+#form-tambah-komentar .text-gray-800 {
+    color: #35542E !important;
+}
+
+/* Rating Stars */
+.rating label {
+    transition: all 0.2s ease;
+}
+
+.rating label:hover,
+.rating input[type="radio"]:checked + label {
+    transform: scale(1.1);
+    color: #fbbf24 !important;
+}
+
+/* Loading indicator */
+#loading-comments {
+    background: #f9fafb;
+    border-radius: 1rem;
+    margin: 2rem 0;
+    padding: 2rem;
+}
+
+/* Comment Card Styling */
+.comment-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.comment-card:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border-color: #a5d6a7;
+}
+
+.comment-card h4.font-bold {
+    color: #35542E;
+}
+
+.comment-card .text-gray-700 {
+    color: #4b5563;
+}
+
+.comment-card .text-gray-500 {
+    color: #9ca3af;
+}
+
+.comment-card .text-gray-600 {
+    color: #6b7280;
+}
+
+/* User avatar styling */
+.user-avatar {
+    background: linear-gradient(135deg, #75B368 0%, #35542E 100%);
+}
+
+/* Action buttons */
+.comment-card button {
+    color: #9ca3af;
+    transition: all 0.2s ease;
+}
+
+.comment-card button:hover {
+    color: #75B368;
+}
+
+/* Sort dropdown */
+#sort-comments {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: #35542E;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+#sort-comments:hover {
+    border-color: #75B368;
+    box-shadow: 0 0 0 3px rgba(117, 179, 104, 0.2);
+}
+
+#sort-comments:focus {
+    outline: none;
+    border-color: #75B368;
+    box-shadow: 0 0 0 3px rgba(117, 179, 104, 0.2);
+}
+
+/* Dark mode styles for forum comments */
+.dark-mode #forum-komentar {
+    background: linear-gradient(to bottom right, #35542E 0%, #75B368 100%);
+}
+
+.dark-mode #forum-komentar h2.text-primary,
+.dark-mode #forum-komentar h3.text-primary,
+.dark-mode #forum-komentar h4.text-primary {
+    color: #e0eee0 !important;
+}
+
+.dark-mode #forum-komentar p.text-gray-600 {
+    color: #c0d6c0 !important;
+}
+
+.dark-mode .comment-card {
+    background: #35542E !important;
+    border: 1px solid #4a6c42 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark-mode .comment-card h4.font-bold {
+    color: #e0eee0 !important;
+}
+
+.dark-mode .comment-card .text-gray-700,
+.dark-mode .comment-card .text-gray-600 {
+    color: #d1e0d1 !important;
+}
+
+.dark-mode .comment-card .text-gray-500 {
+    color: #a5d6a7 !important;
+}
+
+.dark-mode #form-tambah-komentar .bg-white {
+    background: #35542E !important;
+    border: 1px solid #4a6c42 !important;
+}
+
+.dark-mode #form-tambah-komentar .text-gray-800 {
+    color: #e0eee0 !important;
+}
+
+.dark-mode #sort-comments {
+    background-color: #75B368;
+    border: 1px solid #35542E;
+    color: #35542E;
+}
+
+.dark-mode #loading-comments {
+    background: #4a6c42;
 }
