@@ -61,17 +61,41 @@
             emptyElement.classList.remove('hidden');
             return;
         }
-        
+
         emptyElement.classList.add('hidden');
         announcements.forEach(announcement => {
+            // Determine announcement type based on title or content for visual tags
+            let announcementType = 'info';
+            if (announcement.judul.toLowerCase().includes('peringatan') ||
+                announcement.judul.toLowerCase().includes('penting') ||
+                announcement.konten.toLowerCase().includes('wajib') ||
+                announcement.konten.toLowerCase().includes('peringatan')) {
+                announcementType = 'penting';
+            } else if (announcement.judul.toLowerCase().includes('event') ||
+                       announcement.judul.toLowerCase().includes('acara') ||
+                       announcement.konten.toLowerCase().includes('event')) {
+                announcementType = 'event';
+            }
+
             const card = document.createElement('div');
-            card.className = 'bg-white rounded-xl shadow-lg p-6 mb-4 border-l-4 border-accent';
+            card.className = 'announcement-card';
             card.innerHTML = `
-                <div class="flex justify-between items-start mb-3"><h3 class="text-xl font-bold text-gray-800">${announcement.judul}</h3></div>
-                <div class="text-gray-700 mb-4">${announcement.konten}</div>
-                <div class="text-xs text-gray-500">
-                    <span>Oleh: ${announcement.profiles.nama_lengkap}</span> | 
-                    <span>Berlaku hingga: ${new Date(announcement.end_date).toLocaleDateString('id-ID')}</span>
+                <div class="announcement-header">
+                    <h3 class="announcement-title">${announcement.judul}</h3>
+                    <div class="announcement-date">
+                        ${new Date(announcement.start_date).toLocaleDateString('id-ID')}
+                    </div>
+                </div>
+                <div class="announcement-tag tag-${announcementType}">${announcementType === 'penting' ? 'Penting' : announcementType === 'event' ? 'Event' : 'Info'}</div>
+                <div class="announcement-content">${announcement.konten}</div>
+                <div class="announcement-author">
+                    <i class="fas fa-user"></i> Oleh: ${announcement.profiles.nama_lengkap}
+                </div>
+                <div class="announcement-meta">
+                    <small class="text-gray-500">
+                        Berlaku: ${new Date(announcement.start_date).toLocaleDateString('id-ID')} -
+                        ${new Date(announcement.end_date).toLocaleDateString('id-ID')}
+                    </small>
                 </div>`;
             container.appendChild(card);
         });

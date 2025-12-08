@@ -44,7 +44,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         <button id="theme-toggle" class="text-xl transition-default" title="Ganti Tema">
                             <i class="fas fa-moon" id="theme-icon"></i>
                         </button>
-                        
+
                         <?php if ($is_logged_in && $user_name): ?>
                             <div id="auth-display">
                                 <span id="greeting-text" class="text-sm" data-translate-key="greeting_text">Selamat datang,</span>
@@ -74,7 +74,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     Jelajahi keindahan alam dan tantangan ekstrem di puncak tertinggi Jawa Timur
                 </p>
             </div>
-            
+
             <div class="button-container">
                 <a href="#" class="pulse-button button-reserve">
                     <i class="fas fa-rocket"></i>Reservasi Sekarang
@@ -83,17 +83,17 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     <i class="fas fa-map-marker-alt"></i>Lokasi Pendakian
                 </a>
             </div>
-            
+
             <div class="stats-grid">
-            
+
             <!-- 1. TOTAL PENDAKI TAHUN INI -->
             <div class="glass-card card-hover">
                 <i class="card-icon fas fa-users"></i>
                 <!-- Default value: Loading... -->
-                <div class="stat-number gradient-text" id="total-pendaki">1000+</div> 
+                <div class="stat-number gradient-text" id="total-pendaki">1000+</div>
                 <div class="stat-label" data-translate-key="climbers_this_year">Total Rombongan Tahun Ini</div>
             </div>
-            
+
             <!-- 2. RATING PENGALAMAN -->
             <div class="glass-card card-hover">
                 <i class="card-icon fas fa-star"></i>
@@ -101,7 +101,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 <div class="stat-number gradient-text" id="rating-pengalaman">3,6/5</div>
                 <div class="stat-label" data-translate-key="experience_rating">Rating Pengalaman</div>
             </div>
-            
+
             <!-- 3. TAHUN OPERASIONAL (Statik) -->
             <div class="glass-card card-hover">
                 <i class="card-icon fas fa-calendar-check"></i>
@@ -110,7 +110,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
             </div>
             </div>
         </div>
-        
+
         <!-- Scroll indicator -->
         <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce text-white">
             <i class="fas fa-chevron-down text-3xl"></i>
@@ -118,28 +118,37 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
     </section>
 
     <!-- Pengumuman Section -->
-    <section class="py-16 bg-gradient-br-green-blue">
+    <section class="py-16 bg-gradient-to-br from-blue-50 to-green-50">
         <div class="container auto-margin px-4">
             <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold mb-4 animated-border auto-margin" 
-                    style="color: #75B368 !important;" 
-                    data-translate-key="latest_announcements_title">Pengumuman Terbaru</h2>
-                <p class="text-xl text-gray-600 max-w-3xl auto-margin leading-relaxed" data-translate-key="latest_announcements_subtitle">
+                <div class="inline-block relative">
+                    <h2 class="text-4xl font-bold mb-4 relative z-10"
+                        data-translate-key="latest_announcements_title">Pengumuman Terbaru</h2>
+                    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-green-400 to-blue-500 rounded-full"></div>
+                </div>
+                <p class="text-xl text-gray-600 max-w-3xl auto-margin leading-relaxed mt-6" data-translate-key="latest_announcements_subtitle">
                     Informasi penting terkait pendakian Gunung Butak
                 </p>
             </div>
-            
+
             <div id="pengumuman-container" class="max-w-6xl auto-margin">
-                <div class="bg-white rounded-2xl shadow-xl p-8 **card-announcement**">
+                <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-xl p-6 border border-gray-100">
                     <div id="pengumuman-content" class="space-y-6">
-                        <div id="pengumuman-loading" class="text-center py-12">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary auto-margin mb-4"></div>
-                            <p class="text-gray-600" data-translate-key="loading_announcements">Memuat pengumuman terbaru...</p>
+                        <div id="pengumuman-loading" class="flex flex-col items-center justify-center py-16">
+                            <div class="relative">
+                                <div class="w-16 h-16 border-4 border-t-green-500 border-r-blue-500 border-b-indigo-500 border-l-transparent rounded-full animate-spin"></div>
+                                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                    <i class="fas fa-bullhorn text-2xl text-green-500"></i>
+                                </div>
+                            </div>
+                            <p class="mt-6 text-gray-600 font-medium" data-translate-key="loading_announcements">Memuat pengumuman terbaru...</p>
                         </div>
-                        <div id="pengumuman-empty" class="hidden text-center py-12">
-                            <i class="fas fa-bullhorn text-5xl text-gray-300 mb-4 dark:text-white"></i>
-                            <h3 class="text-2xl font-bold text-gray-700 mb-2" data-translate-key="no_announcements_title">Tidak Ada Pengumuman</h3>
-                            <p class="text-gray-600" data-translate-key="no_announcements_subtitle">Belum ada pengumuman aktif saat ini</p>
+                        <div id="pengumuman-empty" class="hidden flex flex flex-col items-center justify-center py-16 text-center">
+                            <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-6">
+                                <i class="fas fa-bullhorn text-4xl text-gray-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-3" data-translate-key="no_announcements_title">Tidak Ada Pengumuman</h3>
+                            <p class="text-gray-600 max-w-md" data-translate-key="no_announcements_subtitle">Belum ada pengumuman aktif saat ini</p>
                         </div>
                     </div>
                 </div>
@@ -156,7 +165,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     Temukan alasan mengapa Gunung Butak menjadi destinasi pendakian favorit para petualang
                 </p>
             </div>
-            
+
             <div class="grid-cols-1 lg-grid-cols-3 gap-10 mb-16">
                 <!-- Main Stats Cards -->
                 <div class="stat-card bg-white rounded-3xl shadow-2xl card-hover overflow-hidden feature-badge glass-card">
@@ -175,7 +184,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="stat-card bg-white rounded-3xl shadow-2xl card-hover overflow-hidden feature-badge glass-card difficulty-section">
                     <div class="w-full h-1 bg-gradient-to-r from-orange-400 to-orange-600"></div>
                     <div class="p-10">
@@ -192,7 +201,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="stat-card bg-white rounded-3xl shadow-2xl card-hover overflow-hidden feature-badge glass-card">
                     <div class="w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600"></div>
                     <div class="p-10">
@@ -207,7 +216,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     </div>
                 </div>
             </div>
-            
+
             <!-- Additional Info Cards -->
             <div class="grid-cols-1 md-grid-cols-2 lg-grid-cols-4 gap-8 mt-12">
                 <div class="bg-white rounded-2xl p-8 shadow-xl card-hover text-center feature-badge glass-card border border-white border-opacity-30">
@@ -218,7 +227,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     <p class="text-2xl font-bold text-primary mb-2">15-22°C</p>
                     <p class="text-gray-600" data-translate-key="avg_temp_desc">Nyaman untuk pendakian</p>
                 </div>
-                
+
                 <div class="bg-white rounded-2xl p-8 shadow-xl card-hover text-center feature-badge glass-card border border-white border-opacity-30">
                     <div class="w-20 h-20 bg-gradient-to-r from-blue-100 to-blue-200 rounded-full flex-display items-center justify-center auto-margin mb-6">
                         <i class="fas fa-wind text-3xl text-blue-600"></i>
@@ -227,7 +236,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     <p class="text-2xl font-bold text-primary mb-2">10-30 km/jam</p>
                     <p class="text-gray-600" data-translate-key="wind_speed_desc">Angin segar di puncak</p>
                 </div>
-                
+
                 <div class="bg-white rounded-2xl p-8 shadow-xl card-hover text-center feature-badge glass-card border border-white border-opacity-30">
                     <div class="w-20 h-20 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-full flex-display items-center justify-center auto-margin mb-6">
                         <i class="fas fa-cloud-sun text-3xl text-yellow-600"></i>
@@ -236,7 +245,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     <p class="text-2xl font-bold text-primary mb-2" data-translate-key="rainfall_level">Rendah</p>
                     <p class="text-gray-600" data-translate-key="rainfall_desc">Kemungkinan hujan rendah</p>
                 </div>
-                
+
                 <div class="bg-white rounded-2xl p-8 shadow-xl card-hover text-center feature-badge glass-card border border-white border-opacity-30">
                     <div class="w-20 h-20 bg-gradient-to-r from-purple-100 to-purple-200 rounded-full flex-display items-center justify-center auto-margin mb-6">
                         <i class="fas fa-tree text-3xl text-purple-600"></i>
@@ -246,7 +255,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     <p class="text-gray-600" data-translate-key="vegetation_desc">Hutan-Sahara yang bervariasi</p>
                 </div>
             </div>
-            
+
             <!-- Additional Information Section -->
             <div class="mt-20 bg-gradient-primary-accent rounded-3xl p-10 text-white">
                 <div class="max-w-4xl auto-margin text-center">
@@ -282,7 +291,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     Kenali lebih dekat destinasi pendakian terbaik di Jawa Timur
                 </p>
             </div>
-            
+
             <div class="max-w-5xl auto-margin">
                 <div class="grid-cols-1 md-grid-cols-2 gap-12 items-center mb-16">
                     <div class="feature-card card-hover">
@@ -298,14 +307,14 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="feature-card card-hover">
                         <div class="overflow-hidden rounded-2xl shadow-xl">
                             <img src="assets/images/gunung2.jpg" alt="Pemandangan Gunung Butak" class="w-full h-80 object-cover">
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="grid-cols-1 md-grid-cols-2 gap-10">
                     <div class="bg-gradient-primary-green700 rounded-2xl p-8 text-white feature-badge">
                         <h3 class="text-2xl font-bold mb-6" data-translate-key="fun_facts_title">Fakta Menarik</h3>
@@ -328,7 +337,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                             </li>
                         </ul>
                     </div>
-                    
+
                     <div class="bg-gradient-accent-blue500 rounded-2xl p-8 text-white feature-badge">
                         <h3 class="text-2xl font-bold mb-6" data-translate-key="our_advantages_title">Keunggulan Kami</h3>
                         <ul class="space-y-4">
@@ -364,7 +373,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     Temukan alasan mengapa Gunung Butak menjadi destinasi pendakian yang tak terlupakan
                 </p>
             </div>
-            
+
             <div class="grid-cols-1 lg-grid-cols-3 gap-10">
                 <!-- Card 1 -->
                 <div class="feature-card card-hover bg-gradient-br-green-blue rounded-3xl shadow-2xl overflow-hidden transition-default group">
@@ -378,12 +387,12 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         </div>
                         <h3 class="text-3xl font-bold mb-4 text-center text-primary" data-translate-key="scenic_view_title">Pemandangan Indah</h3>
                         <p class="text-gray-700 text-lg leading-relaxed text-center" data-translate-key="scenic_view_desc">
-                            Nikmati pemandangan alam yang luar biasa dari hutan hingga sabana yang menakjubkan di sepanjang jalur pendakian. 
+                            Nikmati pemandangan alam yang luar biasa dari hutan hingga sabana yang menakjubkan di sepanjang jalur pendakian.
                             Puncak Gunung Butak menawarkan pemandangan 360 derajat yang memukau.
                         </p>
                     </div>
                 </div>
-                
+
                 <!-- Card 2 -->
                 <div class="feature-card card-hover bg-gradient-br-yellow-red rounded-3xl shadow-2xl overflow-hidden transition-default group">
                     <div class="h-72 overflow-hidden">
@@ -396,12 +405,12 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         </div>
                         <h3 class="text-3xl font-bold mb-4 text-center text-primary" data-translate-key="biodiversity_title">Keberagaman Flora & Fauna</h3>
                         <p class="text-gray-700 text-lg leading-relaxed text-center" data-translate-key="biodiversity_desc">
-                            Jelajahi berbagai ekosistem unik dan temukan berbagai spesies langka yang hanya ditemukan di kawasan ini. 
+                            Jelajahi berbagai ekosistem unik dan temukan berbagai spesies langka yang hanya ditemukan di kawasan ini.
                             Habitat alami berbagai jenis burung dan satwa endemik Jawa.
                         </p>
                     </div>
                 </div>
-                
+
                 <!-- Card 3 -->
                 <div class="feature-card card-hover bg-gradient-br-blue-indigo rounded-3xl shadow-2xl overflow-hidden transition-default group">
                     <div class="h-72 overflow-hidden">
@@ -414,7 +423,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         </div>
                         <h3 class="text-3xl font-bold mb-4 text-center text-primary" data-translate-key="vast_savanna_title">Sabana Luas</h3>
                         <p class="text-gray-700 text-lg leading-relaxed text-center" data-translate-key="vast_savanna_desc">
-                            Rasakan keindahan luasnya padang sabana di kaki gunung, tempat yang sangat indah untuk berkemah dan menikmati alam. 
+                            Rasakan keindahan luasnya padang sabana di kaki gunung, tempat yang sangat indah untuk berkemah dan menikmati alam.
                             Sempurna untuk hunting sunrise dan stargazing.
                         </p>
                     </div>
@@ -454,8 +463,8 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     Rencanakan pendakian Anda dengan informasi cuaca dan waktu yang optimal
                 </p>
             </div>
-            
-            <div class="time-card-grid">       
+
+            <div class="time-card-grid">
                 <!-- Card 1: Musim Kemarau -->
                 <div class="time-card season-card">
                     <div class="card-header text-center">
@@ -504,7 +513,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         </li>
                     </ul>
                 </div>
-                
+
                 <!-- Card 2: Waktu Ideal Sehari -->
                 <div class="time-card daily-time-card">
                     <div class="card-header text-center">
@@ -518,7 +527,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         <!-- Item 1 (Pagi Hari - Yellow) - Menggunakan fa-cloud-sun -->
                         <li class="card-list-item">
                             <div class="list-icon-wrapper time-icon yellow">
-                                <i class="fas fa-cloud-sun"></i> 
+                                <i class="fas fa-cloud-sun"></i>
                             </div>
                             <div>
                                 <p><strong>Pagi hari (04:00-06:00):</strong> Udara segar dan suhu nyaman</p>
@@ -554,7 +563,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     </ul>
                 </div>
             </div>
-            
+
             <!-- Weather Forecast Section -->
             <div class="weather-container">
                 <div class="main-card">
@@ -562,7 +571,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         <h1>Prakiraan Cuaca Mendatang</h1>
                         <p>Cuaca terkini dan perkiraan 3 hari ke depan untuk Gunung Butak</p>
                     </header>
-                    
+
                     <div id="weather-forecast" class="forecast-area">
                         <div class="loading">
                             <div class="spinner"></div>
@@ -583,15 +592,15 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 Temukan jalur pendakian melalui Basecamp Kucur dan rute terbaik menuju puncak
             </p>
         </div>
-        
+
         <div class="card-grid-container">
             <div class="card-lokasi card-rute card-hover">
                 <div class="card-inner-border">
                     <div class="card-content">
                         <h3 class="card-title text-center" data-translate-key="access_route_title">Rute Akses Menuju Basecamp</h3>
-                        
+
                         <div class="route-list-wrapper">
-                            
+
                             <div class="route-item">
                                 <div class="icon-circle icon-bg-hijau">
                                     <i class="fas fa-map-marker-alt"></i>
@@ -601,7 +610,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                                     <p class="route-item-desc" data-translate-key="basecamp_location">Kabupaten Malang, Jawa Timur</p>
                                 </div>
                             </div>
-                            
+
                             <div class="route-item">
                                 <div class="icon-circle icon-bg-hijau">
                                     <i class="fas fa-car"></i>
@@ -611,7 +620,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                                     <p class="route-item-desc" data-translate-key="vehicle_access_desc">Dapat dijangkau dengan mobil atau motor, ketinggian 1.200 mdpl</p>
                                 </div>
                             </div>
-                            
+
                             <div class="route-item">
                                 <div class="icon-circle icon-bg-hijau">
                                     <i class="fas fa-walking"></i>
@@ -621,7 +630,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                                     <p class="route-item-desc" data-translate-key="climbing_route_desc">Jalur utama sepanjang 8 km, perkiraan waktu 12-15 jam</p>
                                 </div>
                             </div>
-                            
+
                             <div class="route-item">
                                 <div class="icon-circle icon-bg-hijau">
                                     <i class="fas fa-info-circle"></i>
@@ -633,7 +642,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                             </div>
 
                         </div>
-                        
+
                         <div class="travel-tips-container">
                             <h4 class="tips-title" data-translate-key="travel_tips_title">Tips Perjalanan:</h4>
                             <ul class="tips-list">
@@ -654,28 +663,28 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     </div>
                 </div>
             </div>
-            
+
             <div class="card-lokasi card-map card-hover">
                 <div class="map-inner-border">
                     <div class="map-content">
                         <div class="map-header-bar"></div>
                         <div class="map-iframe-wrapper">
-                            <iframe 
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.768447332634!2d112.6028828757616!3d-8.16107007943676!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOMKwMDknNDAuOSJTIDExMsKwMzYnMTAuNCJF!5e0!3m2!1sen!2sid!4v1650000000000!5m2!1sen!2sid" 
-                                width="100%" 
-                                height="500" 
-                                style="border:0;" 
-                                allowfullscreen="" 
-                                loading="lazy" 
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.768447332634!2d112.6028828757616!3d-8.16107007943676!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOMKwMDknNDAuOSJTIDExMsKwMzYnMTAuNCJF!5e0!3m2!1sen!2sid!4v1650000000000!5m2!1sen!2sid"
+                                width="100%"
+                                height="500"
+                                style="border:0;"
+                                allowfullscreen=""
+                                loading="lazy"
                                 referrerpolicy="no-referrer-when-downgrade">
                             </iframe>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
         </div>
-    </div>  
+    </div>
             <!-- Interactive Map Features -->
             <div class="mt-20 grid-cols-1 md-grid-cols-3 gap-8">
                 <div class="bg-gradient-br-green-blue rounded-3xl p-8 text-center feature-badge card-hover">
@@ -683,13 +692,13 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     <h4 class="text-2xl font-bold text-gray-800 mb-3" data-translate-key="trekking_routes_title">Jalur Pendakian</h4>
                     <p class="text-gray-600" data-translate-key="trekking_routes_desc">Rute terbaik dengan pos-pos peristirahatan</p>
                 </div>
-                
+
                 <div class="bg-gradient-br-orange-yellow rounded-3xl p-8 text-center feature-badge card-hover">
                     <i class="fas fa-exclamation-triangle text-5xl text-orange-600 mb-4"></i>
                     <h4 class="text-2xl font-bold text-gray-800 mb-3" data-translate-key="danger_points_title">Titik Bahaya</h4>
                     <p class="text-gray-600" data-translate-key="danger_points_desc">Area rawan longsor dan medan terjal</p>
                 </div>
-                
+
                 <div class="bg-gradient-br-blue-indigo rounded-3xl p-8 text-center feature-badge card-hover">
                     <i class="fas fa-water text-5xl text-blue-600 mb-4"></i>
                     <h4 class="text-2xl font-bold text-gray-800 mb-3" data-translate-key="water_source_title">Sumber Air</h4>
@@ -708,7 +717,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     Pendapat para pendaki yang telah menaklukkan puncak Gunung Butak
                 </p>
             </div>
-            
+
             <!-- Sliding Testimonials Section -->
             <div class="relative mb-16">
                 <div class="overflow-hidden">
@@ -717,7 +726,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         <p id="loading-message" class="text-center w-full text-gray-500">Memuat testimonial...</p>
                     </div>
                 </div>
-                
+
                 <!-- Navigation Arrows -->
                 <button id="prev-testimonial" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg z-10 hover:bg-gray-100 transition-colors">
                     <i class="fas fa-chevron-left text-primary text-xl"></i>
@@ -725,11 +734,11 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 <button id="next-testimonial" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg z-10 hover:bg-gray-100 transition-colors">
                     <i class="fas fa-chevron-right text-primary text-xl"></i>
                 </button>
-                
+
                 <!-- Pagination Dots -->
                 <div id="testimonial-dots" class="flex-display justify-center mt-8 space-x-2"></div>
             </div>
-            
+
             <!-- Form Komentar untuk Pengguna yang Login -->
             <div id="komentar-form-section">
                 <div class="max-w-2xl auto-margin mb-16">
@@ -737,21 +746,21 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         <h2 class="text-3xl font-bold text-primary animated-border auto-margin mb-4" data-translate-key="share_experience_title">Bagikan Pengalaman Anda</h2>
                         <p class="text-gray-600" data-translate-key="share_experience_subtitle">Tulis komentar dan beri penilaian untuk membantu pendaki lain</p>
                     </div>
-                    
+
                     <div class="feature-badge card-hover">
                         <div class="bg-gradient-primary-accent rounded-3xl p-1">
                             <div class="bg-white rounded-3xl shadow-2xl p-8">
                                 <div id="komentar-error-message" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-lg mb-6"></div>
                                 <div id="komentar-success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 px-6 py-4 rounded-lg mb-6"></div>
-                                
+
                                 <form id="komentarForm" class="space-y-6">
                                     <!-- ID Pengguna HARUS diambil dari sesi Auth Supabase di script.js -->
-                                    <input type="hidden" id="user-id" value="anon_user_placeholder"> 
+                                    <input type="hidden" id="user-id" value="anon_user_placeholder">
                                     <div>
                                         <label class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="comment_label">Komentar:</label>
                                         <textarea id="isi-komentar" class="w-full px-4 py-4 rounded-2xl border border-gray-300 input-style transition-default text-lg" placeholder="Tulis pengalaman Anda mendaki Gunung Butak..." data-translate-key="placeholder_comment_area"></textarea>
                                     </div>
-                                    
+
                                     <div>
                                         <label class="block text-gray-800 text-lg font-bold mb-3" data-translate-key="rating_label">Rating:</label>
                                         <div class="flex-display items-center">
@@ -770,7 +779,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                                             <span id="rating-value" class="ml-4 text-xl text-gray-600" data-translate-key="select_rating">Pilih rating</span>
                                         </div>
                                     </div>
-                                    
+
                                     <button type="submit" class="w-full bg-gradient-primary-accent hover:from-accent hover:to-primary text-white font-bold py-4 px-6 rounded-2xl transition-default hover-scale-105 shadow-2xl text-xl glow-button" data-translate-key="submit_comment">
                                         <i class="fas fa-paper-plane mr-3"></i>Kirim Komentar
                                     </button>
@@ -780,24 +789,24 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     </div>
                 </div>
             </div>
-            
+
             <!-- Stats Section -->
             <div class="stats-container">
-                <div class="stats-grid">                    
+                <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-value" id="total-pendaki-rating">98%</div>
                         <p class="stat-label" data-translate-key="climber_satisfaction">Kepuasan Pendaki</p>
-                    </div>                   
+                    </div>
                     <div class="stat-item">
                         <div class="stat-value" id="avg-rating">4.9/5</div>
                         <p class="stat-label" data-translate-key="avg_rating_label">Rating Rata-rata</p>
-                    </div>                   
+                    </div>
                     <div class="stat-item">
                         <div class="stat-value" id="total-komentar">5000+</div>
                         <p class="stat-label" data-translate-key="total_reviews">Total Ulasan</p>
-                    </div>                   
+                    </div>
                 </div>
-            </div>    
+            </div>
         </div>
     </section>
 
@@ -810,7 +819,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     Temukan informasi terbaru dan promosi menarik dari Gunung Butak
                 </p>
             </div>
-            
+
             <!-- Sliding Posters Section -->
             <div class="relative mb-16">
                 <div class="overflow-hidden">
@@ -833,7 +842,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Navigation Arrows -->
                 <button id="prev-poster" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg z-10 hover:bg-gray-100 transition-colors">
                     <i class="fas fa-chevron-left text-primary text-xl"></i>
@@ -841,12 +850,12 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 <button id="next-poster" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg z-10 hover:bg-gray-100 transition-colors">
                     <i class="fas fa-chevron-right text-primary text-xl"></i>
                 </button>
-                
+
                 <!-- Pagination Dots -->
                 <div id="poster-dots" class="flex-display justify-center mt-8 space-x-2"></div>
             </div>
         </div>
-        
+
     </section>
 
     <!-- Footer -->
@@ -860,7 +869,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         <h3 class="text-2xl font-bold" data-translate-key="footer_title">Gunung Butak</h3>
                     </div>
                     <p class="text-gray-300 mb-6 leading-relaxed" data-translate-key="footer_description">
-                        Platform reservasi pendakian Gunung Butak melalui jalur Kucur. 
+                        Platform reservasi pendakian Gunung Butak melalui jalur Kucur.
                         Membantu pendaki untuk merencanakan dan menikmati petualangan alam mereka dengan aman dan menyenangkan.
                     </p>
                     <div class="flex-display space-x-4">
@@ -878,7 +887,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         </a>
                     </div>
                 </div>
-                
+
                 <!-- Navigasi -->
                 <div>
                     <h4 class="text-lg font-bold mb-6" data-translate-key="navigation_title">Navigasi</h4>
@@ -890,7 +899,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         <li><a href="#testimoni" class="nav-link text-gray-300 hover:text-accent transition-default block py-1" data-translate-key="nav_contact">Kontak</a></li>
                     </ul>
                 </div>
-                
+
                 <!-- Jalur Pendakian -->
                 <div>
                     <h4 class="text-lg font-bold mb-6" data-translate-key="climbing_info_title">Jalur Pendakian</h4>
@@ -917,7 +926,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         </li>
                     </ul>
                 </div>
-                
+
                 <!-- Kontak Kami -->
                 <div>
                     <h4 class="text-lg font-bold mb-6" data-translate-key="contact_us_title">Kontak Kami</h4>
@@ -1116,7 +1125,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
         };
 
         let currentLang = 'id'; // Default language
-        
+
         // --- THEME TOGGLE LOGIC ---
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
@@ -1134,7 +1143,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 localStorage.setItem('theme', 'light');
             }
         }
-        
+
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
             applyTheme(savedTheme === 'dark');
@@ -1144,7 +1153,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
             const isDark = document.body.classList.contains('dark-mode');
             applyTheme(!isDark);
         });
-        
+
         // --- TRANSLATION LOGIC ---
         const langToggle = document.getElementById('lang-toggle');
 
@@ -1152,7 +1161,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
             const key = element.getAttribute('data-translate-key');
             if (key && translations[currentLang][key]) {
                 const translation = translations[currentLang][key];
-                
+
                 // Cek apakah elemen input/placeholder
                 if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                     if (element.placeholder) {
@@ -1178,12 +1187,12 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
             currentLang = lang;
             document.documentElement.lang = lang;
             const elementsToTranslate = document.querySelectorAll('[data-translate-key]');
-            
+
             elementsToTranslate.forEach(translateElement);
-            
+
             // Handle placeholders manual (Dibutuhkan untuk elemen tanpa data-translate-key)
             // (Placeholder di bawah sudah ditangani dengan baik oleh logic utama)
-            
+
             // Karena elemen input tidak memiliki data-translate-key untuk placeholder, kita perlu melakukan pembaruan langsung di sini.
             // Namun, dalam HTML, kita telah menambahkan data-translate-key pada placeholder. Mari kita pastikan semua placeholder ter-update.
             document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(el => {
@@ -1192,7 +1201,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     el.placeholder = translations[lang][key];
                 }
             });
-            
+
             localStorage.setItem('lang', lang);
         }
 
@@ -1208,13 +1217,13 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
 
         document.addEventListener('DOMContentLoaded', () => {
             const cards = document.querySelectorAll('.feature-card');
-            
+
             const observer = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const card = entry.target;
                         const index = Array.from(cards).indexOf(card);
-                        
+
                         // Add a sequential delay based on the card's position
                         setTimeout(() => {
                             card.classList.add('is-visible');
@@ -1235,9 +1244,9 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
         document.addEventListener('DOMContentLoaded', function() {
             loadTheme();
             loadLanguage(); // Muat bahasa setelah tema
-            
+
             // Existing JS logic...
-        
+
             // Smooth scrolling for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
@@ -1251,27 +1260,27 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     }
                 });
             });
-            
+
             // Enhanced scroll to top functionality
             const scrollToTopBtn = document.createElement('div');
             scrollToTopBtn.className = 'scroll-to-top visible';
             scrollToTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
             document.body.appendChild(scrollToTopBtn);
-            
+
             scrollToTopBtn.addEventListener('click', function() {
                 window.scrollTo({
                     top: 0,
                     behavior: 'smooth'
                 });
             });
-            
+
             // Add animation on scroll for elements
             function animateOnScroll() {
                 const elements = document.querySelectorAll('.card-hover, .bg-white, .testimonial-card, .feature-badge');
                 elements.forEach(element => {
                     const elementPosition = element.getBoundingClientRect().top;
                     const screenPosition = window.innerHeight / 1.3;
-                    
+
                     if (elementPosition < screenPosition) {
                         if (element.style.opacity !== '1') {
                             element.style.opacity = '1';
@@ -1280,9 +1289,9 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     }
                 });
             }
-            
+
             window.addEventListener('scroll', animateOnScroll);
-            
+
             // Initialize elements with opacity 0 for animation
             const elements = document.querySelectorAll('.card-hover, .bg-white, .testimonial-card, .feature-badge');
             elements.forEach(element => {
@@ -1290,10 +1299,10 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 element.style.opacity = '0';
                 element.style.transform = 'translateY(20px)';
             });
-                
+
             // Trigger initial animation check
             setTimeout(animateOnScroll, 100);
-            
+
             // Add floating effect to hero section (The new CSS defines the .floating animation)
             const heroElements = document.querySelectorAll('.hero-background h1, .hero-background h2, .hero-background p, .hero-background a, .hero-background .counter, .hero-content');
             heroElements.forEach(el => {
@@ -1301,7 +1310,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     el.classList.add('floating');
                 }
             });
-            
+
             // Enhanced counter animation for stats
             function animateCounter(element, target, duration) {
                 let start = 0;
@@ -1309,31 +1318,31 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 const timer = setInterval(() => {
                     start += increment;
                     element.textContent = Math.floor(start);
-                    
+
                     if (start >= target) {
                         element.textContent = target.toLocaleString('id-ID'); // Format numbers
                         clearInterval(timer);
                     }
                 }, 16);
             }
-            
+
             // Activate counters when they come into view
             const observerOptions = {
                 root: null, rootMargin: '0px', threshold: 0.5
             };
-            
+
             const counterObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const numberElements = entry.target.querySelectorAll('.gradient-text, [id$="-rating"], [id$="-komentar"]');
                         numberElements.forEach(counter => {
-                            const text = counter.textContent.replace(/[^0-9.]/g, ''); 
+                            const text = counter.textContent.replace(/[^0-9.]/g, '');
                             let target = parseFloat(text);
                             if (counter.textContent.endsWith('+')) {
                                 target = target * 1000;
                             }
                             if (!isNaN(target)) {
-                                counter.textContent = '0'; 
+                                counter.textContent = '0';
                                 animateCounter(counter, target, 2000);
                                 counterObserver.unobserve(entry.target);
                             }
@@ -1341,7 +1350,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     }
                 });
             }, observerOptions);
-            
+
             // Observe counter elements
             document.querySelectorAll('.stat-card, .bg-gradient-to-r, .bg-gradient-primary-accent').forEach(card => {
                 counterObserver.observe(card);
@@ -1356,7 +1365,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     parallax.style.backgroundPosition = `center calc(50% + ${speed}px)`;
                 }
             });
-            
+
             // Add ripple effect to buttons
             const buttons = document.querySelectorAll('.pulse-button, .glow-button');
             buttons.forEach(button => {
@@ -1369,20 +1378,20 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     const size = Math.max(rect.width, rect.height);
                     const x = e.clientX - rect.left - size / 2;
                     const y = e.clientY - rect.top - size / 2;
-                    
+
                     ripple.style.width = ripple.style.height = size + 'px';
                     ripple.style.left = x + 'px';
                     ripple.style.top = y + 'px';
                     ripple.classList.add('ripple');
-                    
+
                     const existingRipple = this.querySelector('.ripple');
                     if (existingRipple) { existingRipple.remove(); }
                     this.appendChild(ripple);
-                    
+
                     setTimeout(() => { ripple.remove(); }, 600);
                 });
             });
-            
+
             // Add typing animation to hero text
             function animateHeroText() {
                 const heroContents = document.querySelectorAll('.hero-content > *');
@@ -1393,7 +1402,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 });
             }
             setTimeout(animateHeroText, 500);
-            
+
             // Add particle effect to hero section
             function createParticles() {
                 const hero = document.querySelector('.hero-background');
@@ -1408,13 +1417,13 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 }
             }
             window.addEventListener('load', createParticles);
-            
+
             // Add scroll progress indicator
             function addScrollProgress() {
                 const progressContainer = document.createElement('div');
                 progressContainer.id = 'scroll-progress';
                 progressContainer.style.cssText = `
-                    position: fixed; top: 0; left: 0; width: 0%; height: 3px; 
+                    position: fixed; top: 0; left: 0; width: 0%; height: 3px;
                     background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
                     z-index: 9999; transition: width 0.1s ease;
                 `;
@@ -1427,7 +1436,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 });
             }
             addScrollProgress();
-            
+
             // Add enhanced navigation highlighting
             function highlightNavOnScroll() {
                 const sections = document.querySelectorAll('section[id]');
@@ -1447,7 +1456,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 });
             }
             window.addEventListener('scroll', highlightNavOnScroll);
-            
+
             // Tab switching logic for Auth Section (with null checks)
             const loginTab = document.getElementById('login-tab');
             const registerTab = document.getElementById('register-tab');
@@ -1459,7 +1468,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
             function switchAuthTab(tabName) {
                 const tabs = [loginTab, registerTab, forgotTab].filter(Boolean);
                 const contents = [loginContent, registerContent, forgotContent].filter(Boolean);
-                
+
                 tabs.forEach(tab => {
                     if (tab) {
                         tab.classList.remove('text-blue-600', 'border-blue-600');
@@ -1498,7 +1507,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
 
             const showRegister = document.getElementById('show-register');
             if (showRegister) showRegister.addEventListener('click', () => switchAuthTab('register'));
-            
+
             const showLogin = document.getElementById('show-login');
             if (showLogin) showLogin.addEventListener('click', () => switchAuthTab('login'));
 
@@ -1507,7 +1516,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
 
             const showLoginFromForgot = document.getElementById('show-login-from-forgot');
             if (showLoginFromForgot) showLoginFromForgot.addEventListener('click', () => switchAuthTab('login'));
-            
+
             // Rating interaction logic
             const ratingInputs = document.querySelectorAll('.rating input[type="radio"]');
             const ratingValueSpan = document.getElementById('rating-value');
@@ -1518,7 +1527,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     });
                 });
             }
-            
+
             // Initialize the authentication UI based on PHP session status
             async function initializeAuthUI() {
                 const authContainer = document.getElementById('auth-container');
@@ -1601,7 +1610,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                     });
                 }
             });
-            
+
             const registerForm = document.getElementById('registerForm');
             if (registerForm) {
                 registerForm.addEventListener('submit', async (e) => {
@@ -1671,7 +1680,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
         });
 
     </script>
-    
+
     <!-- Load Supabase config first to create the global client -->
     <script src="assets/js/config.js"></script>
 
@@ -1682,7 +1691,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
     <script src="assets/js/weather-forecast.js"></script>
     <script src="assets/js/poster-slider.js"></script>
     <script src="assets/js/komentar.js"></script>
-    
+
     <!-- Close the main content div -->
     </div>
 </body>
