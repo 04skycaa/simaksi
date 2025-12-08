@@ -119,7 +119,7 @@
             await window.supabaseClient.auth.signOut();
             
             // Clear the server-side PHP session in the background
-            await fetch('auth/logout.php', { method: 'POST' });
+            await fetch('./auth/logout.php', { method: 'POST' });
 
         } catch (error) {
             console.error('Error during logout process:', error);

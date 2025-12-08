@@ -113,7 +113,7 @@ $asset_url = $base_url . '/assets';
             <!-- 3. TAHUN OPERASIONAL (Statik) -->
             <div class="glass-card card-hover">
                 <i class="card-icon fas fa-calendar-check"></i>
-                <div class="stat-number gradient-text">5+</div>
+                <div class="stat-number gradient-text">1+</div>
                 <div class="stat-label" data-translate-key="years_of_operation">Tahun Operasional</div>
             </div>
             </div>
@@ -678,7 +678,7 @@ $asset_url = $base_url . '/assets';
                         <div class="map-header-bar"></div>
                         <div class="map-iframe-wrapper">
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.768447332634!2d112.6028828757616!3d-8.16107007943676!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOMKwMDknNDAuOSJTIDExMsKwMzYnMTAuNCJF!5e0!3m2!1sen!2sid!4v1650000000000!5m2!1sen!2sid"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3953.402258894248!2d112.546798!3d-7.965910!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zLTcuOTY1OTEsIDExMi41NDY3OTg!5e0!3m2!1sen!2sid!4v1650000000000!5m2!1sen!2sid"
                                 width="100%"
                                 height="500"
                                 style="border:0;"

@@ -95,7 +95,7 @@
 
             if (dotsContainer) {
                 const dot = document.createElement('button');
-                dot.className = `poster-dot w-4 h-4 rounded-full ${index === 0 ? 'bg-primary' : 'bg-gray-300'} transition-colors`;
+                dot.className = `dot ${index === 0 ? 'active' : ''}`;
                 dot.setAttribute('data-index', index);
                 dot.addEventListener('click', () => goToSlide(index));
                 dotsContainer.appendChild(dot);
@@ -126,10 +126,9 @@
         const offset = -posterCurrentSlide * 100;
         container.style.transform = `translateX(${offset}%)`;
 
-        const dots = document.querySelectorAll('.poster-dot');
+        const dots = document.querySelectorAll('.dot');
         dots.forEach((dot, index) => {
-            dot.classList.toggle('bg-primary', index === posterCurrentSlide);
-            dot.classList.toggle('bg-gray-300', index !== posterCurrentSlide);
+            dot.classList.toggle('active', index === posterCurrentSlide);
         });
     }
 

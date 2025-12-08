@@ -1929,18 +1929,43 @@ body {
 }
 
 #poster-dots .dot {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    background-color: #d1d5db; 
+    background-color: #d1d5db;
     transition: all 0.3s ease;
     cursor: pointer;
+    margin: 0 4px;
+    border: none;
+    opacity: 0.6;
 }
 #poster-dots .dot.active {
-    background-color: #75B368; 
-    width: 25px;
-    border-radius: 5px;
+    background-color: #75B368;
+    width: 20px;
+    height: 12px;
+    border-radius: 10px;
+    opacity: 1;
+    transform: scale(1.1);
 }
+
+/* Alternative style - uncomment to use pill-shaped dots instead of rounded */
+/*
+#poster-dots .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background-color: #d1d5db;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin: 0 4px;
+}
+#poster-dots .dot.active {
+    background-color: #75B368;
+    width: 24px;
+    border-radius: 12px;
+    transform: scale(1.1);
+}
+*/
 
 /* dark mode */
 .dark-mode #poster-slider {
@@ -1978,10 +2003,12 @@ body {
 }
 
 .dark-mode #poster-dots .dot {
-    background-color: #75B368; 
+    background-color: #75B368;
+    opacity: 0.6;
 }
 .dark-mode #poster-dots .dot.active {
-    background-color: #A5D6A7; 
+    background-color: #A5D6A7;
+    opacity: 1;
 }
 
 /* untuk footer */
