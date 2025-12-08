@@ -789,7 +789,7 @@ $asset_url = $base_url . '/assets';
                     <h3 class="text-2xl font-bold text-primary" data-translate-key="all_comments_title">Semua Komentar</h3>
                     <div class="flex-display items-center space-x-4">
                         <span class="text-gray-600" data-translate-key="sort_by">Urutkan berdasarkan:</span>
-                        <select id="sort-comments" class="border border-gray-300 rounded-full px-4 py-2">
+                        <select id="sort-comments" class="border border-gray-300 px-4 py-2">
                             <option value="terbaru" data-translate-key="sort_newest">Terbaru</option>
                             <option value="rating-tertinggi" data-translate-key="sort_highest_rating">Rating Tertinggi</option>
                             <option value="rating-terendah" data-translate-key="sort_lowest_rating">Rating Terendah</option>
