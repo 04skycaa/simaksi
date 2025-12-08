@@ -20,7 +20,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Supabase Client Library (If needed, keep it) -->
+    <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Native CSS (Jalur Absolut sudah terpasang) -->
@@ -1448,63 +1448,76 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
             }
             window.addEventListener('scroll', highlightNavOnScroll);
             
-            // Tab switching logic for Auth Section
+            // Tab switching logic for Auth Section (with null checks)
             const loginTab = document.getElementById('login-tab');
             const registerTab = document.getElementById('register-tab');
             const forgotTab = document.getElementById('forgot-tab');
             const loginContent = document.getElementById('login-content');
             const registerContent = document.getElementById('register-content');
             const forgotContent = document.getElementById('forgot-content');
-            
+
             function switchAuthTab(tabName) {
-                const tabs = [loginTab, registerTab, forgotTab];
-                const contents = [loginContent, registerContent, forgotContent];
+                const tabs = [loginTab, registerTab, forgotTab].filter(Boolean);
+                const contents = [loginContent, registerContent, forgotContent].filter(Boolean);
                 
                 tabs.forEach(tab => {
-                    tab.classList.remove('text-blue-600', 'border-blue-600');
-                    tab.classList.add('text-gray-500', 'border-transparent');
+                    if (tab) {
+                        tab.classList.remove('text-blue-600', 'border-blue-600');
+                        tab.classList.add('text-gray-500', 'border-transparent');
+                    }
                 });
-                
+
                 contents.forEach(content => {
-                    content.classList.add('hidden');
-                    content.classList.remove('block');
+                    if (content) {
+                        content.classList.add('hidden');
+                        content.classList.remove('block');
+                    }
                 });
-                
-                if (tabName === 'login') {
+
+                if (tabName === 'login' && loginTab && loginContent) {
                     loginTab.classList.add('text-blue-600', 'border-blue-600');
                     loginTab.classList.remove('text-gray-500', 'border-transparent');
                     loginContent.classList.add('block');
                     loginContent.classList.remove('hidden');
-                } else if (tabName === 'register') {
+                } else if (tabName === 'register' && registerTab && registerContent) {
                     registerTab.classList.add('text-blue-600', 'border-blue-600');
                     registerTab.classList.remove('text-gray-500', 'border-transparent');
                     registerContent.classList.add('block');
                     registerContent.classList.remove('hidden');
-                } else if (tabName === 'forgot') {
+                } else if (tabName === 'forgot' && forgotTab && forgotContent) {
                     forgotTab.classList.add('text-blue-600', 'border-blue-600');
                     forgotTab.classList.remove('text-gray-500', 'border-transparent');
                     forgotContent.classList.add('block');
                     forgotContent.classList.remove('hidden');
                 }
             }
+
+            if (loginTab) loginTab.addEventListener('click', () => switchAuthTab('login'));
+            if (registerTab) registerTab.addEventListener('click', () => switchAuthTab('register'));
+            if (forgotTab) forgotTab.addEventListener('click', () => switchAuthTab('forgot'));
+
+            const showRegister = document.getElementById('show-register');
+            if (showRegister) showRegister.addEventListener('click', () => switchAuthTab('register'));
             
-            loginTab.addEventListener('click', () => switchAuthTab('login'));
-            registerTab.addEventListener('click', () => switchAuthTab('register'));
-            forgotTab.addEventListener('click', () => switchAuthTab('forgot'));
-            
-            document.getElementById('show-register').addEventListener('click', () => switchAuthTab('register'));
-            document.getElementById('show-login').addEventListener('click', () => switchAuthTab('login'));
-            document.getElementById('forgot-password-link').addEventListener('click', () => switchAuthTab('forgot'));
-            document.getElementById('show-login-from-forgot').addEventListener('click', () => switchAuthTab('login'));
+            const showLogin = document.getElementById('show-login');
+            if (showLogin) showLogin.addEventListener('click', () => switchAuthTab('login'));
+
+            const forgotPasswordLink = document.getElementById('forgot-password-link');
+            if (forgotPasswordLink) forgotPasswordLink.addEventListener('click', () => switchAuthTab('forgot'));
+
+            const showLoginFromForgot = document.getElementById('show-login-from-forgot');
+            if (showLoginFromForgot) showLoginFromForgot.addEventListener('click', () => switchAuthTab('login'));
             
             // Rating interaction logic
             const ratingInputs = document.querySelectorAll('.rating input[type="radio"]');
             const ratingValueSpan = document.getElementById('rating-value');
-            ratingInputs.forEach(input => {
-                input.addEventListener('change', () => {
-                    ratingValueSpan.textContent = `${input.value} dari 5`;
+            if (ratingInputs && ratingValueSpan) {
+                ratingInputs.forEach(input => {
+                    input.addEventListener('change', () => {
+                        ratingValueSpan.textContent = `${input.value} dari 5`;
+                    });
                 });
-            });
+            }
             
             // Initialize the authentication UI based on PHP session status
             async function initializeAuthUI() {
@@ -1518,19 +1531,22 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 let userName = null;
 
                 try {
-                    const { data: { session }, error } = await supabase.auth.getSession();
-                    if (session) {
-                        isLoggedIn = true;
+                    // Make sure supabase is initialized
+                    if (window.supabase) {
+                        const { data: { session }, error } = await supabase.auth.getSession();
+                        if (session) {
+                            isLoggedIn = true;
 
-                        // Try to get user name from Supabase profile
-                        const { data: profileData, error: profileError } = await supabase
-                            .from('profiles')
-                            .select('nama_lengkap')
-                            .eq('id', session.user.id)
-                            .single();
+                            // Try to get user name from Supabase profile
+                            const { data: profileData, error: profileError } = await supabase
+                                .from('profiles')
+                                .select('nama_lengkap')
+                                .eq('id', session.user.id)
+                                .single();
 
-                        if (profileData) {
-                            userName = profileData.nama_lengkap;
+                            if (profileData) {
+                                userName = profileData.nama_lengkap;
+                            }
                         }
                     }
                 } catch (err) {
@@ -1575,12 +1591,6 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
 
             // Initialize the auth UI when the DOM is loaded
             document.addEventListener('DOMContentLoaded', async function() {
-                // Load Supabase module first
-                if (typeof window.supabase === 'undefined') {
-                    const configModule = await import('./assets/js/config.js');
-                    window.supabase = configModule.supabase;
-                }
-
                 await initializeAuthUI();
 
                 // Set up auth state change listener to keep UI updated
@@ -1592,38 +1602,50 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 }
             });
             
-            document.getElementById('registerForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                // Call the handleRegister function from main.js
-                if (typeof handleRegister === 'function') {
-                    handleRegister(e);
-                }
-            });
-            document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                // Call the handleLogin function from main.js
-                if (typeof handleLogin === 'function') {
-                    handleLogin(e);
-                }
-            });
-            document.getElementById('komentarForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const komentar = document.getElementById('isi-komentar').value;
-                const rating = document.querySelector('input[name="rating"]:checked');
-                if (!komentar || !rating) {
-                    document.getElementById('komentar-error-message').textContent = 'Harap isi komentar dan berikan rating.';
-                    document.getElementById('komentar-error-message').classList.remove('hidden');
-                    document.getElementById('komentar-success-message').classList.add('hidden');
-                    return;
-                }
-                document.getElementById('komentar-success-message').textContent = `Komentar Anda telah terkirim! Rating: ${rating.value}/5`;
-                document.getElementById('komentar-success-message').classList.remove('hidden');
-                document.getElementById('komentar-error-message').classList.add('hidden');
-                document.getElementById('isi-komentar').value = '';
-                rating.checked = false;
-                ratingValueSpan.textContent = 'Pilih rating';
-                setTimeout(() => { loadTestimonials(true); }, 1000);
-            });
+            const registerForm = document.getElementById('registerForm');
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    // Call the handleRegister function from main.js
+                    if (typeof handleRegister === 'function') {
+                        handleRegister(e);
+                    }
+                });
+            }
+
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    // Call the handleLogin function from main.js
+                    if (typeof handleLogin === 'function') {
+                        handleLogin(e);
+                    }
+                });
+            }
+
+            const komentarForm = document.getElementById('komentarForm');
+            if (komentarForm) {
+                komentarForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const komentar = document.getElementById('isi-komentar').value;
+                    const rating = document.querySelector('input[name="rating"]:checked');
+                    if (!komentar || !rating) {
+                        document.getElementById('komentar-error-message').textContent = 'Harap isi komentar dan berikan rating.';
+                        document.getElementById('komentar-error-message').classList.remove('hidden');
+                        document.getElementById('komentar-success-message').classList.add('hidden');
+                        return;
+                    }
+                    document.getElementById('komentar-success-message').textContent = `Komentar Anda telah terkirim! Rating: ${rating.value}/5`;
+                    document.getElementById('komentar-success-message').classList.remove('hidden');
+                    document.getElementById('komentar-error-message').classList.add('hidden');
+                    document.getElementById('isi-komentar').value = '';
+                    rating.checked = false;
+                    const ratingValueSpan = document.getElementById('rating-value');
+                    if(ratingValueSpan) ratingValueSpan.textContent = 'Pilih rating';
+                    setTimeout(() => { if(typeof loadTestimonials === 'function') loadTestimonials(true); }, 1000);
+                });
+            }
 
             // Add click handlers for header logout buttons to use main.js handleLogout function
             const logoutLink = document.getElementById('logout-link');
@@ -1650,16 +1672,15 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
 
     </script>
     
-    <script src="assets/js/index.js"></script>
-    
-    <script src="assets/js/sliding-komentar.js"></script>
-    
-    <script src="assets/js/main.js"></script>
-    
-    <script src="assets/js/weather-forecast.js"></script>
-    
-    <script src="assets/js/poster-slider.js"></script>
+    <!-- Load Supabase config first to create the global client -->
+    <script src="assets/js/config.js"></script>
 
+    <!-- Load other scripts that depend on the global supabaseClient -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/index.js"></script>
+    <script src="assets/js/sliding-komentar.js"></script>
+    <script src="assets/js/weather-forecast.js"></script>
+    <script src="assets/js/poster-slider.js"></script>
     <script src="assets/js/komentar.js"></script>
     
     <!-- Close the main content div -->

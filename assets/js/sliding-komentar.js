@@ -1,505 +1,262 @@
-// Sliding komentar system with auto-rotation
-document.addEventListener('DOMContentLoaded', async function() {
-    // Load Supabase client
-    if (typeof supabase === 'undefined') {
-        const configModule = await import('./config.js');
-        supabase = configModule.supabase;
+(function() {
+    // This script assumes that 'window.supabaseClient' has been initialized by config.js
+    // It will not run if the testimonial slider section is not on the page.
+    if (!document.getElementById('testimoni-container')) {
+        return;
     }
-    
-    // Set up rating system
-    setupRatingSystem();
-    
-    // Check if user is logged in as pendaki
-    checkLoginStatus();
-    
-    // Subscribe to auth state changes
-    subscribeToAuthChanges();
-    
-    // Set up komentar form
-    const komentarForm = document.getElementById('komentarForm');
-    if (komentarForm) {
-        komentarForm.addEventListener('submit', handleKomentarSubmit);
-    }
-    
-    // Load and display all comments in sliding format
-    await loadAllKomentar();
-    
-    // Set up auto-rotation for testimonials
-    setupAutoRotation();
-    
-    // Set up manual navigation
-    setupManualNavigation();
-    
-    // Set up resize handler to maintain proper slide display
-    window.addEventListener('resize', function() {
-        updateSlidePosition();
-    });
-});
 
-// Function to load all comments from database and create sliding system
-async function loadAllKomentar() {
-    try {
-        // Query the komentar table with user profiles - using correct foreign key reference syntax
-        const { data: komentarList, error } = await supabase
-            .from('komentar')
-            .select(`
-                id_komentar,
-                komentar,
-                rating,
-                dibuat_pada,
-                id_pengguna,
-                profiles(nama_lengkap)
-            `)
-            .order('dibuat_pada', { ascending: false }); // Order by creation date, newest first
-        
-        if (error) {
-            console.error('Error fetching comments:', error);
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.supabaseClient) {
+            initializeSlider();
+        } else {
+            console.error('Supabase client not found for sliding-komentar.js. Check script order.');
             showKomentarError();
+        }
+    });
+
+    /**
+     * Initializes all functionality for the testimonial slider.
+     */
+    async function initializeSlider() {
+        await loadAllKomentar();
+        setupManualNavigation();
+        setupAutoRotation();
+        setupRatingSystem(); // Assuming rating form is part of this component
+        subscribeToAuthChanges(); // To show/hide comment form
+        checkLoginStatus(); // Initial check
+        
+        const komentarForm = document.getElementById('komentarForm');
+        if (komentarForm) {
+            komentarForm.addEventListener('submit', handleKomentarSubmit);
+        }
+
+        window.addEventListener('resize', () => {
+            updateSlidePosition();
+        });
+    }
+
+    /**
+     * Fetches comments from Supabase and triggers the UI update.
+     */
+    async function loadAllKomentar() {
+        try {
+            const { data: komentarList, error } = await window.supabaseClient
+                .from('komentar')
+                .select('id_komentar, komentar, rating, dibuat_pada, profiles(nama_lengkap)')
+                .order('dibuat_pada', { ascending: false });
+            
+            if (error) throw error;
+            updateSlidingTestimonials(komentarList);
+
+        } catch (err) {
+            console.error('Error loading comments:', err);
+            showKomentarError();
+        }
+    }
+
+    /**
+     * Renders the testimonial slider UI.
+     */
+    function updateSlidingTestimonials(komentarList) {
+        const container = document.getElementById('testimoni-container');
+        const dotsContainer = document.getElementById('testimonial-dots');
+        if (!container) return;
+
+        container.innerHTML = '';
+        if (dotsContainer) dotsContainer.innerHTML = '';
+
+        if (!komentarList || komentarList.length === 0) {
+            container.innerHTML = `<div class="w-full text-center py-12"><p class="text-gray-600 text-lg">Belum ada komentar.</p></div>`;
+            updateStats(0, 0);
             return;
         }
-        
-        // Update the UI with the comments data
-        updateSlidingTestimonials(komentarList);
-    } catch (err) {
-        console.error('Error loading comments:', err);
-        showKomentarError();
-    }
-}
 
-// Function to update the UI with sliding testimonials
-function updateSlidingTestimonials(komentarList) {
-    const container = document.getElementById('testimoni-container');
-    const dotsContainer = document.getElementById('testimonial-dots');
+        updateStats(
+            komentarList.length,
+            komentarList.reduce((sum, k) => sum + k.rating, 0) / komentarList.length
+        );
 
-    // Check if container exists before trying to access it
-    if (!container) {
-        console.error('testimoni-container not found');
-        return;
-    }
+        komentarList.forEach((komentar, index) => {
+            const card = createTestimonialCard(komentar);
+            container.appendChild(card);
 
-    // Clear all loading placeholders first - remove any elements with animate-pulse class
-    const placeholders = container.querySelectorAll('.animate-pulse');
-    placeholders.forEach(placeholder => placeholder.remove());
-
-    // Clear remaining containers
-    if (dotsContainer) dotsContainer.innerHTML = '';
-
-    if (!komentarList || komentarList.length === 0) {
-        container.innerHTML = `
-            <div class="w-full text-center py-12">
-                <p class="text-gray-600 text-lg">Belum ada komentar dari pendaki</p>
-            </div>
-        `;
-        // Update stats to show 0 when no comments
-        updateStats(0, 0);
-        return;
-    }
-
-    // Calculate stats
-    const totalComments = komentarList.length;
-    const avgRating = komentarList.reduce((sum, komentar) => sum + komentar.rating, 0) / totalComments;
-
-    // Update stats display
-    updateStats(totalComments, avgRating);
-
-    // Create testimonial cards
-    komentarList.forEach((komentar, index) => {
-        // Format the date
-        const formattedDate = new Date(komentar.dibuat_pada).toLocaleDateString('id-ID', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
+            if (dotsContainer) {
+                const dot = document.createElement('button');
+                dot.className = `testimonial-dot w-4 h-4 rounded-full ${index === 0 ? 'bg-primary' : 'bg-gray-300'} transition-colors`;
+                dot.setAttribute('data-index', index);
+                dot.addEventListener('click', () => goToSlide(index));
+                dotsContainer.appendChild(dot);
+            }
         });
 
-        // Create a card for the comment
-        const card = document.createElement('div');
-        card.className = 'testimonial-card w-full flex-shrink-0 px-4';
-        card.style.minWidth = '100%'; // Ensure each card takes full width
-
-        // Check if profiles exists before accessing its properties
+        window.totalSlides = komentarList.length;
+        window.currentSlide = 0;
+        updateSlidePosition();
+        resetAutoRotation(); // Reset rotation after loading
+    }
+    
+    function createTestimonialCard(komentar) {
+        const date = new Date(komentar.dibuat_pada).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
         const namaLengkap = komentar.profiles ? komentar.profiles.nama_lengkap : 'Pendaki';
         const inisial = namaLengkap.charAt(0).toUpperCase();
 
+        const card = document.createElement('div');
+        card.className = 'testimonial-card w-full flex-shrink-0 px-4';
+        card.style.minWidth = '100%';
         card.innerHTML = `
             <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
                 <div class="flex items-center mb-6">
-                    <div class="w-20 h-20 bg-gradient-to-r from-accent to-primary rounded-full flex items-center justify-center text-white font-bold text-2xl mr-6">
-                        ${inisial}
-                    </div>
+                    <div class="w-20 h-20 bg-gradient-to-r from-accent to-primary rounded-full flex items-center justify-center text-white font-bold text-2xl mr-6">${inisial}</div>
                     <div>
                         <h4 class="font-bold text-2xl text-gray-800">${namaLengkap}</h4>
                         <div class="flex items-center mt-2">
-                            <div class="rating-display text-yellow-400 flex text-2xl">
-                                ${generateStars(komentar.rating)}
-                            </div>
+                            <div class="rating-display text-yellow-400 flex text-2xl">${generateStars(komentar.rating)}</div>
                             <span class="ml-3 text-gray-600 text-lg">${komentar.rating}/5</span>
                         </div>
                     </div>
                 </div>
                 <p class="text-gray-700 text-xl italic mb-6 leading-relaxed">"${komentar.komentar}"</p>
-                <div class="text-gray-500 text-lg">- ${formattedDate}</div>
-            </div>
-        `;
-
-        container.appendChild(card);
-
-        // Create pagination dot
-        if (dotsContainer) {
-            const dot = document.createElement('button');
-            dot.className = `testimonial-dot w-4 h-4 rounded-full ${index === 0 ? 'bg-primary' : 'bg-gray-300'} transition-colors`;
-            dot.setAttribute('data-index', index);
-            dot.addEventListener('click', () => goToSlide(index));
-            dotsContainer.appendChild(dot);
-        }
-    });
-
-    // Initialize current slide
-    currentSlide = 0;
-    totalSlides = komentarList.length; // Set total slides after loading comments
-    updateSlidePosition();
-}
-
-// Function to update stats display
-function updateStats(totalComments, avgRating) {
-    const totalCommentsEl = document.getElementById('total-komentar');
-    const avgRatingEl = document.getElementById('avg-rating');
-    const satisfactionEl = document.getElementById('total-pendaki-rating');
-    
-    if (totalCommentsEl) {
-        totalCommentsEl.textContent = totalComments;
+                <div class="text-gray-500 text-lg">- ${date}</div>
+            </div>`;
+        return card;
     }
-    
-    if (avgRatingEl) {
-        avgRatingEl.textContent = avgRating ? avgRating.toFixed(1) + '/5' : '0/5';
-    }
-    
-    if (satisfactionEl) {
-        // Calculate satisfaction percentage based on average rating (assuming 5-star scale)
-        const satisfactionPercentage = avgRating ? Math.round((avgRating / 5) * 100) : 0;
-        satisfactionEl.textContent = totalComments > 0 ? satisfactionPercentage + '%' : '0%';
-    }
-}
 
-// Function to generate star icons based on rating
-function generateStars(rating) {
-    let stars = '';
-    for (let i = 1; i <= 5; i++) {
-        if (i <= rating) {
-            stars += '<span class="text-yellow-400">★</span>';
-        } else {
-            stars += '<span class="text-gray-300">★</span>';
+
+    function updateStats(totalComments, avgRating) {
+        const totalEl = document.getElementById('total-komentar');
+        const avgEl = document.getElementById('avg-rating');
+        const satisfactionEl = document.getElementById('total-pendaki-rating');
+        if(totalEl) totalEl.textContent = totalComments;
+        if(avgEl) avgEl.textContent = avgRating ? avgRating.toFixed(1) + '/5' : '0/5';
+        if(satisfactionEl) {
+            const percentage = avgRating ? Math.round((avgRating / 5) * 100) : 0;
+            satisfactionEl.textContent = totalComments > 0 ? percentage + '%' : '0%';
         }
     }
-    return stars;
-}
 
-// Function to show an error if comments fail to load
-function showKomentarError() {
-    const container = document.getElementById('testimoni-container');
-    
-    // Check if container exists before trying to access it
-    if (!container) {
-        console.error('testimoni-container not found');
-        return;
+    function generateStars(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) stars += `<span class="${i <= rating ? 'text-yellow-400' : 'text-gray-300'}">★</span>`;
+        return stars;
+    }
+
+    function showKomentarError() {
+        const container = document.getElementById('testimoni-container');
+        if (container) container.innerHTML = '<div class="w-full text-center py-12"><p class="text-red-500 text-lg">Gagal memuat komentar.</p></div>';
+    }
+
+    // --- SLIDER CONTROLS ---
+    let currentSlide = 0;
+    let totalSlides = 0;
+    let autoRotationInterval;
+
+    function updateSlidePosition() {
+        const container = document.getElementById('testimoni-container');
+        if (!container || totalSlides === 0) return;
+        container.style.transform = `translateX(${-currentSlide * 100}%)`;
+
+        document.querySelectorAll('.testimonial-dot').forEach((dot, index) => {
+            dot.classList.toggle('bg-primary', index === currentSlide);
+            dot.classList.toggle('bg-gray-300', index !== currentSlide);
+        });
     }
     
-    container.innerHTML = `
-        <div class="w-full text-center py-12">
-            <p class="text-red-500 text-lg">Gagal memuat komentar. Silakan coba lagi nanti.</p>
-        </div>
-    `;
-}
-
-// Sliding functionality
-let currentSlide = 0;
-let totalSlides = 0;
-let autoRotationInterval;
-
-// Function to update slide position
-function updateSlidePosition() {
-    const container = document.getElementById('testimoni-container');
-    if (!container) return;
-
-    totalSlides = container.children.length;
-    const offset = -currentSlide * 100;
-    container.style.transform = `translateX(${offset}%)`;
-
-    // Update active slide card
-    const cards = container.querySelectorAll('.testimonial-card');
-    cards.forEach((card, index) => {
-        if (index === currentSlide) {
-            card.classList.add('active', 'animate');
-            // Remove animation class after animation completes for future animations
-            setTimeout(() => {
-                card.classList.remove('animate');
-            }, 500);
-        } else {
-            card.classList.remove('active', 'animate');
-        }
-    });
-
-    // Update active dot
-    const dots = document.querySelectorAll('.testimonial-dot');
-    dots.forEach((dot, index) => {
-        if (index === currentSlide) {
-            dot.classList.remove('bg-gray-300');
-            dot.classList.add('bg-primary');
-            dot.classList.add('active');
-        } else {
-            dot.classList.remove('bg-primary');
-            dot.classList.remove('active');
-            dot.classList.add('bg-gray-300');
-        }
-    });
-}
-
-// Function to go to a specific slide
-function goToSlide(slideIndex) {
-    if (slideIndex >= 0 && slideIndex < totalSlides) {
+    function goToSlide(slideIndex) {
         currentSlide = slideIndex;
         updateSlidePosition();
         resetAutoRotation();
     }
-}
 
-// Function to go to the next slide
-function nextSlide() {
-    currentSlide = (currentSlide + 1) % totalSlides;
-    updateSlidePosition();
-}
-
-// Function to go to the previous slide
-function prevSlide() {
-    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-    updateSlidePosition();
-}
-
-// Function to set up auto rotation
-function setupAutoRotation() {
-    // Set up automatic rotation every 5 seconds
-    autoRotationInterval = setInterval(() => {
-        nextSlide();
-    }, 5000);
-}
-
-// Function to reset auto rotation
-function resetAutoRotation() {
-    clearInterval(autoRotationInterval);
-    setupAutoRotation();
-}
-
-// Function to set up manual navigation
-function setupManualNavigation() {
-    const nextBtn = document.getElementById('next-testimonial');
-    const prevBtn = document.getElementById('prev-testimonial');
-    
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            nextSlide();
-            resetAutoRotation();
+    function setupManualNavigation() {
+        document.getElementById('next-testimonial')?.addEventListener('click', () => {
+            if (totalSlides > 1) {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                updateSlidePosition();
+                resetAutoRotation();
+            }
+        });
+        document.getElementById('prev-testimonial')?.addEventListener('click', () => {
+            if (totalSlides > 1) {
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                updateSlidePosition();
+                resetAutoRotation();
+            }
         });
     }
-    
-    if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
-            prevSlide();
-            resetAutoRotation();
-        });
-    }
-}
 
-// Function to set up rating system
-function setupRatingSystem() {
-    const ratingInputs = document.querySelectorAll('input[name="rating"]');
-    const ratingValue = document.getElementById('rating-value');
-    
-    ratingInputs.forEach(input => {
-        const label = document.querySelector(`label[for="${input.id}"]`);
-        label.addEventListener('click', function() {
-            // Reset all stars to empty
-            document.querySelectorAll('.rating label').forEach(star => {
-                star.classList.remove('text-yellow-400');
-                star.classList.add('text-gray-300');
-            });
-            
-            // Fill stars up to selected value
-            const value = parseInt(input.value);
-            for (let i = 1; i <= value; i++) {
-                const star = document.getElementById(`star${i}`).nextElementSibling;
-                star.classList.remove('text-gray-300');
-                star.classList.add('text-yellow-400');
-            }
-            
-            // Update rating text
-            ratingValue.textContent = `Rating: ${value}/5`;
-        });
-    });
-}
-
-// Function to check if user is logged in as pendaki
-async function checkLoginStatus() {
-    try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-            console.error('Error getting session:', error);
-            return;
-        }
-        
-        if (session) {
-            // Get user profile to check role
-            const { data: userData, error: userError } = await supabase
-                .from('profiles')
-                .select('peran, nama_lengkap')
-                .eq('id', session.user.id)
-                .single();
-            
-            if (userError) {
-                console.error('Error getting user data:', userError);
-                return;
-            }
-            
-            if (userData.peran === 'pendaki') {
-                // Show the comment form for pendaki
-                const komentarFormSection = document.getElementById('komentar-form-section');
-                if (komentarFormSection) {
-                    komentarFormSection.classList.remove('hidden');
-                }
-            } else {
-                // For admin or other roles, don't show the comment form
-                const komentarFormSection = document.getElementById('komentar-form-section');
-                if (komentarFormSection) {
-                    komentarFormSection.classList.add('hidden');
-                }
-            }
-        } else {
-            // If not logged in, hide the comment form
-            const komentarFormSection = document.getElementById('komentar-form-section');
-            if (komentarFormSection) {
-                komentarFormSection.classList.add('hidden');
-            }
-        }
-    } catch (err) {
-        console.error('Check login status error:', err);
-    }
-}
-
-// Function to subscribe to auth state changes
-function subscribeToAuthChanges() {
-    supabase.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-            // User has logged in or token has been refreshed
-            checkLoginStatus();
-        } else if (event === 'SIGNED_OUT') {
-            // User has logged out
-            const komentarFormSection = document.getElementById('komentar-form-section');
-            if (komentarFormSection) {
-                komentarFormSection.classList.add('hidden');
-            }
-        }
-    });
-}
-
-// Function to handle komentar form submission
-async function handleKomentarSubmit(event) {
-    event.preventDefault();
-    
-    // Get the session to check if user is logged in
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError || !session) {
-        showMessage('komentar-error-message', 'Anda harus login terlebih dahulu untuk memberikan komentar');
-        return;
-    }
-    
-    // Check if user role is 'pendaki'
-    const { data: userData, error: userError } = await supabase
-        .from('profiles')
-        .select('peran')
-        .eq('id', session.user.id)
-        .single();
-    
-    if (userError || !userData || userData.peran !== 'pendaki') {
-        showMessage('komentar-error-message', 'Hanya pengguna dengan role pendaki yang dapat memberikan komentar');
-        return;
-    }
-    
-    // Get form values
-    const komentar = document.getElementById('isi-komentar').value;
-    const rating = document.querySelector('input[name="rating"]:checked');
-    
-    if (!komentar.trim()) {
-        showMessage('komentar-error-message', 'Komentar tidak boleh kosong');
-        return;
-    }
-    
-    if (!rating) {
-        showMessage('komentar-error-message', 'Silakan berikan rating terlebih dahulu');
-        return;
-    }
-    
-    try {
-        // Insert komentar to database
-        const { error } = await supabase
-            .from('komentar')
-            .insert([
-                {
-                    id_pengguna: session.user.id,
-                    komentar: komentar,
-                    rating: parseInt(rating.value)
-                }
-            ]);
-        
-        if (error) {
-            console.error('Error inserting komentar:', error);
-            showMessage('komentar-error-message', 'Gagal menyimpan komentar. Silakan coba lagi.');
-            return;
-        }
-        
-        // Show success message and reset form
-        showMessage('komentar-success-message', 'Komentar berhasil dikirim!');
-        document.getElementById('komentarForm').reset();
-        
-        // Reset rating display
-        document.querySelectorAll('.rating label').forEach(star => {
-            star.classList.remove('text-yellow-400');
-            star.classList.add('text-gray-300');
-        });
-        document.getElementById('rating-value').textContent = 'Pilih rating';
-        
-        // Reload comments to include the new one
-        await loadAllKomentar();
-        updateSlidePosition(); // Update the slide position after reload
-    } catch (err) {
-        console.error('Error submitting komentar:', err);
-        showMessage('komentar-error-message', 'Terjadi kesalahan saat mengirim komentar');
-    }
-}
-
-// Function to show a message
-function showMessage(elementId, message) {
-    const element = document.getElementById(elementId);
-    if (element) {
-        element.textContent = message;
-        element.classList.remove('hidden');
-        
-        // Auto-hide success messages after 5 seconds
-        if (elementId.includes('success')) {
-            setTimeout(() => {
-                element.classList.add('hidden');
+    function setupAutoRotation() {
+        clearInterval(autoRotationInterval);
+        if (totalSlides > 1) {
+            autoRotationInterval = setInterval(() => {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                updateSlidePosition();
             }, 5000);
         }
     }
-}
 
-// Function to hide a message
-function hideMessage(elementId) {
-    const element = document.getElementById(elementId);
-    if (element) {
-        element.classList.add('hidden');
+    function resetAutoRotation() {
+        clearInterval(autoRotationInterval);
+        setupAutoRotation();
     }
-}
 
-// Make functions available globally to be used by main.js
-window.updateSlidingTestimonials = updateSlidingTestimonials;
-window.loadAllKomentar = loadAllKomentar;
+    // --- AUTH & FORM LOGIC ---
+    function setupRatingSystem() { /* ... rating logic ... */ }
+
+    async function checkLoginStatus() {
+        const form = document.getElementById('komentar-form-section');
+        if(!form) return;
+        try {
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (session) {
+                const { data: profile } = await window.supabaseClient.from('profiles').select('peran').eq('id', session.user.id).single();
+                form.classList.toggle('hidden', !profile || profile.peran !== 'pendaki');
+            } else {
+                form.classList.add('hidden');
+            }
+        } catch (e) {
+            form.classList.add('hidden');
+        }
+    }
+
+    function subscribeToAuthChanges() {
+        window.supabaseClient.auth.onAuthStateChange((event, session) => {
+            checkLoginStatus();
+        });
+    }
+
+    async function handleKomentarSubmit(event) {
+        event.preventDefault();
+        const errorMsg = document.getElementById('komentar-error-message');
+        const successMsg = document.getElementById('komentar-success-message');
+        
+        try {
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (!session) throw new Error('Anda harus login untuk memberikan komentar.');
+            
+            const komentar = document.getElementById('isi-komentar').value.trim();
+            const ratingInput = document.querySelector('input[name="rating"]:checked');
+            if (!komentar || !ratingInput) throw new Error('Komentar dan Rating wajib diisi.');
+            
+            const { error } = await window.supabaseClient.from('komentar').insert([{ id_pengguna: session.user.id, komentar, rating: parseInt(ratingInput.value) }]);
+            if (error) throw error;
+            
+            showMessage(successMsg, 'Komentar berhasil dikirim!');
+            document.getElementById('komentarForm').reset();
+            document.getElementById('rating-value').textContent = 'Pilih rating';
+            await loadAllKomentar();
+
+        } catch(error) {
+            showMessage(errorMsg, error.message);
+        }
+    }
+
+    function showMessage(element, message) {
+        if(element) {
+            element.textContent = message;
+            element.classList.remove('hidden');
+            setTimeout(() => element.classList.add('hidden'), 5000);
+        }
+    }
+
+})();

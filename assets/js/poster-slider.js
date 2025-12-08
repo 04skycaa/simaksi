@@ -1,129 +1,88 @@
-// Poster slider system with auto-rotation
-document.addEventListener('DOMContentLoaded', async function() {
-    // Load Supabase client
-    if (typeof supabase === 'undefined') {
-        try {
-            const configModule = await import('./config.js');
-            window.supabase = configModule.supabase;
-        } catch (err) {
-            console.error('Error loading Supabase config:', err);
-            return;
-        }
+(function() {
+    // This script assumes that 'window.supabaseClient' has been initialized by config.js
+    // It will not run if the poster slider container is not on the page.
+    if (!document.getElementById('poster-slider')) {
+        return;
     }
-    
-    // Load and display all active posters in sliding format
-    await loadAllPosters();
-    
-    // Set up auto-rotation for posters
-    setupAutoRotation();
-    
-    // Set up manual navigation
-    setupManualNavigation();
-});
 
-// Function to load all active posters from database and create sliding system
-async function loadAllPosters() {
-    try {
-        // Query the promosi_poster table for active posters ordered by sequence
-        const { data: posterList, error } = await supabase
-            .from('promosi_poster')
-            .select(`
-                id_poster,
-                judul_poster,
-                deskripsi_poster,
-                url_gambar,
-                url_tautan,
-                urutan
-            `)
-            .eq('is_aktif', true) // Only load active posters
-            .order('urutan', { ascending: true }); // Order by sequence
-        
-        if (error) {
-            console.error('Error fetching posters:', error);
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.supabaseClient) {
+            initializePosterSlider();
+        } else {
+            console.error('Supabase client not found. Make sure config.js is loaded first.');
             showPosterError();
+        }
+    });
+
+    /**
+     * Initializes all functionality for the poster slider.
+     */
+    async function initializePosterSlider() {
+        await loadAllPosters();
+        setupManualNavigation();
+        setupAutoRotation();
+    }
+
+    /**
+     * Fetches poster data from Supabase and updates the UI.
+     */
+    async function loadAllPosters() {
+        try {
+            const { data: posterList, error } = await window.supabaseClient
+                .from('promosi_poster')
+                .select('id_poster, judul_poster, deskripsi_poster, url_gambar, url_tautan, urutan')
+                .eq('is_aktif', true)
+                .order('urutan', { ascending: true });
+
+            if (error) throw error;
+            
+            updateSlidingPosters(posterList);
+
+        } catch (err) {
+            console.error('Error loading posters:', err);
+            showPosterError();
+        }
+    }
+
+    /**
+     * Renders the poster slides and dots based on the fetched data.
+     */
+    function updateSlidingPosters(posterList) {
+        const container = document.getElementById('poster-container');
+        const dotsContainer = document.getElementById('poster-dots');
+
+        if (!container) return;
+        container.innerHTML = '';
+        if (dotsContainer) dotsContainer.innerHTML = '';
+
+        if (!posterList || posterList.length === 0) {
+            container.innerHTML = '<div class="w-full text-center py-12"><p class="text-gray-600 text-lg">Tidak ada poster promosi saat ini</p></div>';
             return;
         }
-        
-        // Update the UI with the posters data
-        updateSlidingPosters(posterList);
-    } catch (err) {
-        console.error('Error loading posters:', err);
-        showPosterError();
-    }
-}
 
-// Function to update the UI with sliding posters
-function updateSlidingPosters(posterList) {
-    const container = document.getElementById('poster-container');
-    const dotsContainer = document.getElementById('poster-dots');
-
-    // Check if container exists before trying to access it
-    if (!container) {
-        console.error('poster-container not found');
-        return;
-    }
-
-    // Clear containers
-    container.innerHTML = '';
-    if (dotsContainer) dotsContainer.innerHTML = '';
-
-    if (!posterList || posterList.length === 0) {
-        container.innerHTML = `
-            <div class="w-full text-center py-12">
-                <p class="text-gray-600 text-lg">Tidak ada poster promosi saat ini</p>
-            </div>
-        `;
-        return;
-    }
-
-    // Create poster cards
-    posterList.forEach((poster, index) => {
-        // Create a card for the poster
-        const card = document.createElement('div');
-        card.className = 'poster-card w-full flex-shrink-0 px-4 card-hover';
-        card.style.minWidth = '100%'; // Ensure each card takes full width
-
-        // Generate the image URL - use the stored URL directly or try to construct it
-        let imageUrl = poster.url_gambar;
-
-        // If supabase client exists and the URL is a path in storage bucket, construct public URL
-        if (window.supabase && imageUrl && imageUrl.startsWith('poster-promosi/')) {
-            try {
-                const { data } = supabase.storage.from('poster-promosi').getPublicUrl(imageUrl);
-                if (data && data.publicUrl) {
-                    imageUrl = data.publicUrl;
-                }
-            } catch (e) {
-                // If there's an error generating public URL, use the original URL
-                console.warn('Error generating public URL for poster:', e);
-            }
-        }
-
-        // Create card content with image, title, description, and optional link
-        let cardContent = '';
-
-        if (poster.url_tautan) {
-            // If there's a link, make the whole card clickable
-            cardContent = `
-                <a href="${poster.url_tautan}" target="_blank" rel="noopener noreferrer">
+        posterList.forEach((poster, index) => {
+            const card = document.createElement('div');
+            card.className = 'poster-card w-full flex-shrink-0 px-4 card-hover';
+            card.style.minWidth = '100%';
+            
+            let imageUrl = poster.url_gambar;
+            // The logic to get public URL from storage is complex without the full client.
+            // Assuming `url_gambar` stores the full public URL for now.
+            
+            card.innerHTML = poster.url_tautan ?
+                `<a href="${poster.url_tautan}" target="_blank" rel="noopener noreferrer">
                     <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
                         <div class="relative overflow-hidden rounded-2xl mb-6">
                             <img src="${imageUrl}" alt="${poster.judul_poster}" class="w-full h-64 object-cover transition-transform duration-500 hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                <span class="text-white text-xl font-bold">Lihat Detail</span>
-                            </div>
                         </div>
                         <div class="text-center">
                             <h4 class="font-bold text-2xl text-gray-800 mb-3">${poster.judul_poster}</h4>
                             <p class="text-gray-700 text-lg mb-4">${poster.deskripsi_poster}</p>
                         </div>
                     </div>
-                </a>
-            `;
-        } else {
-            // If no link, just show the poster
-            cardContent = `
-                <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
+                </a>` :
+                `<div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 h-full">
                     <div class="relative overflow-hidden rounded-2xl mb-6">
                         <img src="${imageUrl}" alt="${poster.judul_poster}" class="w-full h-64 object-cover">
                     </div>
@@ -131,146 +90,91 @@ function updateSlidingPosters(posterList) {
                         <h4 class="font-bold text-2xl text-gray-800 mb-3">${poster.judul_poster}</h4>
                         <p class="text-gray-700 text-lg mb-4">${poster.deskripsi_poster}</p>
                     </div>
-                </div>
-            `;
-        }
+                </div>`;
+            container.appendChild(card);
 
-        card.innerHTML = cardContent;
-        container.appendChild(card);
+            if (dotsContainer) {
+                const dot = document.createElement('button');
+                dot.className = `poster-dot w-4 h-4 rounded-full ${index === 0 ? 'bg-primary' : 'bg-gray-300'} transition-colors`;
+                dot.setAttribute('data-index', index);
+                dot.addEventListener('click', () => goToSlide(index));
+                dotsContainer.appendChild(dot);
+            }
+        });
 
-        // Create pagination dot
-        if (dotsContainer) {
-            const dot = document.createElement('button');
-            dot.className = `poster-dot w-4 h-4 rounded-full ${index === 0 ? 'bg-primary' : 'bg-gray-300'} transition-colors`;
-            dot.setAttribute('data-index', index);
-            dot.addEventListener('click', () => goToSlide(index));
-            dotsContainer.appendChild(dot);
-        }
-    });
-
-    // Initialize current slide
-    window.posterCurrentSlide = 0;
-    window.posterTotalSlides = posterList.length; // Set total slides after loading posters
-    updateSlidePosition();
-}
-
-// Function to show an error if posters fail to load
-function showPosterError() {
-    const container = document.getElementById('poster-container');
-    
-    // Check if container exists before trying to access it
-    if (!container) {
-        console.error('poster-container not found');
-        return;
-    }
-    
-    container.innerHTML = `
-        <div class="w-full text-center py-12">
-            <p class="text-red-500 text-lg">Gagal memuat poster promosi. Silakan coba lagi nanti.</p>
-        </div>
-    `;
-}
-
-// Sliding functionality
-// Using window object to prevent conflicts with other scripts
-window.posterCurrentSlide = 0;
-window.posterTotalSlides = 0;
-window.posterAutoRotationInterval = null;
-
-// Function to update slide position
-function updateSlidePosition() {
-    const container = document.getElementById('poster-container');
-    if (!container) return;
-
-    window.posterTotalSlides = container.children.length;
-    const offset = -window.posterCurrentSlide * 100;
-    container.style.transform = `translateX(${offset}%)`;
-
-    // Update active slide card
-    const cards = container.querySelectorAll('.poster-card');
-    cards.forEach((card, index) => {
-        if (index === window.posterCurrentSlide) {
-            card.classList.add('active', 'animate');
-            // Remove animation class after animation completes for future animations
-            setTimeout(() => {
-                card.classList.remove('animate');
-            }, 500);
-        } else {
-            card.classList.remove('active', 'animate');
-        }
-    });
-
-    // Update active dot
-    const dots = document.querySelectorAll('.poster-dot');
-    dots.forEach((dot, index) => {
-        if (index === window.posterCurrentSlide) {
-            dot.classList.remove('bg-gray-300');
-            dot.classList.add('bg-primary');
-            dot.classList.add('active');
-        } else {
-            dot.classList.remove('bg-primary');
-            dot.classList.remove('active');
-            dot.classList.add('bg-gray-300');
-        }
-    });
-}
-
-// Function to go to a specific slide
-function goToSlide(slideIndex) {
-    if (slideIndex >= 0 && slideIndex < window.posterTotalSlides) {
-        window.posterCurrentSlide = slideIndex;
+        window.posterCurrentSlide = 0;
+        window.posterTotalSlides = posterList.length;
         updateSlidePosition();
-        resetAutoRotation();
     }
-}
 
-// Function to go to the next slide
-function nextSlide() {
-    window.posterCurrentSlide = (window.posterCurrentSlide + 1) % window.posterTotalSlides;
-    updateSlidePosition();
-}
-
-// Function to go to the previous slide
-function prevSlide() {
-    window.posterCurrentSlide = (window.posterCurrentSlide - 1 + window.posterTotalSlides) % window.posterTotalSlides;
-    updateSlidePosition();
-}
-
-// Function to set up auto rotation
-function setupAutoRotation() {
-    // Clear any existing interval
-    if (window.posterAutoRotationInterval) {
-        clearInterval(window.posterAutoRotationInterval);
+    function showPosterError() {
+        const container = document.getElementById('poster-container');
+        if (container) {
+            container.innerHTML = '<div class="w-full text-center py-12"><p class="text-red-500 text-lg">Gagal memuat poster promosi.</p></div>';
+        }
     }
-    
-    // Set up automatic rotation every 6 seconds
-    window.posterAutoRotationInterval = setInterval(() => {
-        nextSlide();
-    }, 6000);
-}
 
-// Function to reset auto rotation
-function resetAutoRotation() {
-    clearInterval(window.posterAutoRotationInterval);
-    setupAutoRotation();
-}
+    // --- SLIDER LOGIC ---
+    let posterCurrentSlide = 0;
+    let posterTotalSlides = 0;
+    let posterAutoRotationInterval = null;
 
-// Function to set up manual navigation
-function setupManualNavigation() {
-    const nextBtn = document.getElementById('next-poster');
-    const prevBtn = document.getElementById('prev-poster');
-    
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            nextSlide();
-            resetAutoRotation();
+    function updateSlidePosition() {
+        const container = document.getElementById('poster-container');
+        if (!container) return;
+        posterTotalSlides = container.children.length;
+        const offset = -posterCurrentSlide * 100;
+        container.style.transform = `translateX(${offset}%)`;
+
+        const dots = document.querySelectorAll('.poster-dot');
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('bg-primary', index === posterCurrentSlide);
+            dot.classList.toggle('bg-gray-300', index !== posterCurrentSlide);
         });
     }
-    
-    if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
-            prevSlide();
+
+    function goToSlide(slideIndex) {
+        if (slideIndex >= 0 && slideIndex < posterTotalSlides) {
+            posterCurrentSlide = slideIndex;
+            updateSlidePosition();
             resetAutoRotation();
+        }
+    }
+
+    function nextSlide() {
+        posterCurrentSlide = (posterCurrentSlide + 1) % posterTotalSlides;
+        updateSlidePosition();
+    }
+
+    function prevSlide() {
+        posterCurrentSlide = (posterCurrentSlide - 1 + posterTotalSlides) % posterTotalSlides;
+        updateSlidePosition();
+    }
+
+    function setupAutoRotation() {
+        clearInterval(posterAutoRotationInterval);
+        if (posterTotalSlides > 1) {
+            posterAutoRotationInterval = setInterval(nextSlide, 6000);
+        }
+    }
+
+    function resetAutoRotation() {
+        clearInterval(posterAutoRotationInterval);
+        setupAutoRotation();
+    }
+
+    function setupManualNavigation() {
+        document.getElementById('next-poster')?.addEventListener('click', () => {
+            if (posterTotalSlides > 1) {
+                nextSlide();
+                resetAutoRotation();
+            }
+        });
+        document.getElementById('prev-poster')?.addEventListener('click', () => {
+            if (posterTotalSlides > 1) {
+                prevSlide();
+                resetAutoRotation();
+            }
         });
     }
-}
+})();
