@@ -6,9 +6,9 @@ session_destroy();  // hancurkan session
 // Check if there's a redirect parameter, otherwise default to login
 $redirect = $_GET['redirect'] ?? 'login';
 if ($redirect === 'index') {
-    $location = '/simaksi/index.php';
+    $location = '../index.php';
 } else {
-    $location = '/simaksi/auth/login.php';
+    $location = '../auth/login.php';
 }
 
 header("Location: $location");

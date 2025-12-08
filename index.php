@@ -12,7 +12,13 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-translate-key="page_title">Gunung Butak </title>
-    <link rel="icon" type="image/x-icon" href="assets/images/LOGO_WEB.png">
+    <?php
+// Define base paths for flexible URL handling
+$base_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']);
+$base_url = rtrim($base_url, '/');
+$asset_url = $base_url . '/assets';
+?>
+<link rel="icon" type="image/x-icon" href="<?php echo $asset_url; ?>/images/LOGO_WEB.png">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -23,8 +29,8 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
     <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Native CSS (Jalur Absolut sudah terpasang) -->
-    <link rel="stylesheet" href="/simaksi/assets/css/index.css">
+    <!-- Native CSS (Relative Path) -->
+    <link rel="stylesheet" href="<?php echo $asset_url; ?>/css/index.css">
 </head>
 <body class="bg-white">
     <!-- Main Content -->
@@ -34,7 +40,7 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
             <div class="container auto-margin">
                 <div class="flex-display items-center justify-between">
                     <div class="flex-display items-center">
-                        <img src="assets/images/LOGO_WEB.png" alt="Logo Gunung Butak" class="w-10 h-10 mr-3">
+                        <img src="<?php echo $asset_url; ?>/images/LOGO_WEB.png" alt="Logo Gunung Butak" class="w-10 h-10 mr-3">
                         <h1 class="text-xl font-bold" data-translate-key="header_title">Gunung Butak</h1>
                     </div>
                     <div class="flex-display items-center space-x-4">
@@ -49,13 +55,15 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                             <div id="auth-display">
                                 <span id="greeting-text" class="text-sm" data-translate-key="greeting_text">Selamat datang,</span>
                                 <span id="user-fullname" class="font-semibold text-sm"><?php echo htmlspecialchars($user_name); ?></span>
-                                <a href="/simaksi/auth/relogin.php" id="logout-link-header" class="border border-white px-3 py-1 rounded-full text-xs hover-bg-white text-white transition-default" data-translate-key="logout_button_header">
+                                <?php $logout_url = $base_url . '/auth/relogin.php'; ?>
+                                <a href="<?php echo $logout_url; ?>" id="logout-link-header" class="border border-white px-3 py-1 rounded-full text-xs hover-bg-white text-white transition-default" data-translate-key="logout_button_header">
                                     Logout
                                 </a>
                             </div>
                         <?php else: ?>
                             <div id="auth-display">
-                                <a href="/simaksi/auth/login.php" class="login-button border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default" data-translate-key="login_button">
+                                <?php $login_url = $base_url . '/auth/login.php'; ?>
+                                <a href="<?php echo $login_url; ?>" class="login-button border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default" data-translate-key="login_button">
                                     Login
                                 </a>
                             </div>
@@ -784,6 +792,16 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                                         <i class="fas fa-paper-plane mr-3"></i>Kirim Komentar
                                     </button>
                                 </form>
+
+                                <!-- Message for non-logged in users -->
+                                <div id="login-to-comment-message" class="hidden text-center py-8">
+                                    <i class="fas fa-lock text-4xl text-gray-400 mb-4"></i>
+                                    <h3 class="text-xl font-bold text-gray-700 mb-2">Login Diperlukan</h3>
+                                    <p class="text-gray-600 mb-4">Anda harus login untuk dapat memberikan komentar dan penilaian</p>
+                                    <a href="auth/login.php" class="inline-block bg-gradient-primary-accent hover:from-accent hover:to-primary text-white font-bold py-3 px-6 rounded-2xl transition-default hover-scale-105 shadow-xl text-lg">
+                                        Login Sekarang
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1633,8 +1651,54 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                 });
             }
 
+            // Function to update user ID field when user is logged in
+            async function updateUserIdField() {
+                const userIdField = document.getElementById('user-id');
+                if (!userIdField) return;
+
+                try {
+                    // Check if Supabase client is available
+                    let supabaseClient = null;
+                    if (window.supabase && window.supabase.auth) {
+                        supabaseClient = window.supabase;
+                    } else if (window.supabaseClient && window.supabaseClient.auth) {
+                        supabaseClient = window.supabaseClient;
+                    }
+
+                    if (!supabaseClient) {
+                        console.error('Supabase client not initialized');
+                        userIdField.value = 'anon_user_placeholder';
+                        return;
+                    }
+
+                    // Try to get user from Supabase - this is what we need for database operations
+                    try {
+                        const { data: { user }, error } = await supabaseClient.auth.getUser();
+                        if (error) {
+                            console.warn('Could not get user from Supabase:', error.message);
+                            // User is not logged in via Supabase, which is required for comments
+                            userIdField.value = 'anon_user_placeholder';
+                            return;
+                        }
+
+                        if (user) {
+                            userIdField.value = user.id;
+                        } else {
+                            userIdField.value = 'anon_user_placeholder';
+                        }
+                    } catch (error) {
+                        console.error('Error getting user from Supabase:', error);
+                        userIdField.value = 'anon_user_placeholder';
+                    }
+                } catch (error) {
+                    console.error('Error updating user ID field:', error);
+                    userIdField.value = 'anon_user_placeholder';
+                }
+            }
+
+            // Only add the inline handler if komentar.js is not loaded or not working
             const komentarForm = document.getElementById('komentarForm');
-            if (komentarForm) {
+            if (komentarForm && typeof handleFormSubmit !== 'function') {
                 komentarForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const komentar = document.getElementById('isi-komentar').value;
@@ -1645,16 +1709,154 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
                         document.getElementById('komentar-success-message').classList.add('hidden');
                         return;
                     }
-                    document.getElementById('komentar-success-message').textContent = `Komentar Anda telah terkirim! Rating: ${rating.value}/5`;
-                    document.getElementById('komentar-success-message').classList.remove('hidden');
-                    document.getElementById('komentar-error-message').classList.add('hidden');
-                    document.getElementById('isi-komentar').value = '';
-                    rating.checked = false;
-                    const ratingValueSpan = document.getElementById('rating-value');
-                    if(ratingValueSpan) ratingValueSpan.textContent = 'Pilih rating';
-                    setTimeout(() => { if(typeof loadTestimonials === 'function') loadTestimonials(true); }, 1000);
+
+                    try {
+                        // Check if Supabase client is initialized
+                        let supabaseClient = null;
+                        if (window.supabase && window.supabase.auth) {
+                            supabaseClient = window.supabase;
+                        } else if (window.supabaseClient && window.supabaseClient.auth) {
+                            supabaseClient = window.supabaseClient;
+                        }
+
+                        if (!supabaseClient) {
+                            throw new Error('Koneksi ke database tidak tersedia.');
+                        }
+
+                        // Get user from Supabase - this is required for database operations
+                        let user = null;
+                        try {
+                            const supabaseResult = await supabaseClient.auth.getUser();
+                            if (supabaseResult.error) {
+                                throw new Error('Anda harus login terlebih dahulu untuk mengirim komentar. Silakan login dan coba kembali.');
+                            }
+                            user = supabaseResult.data.user;
+                        } catch (supabaseError) {
+                            console.error('Error getting user from Supabase:', supabaseError);
+                            throw new Error('Gagal mengakses informasi pengguna. Silakan login kembali.');
+                        }
+
+                        if (!user) {
+                            throw new Error('Anda harus login untuk mengirim komentar.');
+                        }
+
+                        // Prepare the comment data
+                        const commentData = {
+                            id_pengguna: user.id,
+                            komentar: komentar,
+                            rating: parseInt(rating.value)
+                        };
+
+                        // Insert to database
+                        const { error: insertError } = await supabaseClient
+                            .from('komentar')
+                            .insert([commentData]);
+
+                        if (insertError) throw insertError;
+
+                        // Show success message
+                        document.getElementById('komentar-success-message').textContent = `Komentar Anda telah terkirim! Rating: ${rating.value}/5`;
+                        document.getElementById('komentar-success-message').classList.remove('hidden');
+                        document.getElementById('komentar-error-message').classList.add('hidden');
+
+                        // Reset form
+                        document.getElementById('isi-komentar').value = '';
+                        rating.checked = false;
+                        if(document.getElementById('rating-value')) document.getElementById('rating-value').textContent = 'Pilih rating';
+
+                        // Reload testimonials to show new comment
+                        setTimeout(() => {
+                            if(typeof loadTestimonials === 'function') {
+                                loadTestimonials(true);
+                            } else if(typeof window.loadTestimonials === 'function') {
+                                window.loadTestimonials(true);
+                            }
+                        }, 1000);
+
+                    } catch (error) {
+                        console.error('Error submitting comment:', error);
+                        document.getElementById('komentar-error-message').textContent = error.message || 'Gagal mengirim komentar. Silakan coba lagi.';
+                        document.getElementById('komentar-error-message').classList.remove('hidden');
+                        document.getElementById('komentar-success-message').classList.add('hidden');
+                    }
                 });
             }
+
+            // Function to update comment form visibility based on login status
+            async function updateCommentFormVisibility() {
+                try {
+                    // Check if Supabase client is available
+                    let supabaseClient = null;
+                    if (window.supabase && window.supabase.auth) {
+                        supabaseClient = window.supabase;
+                    } else if (window.supabaseClient && window.supabaseClient.auth) {
+                        supabaseClient = window.supabaseClient;
+                    }
+
+                    const commentForm = document.getElementById('komentarForm');
+                    const loginMessage = document.getElementById('login-to-comment-message');
+
+                    if (commentForm && loginMessage) {
+                        // For comment form to be visible, user must be logged in via Supabase
+                        // since that's required for database operations
+                        if (supabaseClient) {
+                            try {
+                                const { data: { user }, error } = await supabaseClient.auth.getUser();
+                                if (!error && user) {
+                                    // User is logged in via Supabase, show the form
+                                    commentForm.classList.remove('hidden');
+                                    loginMessage.classList.add('hidden');
+                                } else {
+                                    // User is not logged in via Supabase, show login message
+                                    commentForm.classList.add('hidden');
+                                    loginMessage.classList.remove('hidden');
+                                }
+                            } catch (error) {
+                                console.error('Error checking Supabase auth status:', error);
+                                // On error with Supabase auth, show login message
+                                commentForm.classList.add('hidden');
+                                loginMessage.classList.remove('hidden');
+                            }
+                        } else {
+                            // If Supabase client isn't available, show login message
+                            commentForm.classList.add('hidden');
+                            loginMessage.classList.remove('hidden');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error updating comment form visibility:', error);
+                    // On error, default to showing login message
+                    const commentForm = document.getElementById('komentarForm');
+                    const loginMessage = document.getElementById('login-to-comment-message');
+                    if (commentForm && loginMessage) {
+                        commentForm.classList.add('hidden');
+                        loginMessage.classList.remove('hidden');
+                    }
+                }
+            }
+
+            // Update user ID field and form visibility when auth state changes and when DOM is loaded
+            document.addEventListener('DOMContentLoaded', async () => {
+                // Add a small delay to ensure Supabase is initialized
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                // Run the update functions after initialization
+                updateUserIdField();
+                updateCommentFormVisibility();
+
+                // Set up auth state change listeners if Supabase is available
+                if (window.supabase && window.supabase.auth) {
+                    window.supabase.auth.onAuthStateChange((event, session) => {
+                        updateUserIdField();
+                        updateCommentFormVisibility();
+                    });
+                } else if (window.supabaseClient && window.supabaseClient.auth) {
+                    window.supabaseClient.auth.onAuthStateChange((event, session) => {
+                        updateUserIdField();
+                        updateCommentFormVisibility();
+                    });
+                }
+            });
 
             // Add click handlers for header logout buttons to use main.js handleLogout function
             const logoutLink = document.getElementById('logout-link');
@@ -1682,15 +1884,15 @@ $user_role = $is_logged_in ? ($_SESSION['user_peran'] ?? null) : null;
     </script>
 
     <!-- Load Supabase config first to create the global client -->
-    <script src="assets/js/config.js"></script>
+    <script src="<?php echo $asset_url; ?>/js/config.js"></script>
 
     <!-- Load other scripts that depend on the global supabaseClient -->
-    <script src="assets/js/main.js"></script>
-    <script src="assets/js/index.js"></script>
-    <script src="assets/js/sliding-komentar.js"></script>
-    <script src="assets/js/weather-forecast.js"></script>
-    <script src="assets/js/poster-slider.js"></script>
-    <script src="assets/js/komentar.js"></script>
+    <script src="<?php echo $asset_url; ?>/js/main.js"></script>
+    <script src="<?php echo $asset_url; ?>/js/index.js"></script>
+    <script src="<?php echo $asset_url; ?>/js/sliding-komentar.js"></script>
+    <script src="<?php echo $asset_url; ?>/js/weather-forecast.js"></script>
+    <script src="<?php echo $asset_url; ?>/js/poster-slider.js"></script>
+    <script src="<?php echo $asset_url; ?>/js/komentar.js"></script>
 
     <!-- Close the main content div -->
     </div>

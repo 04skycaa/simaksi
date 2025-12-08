@@ -7,7 +7,8 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
 
 // Cek apakah pengguna sudah login
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
-    header('Location: /simaksi/auth/login.php');
+    $login_url = dirname(dirname($_SERVER['SCRIPT_NAME'])) . '/auth/login.php';
+    header('Location: ' . $login_url);
     exit;
 }
 
@@ -69,7 +70,8 @@ switch ($page) {
         // Cek apakah pengguna adalah admin sebelum menyertakan file
         // Dalam sistem login, peran disimpan di $_SESSION['user_peran'], bukan $_SESSION['user']['peran']
         if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true || $_SESSION['user_peran'] !== 'admin') {
-            header('Location: ../auth/login.php');
+            $login_url = dirname(dirname($_SERVER['SCRIPT_NAME'])) . '/auth/login.php';
+            header('Location: ' . $login_url);
             exit;
         }
         $content = '../admin/management_user/register_user.php';
@@ -130,13 +132,18 @@ $current_title = isset($menu_titles[$page]) ? $menu_titles[$page] : 'Dashboard';
 <!DOCTYPE html>
 <html lang="en">
 
+<?php
+// Calculate the relative path from the admin directory to the assets directory
+// Since admin files are in /admin/ and assets are in /assets/, we need to go up one level
+$asset_url = '../assets';
+?>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($menu_titles[$page]) ? $menu_titles[$page] : 'Dashboard'; ?> | E-Simaksi</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="icon" type="image/x-icon" href="/simaksi/assets/images/favicon.ico">
+    <link rel="stylesheet" href="<?php echo $asset_url; ?>/css/style.css">
+    <link rel="icon" type="image/x-icon" href="<?php echo $asset_url; ?>/images/favicon.ico">
 </head>
 
 <body>
@@ -145,7 +152,7 @@ $current_title = isset($menu_titles[$page]) ? $menu_titles[$page] : 'Dashboard';
             <ul>
                 <li>
                     <a href="#">
-                        <img src="../assets/images/logo2.png" class="logo-img" alt="Logo E-Simaksi">
+                        <img src="<?php echo $asset_url; ?>/images/logo2.png" class="logo-img" alt="Logo E-Simaksi">
                     </a>
                 </li>
 
@@ -266,7 +273,7 @@ $current_title = isset($menu_titles[$page]) ? $menu_titles[$page] : 'Dashboard';
         </div>
     </div>
 
-    <script src="../assets/js/script.js"></script>
+    <script src="<?php echo $asset_url; ?>/js/script.js"></script>
 </body>
 
 </html>

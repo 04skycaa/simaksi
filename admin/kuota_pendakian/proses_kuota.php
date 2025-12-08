@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <div class="form-container">
-    <form id="kuotaForm" action="/simaksi/admin/kuota_pendakian/proses_kuota.php" method="POST">
+    <form id="kuotaForm" action="proses_kuota.php" method="POST">
         <input type="hidden" name="action" value="<?= $form_action ?>">
         <?php if ($is_edit): ?>
             <input type="hidden" name="id_kuota" value="<?= htmlspecialchars($kuota_data['id_kuota'] ?? '') ?>">

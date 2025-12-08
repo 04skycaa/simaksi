@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
         button.addEventListener("click", function () {
             const userId = this.getAttribute("data-id");
             // Judul modal diubah menjadi "Lihat Detail Pengguna"
-            openModal(`/simaksi/admin/management_user/form_user.php?id=${userId}`, 'Lihat Detail Pengguna');
+            openModal(`management_user/form_user.php?id=${userId}`, 'Lihat Detail Pengguna');
         });
     });
 
@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     formData.append('action', 'hapus'); // Anda perlu proses_user.php untuk menangani 'action=hapus'
                     formData.append('id', userId);
 
-                    fetch('/simaksi/admin/management_user/proses_user.php', {
+                    fetch('management_user/proses_user.php', {
                         method: 'POST',
                         body: formData
                     })

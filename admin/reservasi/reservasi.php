@@ -1,6 +1,12 @@
 <?php
 include __DIR__ . '/../api/config.php';
 
+// Determine if this page is being included as content or accessed directly
+$is_included = (strpos($_SERVER['SCRIPT_NAME'], '/admin/index.php') !== false && isset($_GET['page']) && $_GET['page'] === 'reservasi');
+
+// Define asset path based on context
+$asset_path = $is_included ? '../assets' : '../../assets';
+
 if (!function_exists('makeSupabaseRequest')) {
     die("Error: Gagal memuat konfigurasi Supabase atau fungsi makeSupabaseRequest tidak ditemukan. Periksa path include: " . __DIR__ . '/../api/config.php');
 }
@@ -132,7 +138,7 @@ if ($current_tab === 'reservasi') {
 <head>
     <meta charset="UTF-8">
     <title>Reservasi dan Validasi Data</title>
-    <link rel="stylesheet" href="../assets/css/style.css"> 
+    <link rel="stylesheet" href="<?php echo $asset_path; ?>/css/style.css"> 
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
@@ -782,7 +788,7 @@ function fetchDetailReservasi(id) {
 
     Swal.fire({ title: 'Memuat Data...', text: 'Sedang mengambil detail reservasi.', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
-    fetch(`api/get_reservasi_detail.php?id_reservasi=${id}`) 
+    fetch(`../api/get_reservasi_detail.php?id_reservasi=${id}`) 
         .then(response => {
             if (!response.ok) { throw new Error('Gagal menghubungi server. Status: ' + response.status); }
             return response.json();
@@ -1148,7 +1154,7 @@ async function handleValidationUpdate(id) {
     // payload.barang_to_delete = barangToDelete;
 
     // PERBAIKAN: Menggunakan path RELATIF dari index.php
-    const updateUrl = 'api/update_reservasi_status.php'; 
+    const updateUrl = '../api/update_reservasi_status.php'; 
 
     try {
         const response = await fetch(updateUrl, {

@@ -7,7 +7,7 @@
 async function loadStats() {
     // Jalur ke file PHP API yang mengambil data dari Supabase.
     // PASTIKAN jalur ini benar di server Anda.
-    const apiUrl = '/simaksi/admin/api/fetch_stats.php'; 
+    const apiUrl = 'admin/api/fetch_stats.php'; 
     
     // Default value jika terjadi error atau data belum dimuat
     const defaultText = 'N/A';

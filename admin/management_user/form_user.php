@@ -113,7 +113,7 @@ if ($is_edit) {
 
 
 <div class="form-container">
-    <form id="userForm" action="/simaksi/admin/management_user/proses_user.php" method="POST">
+    <form id="userForm" action="proses_user.php" method="POST">
         <input type="hidden" name="form_action" value="<?= $form_action ?>">
         
         <?php if ($is_edit): ?>
@@ -214,7 +214,7 @@ if ($is_edit) {
                 <i class="fa-solid fa-save"></i> Simpan
             </button>
         <?php else: ?>
-            <button type="button" class="form-submit-btn" onclick="window.location.href='http://localhost/simaksi/admin/index.php?page=user'">
+            <button type="button" class="form-submit-btn" onclick="window.location.href='../index.php?page=user'">
                 <i class="fa-solid fa-times"></i> Tutup
             </button>
         <?php endif; ?>

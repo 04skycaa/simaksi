@@ -4,7 +4,7 @@ ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
 
 session_start();
-include '../config/config.php'; 
+include __DIR__ . '/../config/config.php'; 
 
 // Inisialisasi variabel error message dan success flag
 $error_message = '';
@@ -131,9 +131,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Tentukan URL pengalihan
             if (strtolower($profile['peran']) === 'admin') {
-                $success_redirect_url = '/simaksi/admin/index.php';
+                $success_redirect_url = '../admin/index.php';
             } else {
-                $success_redirect_url = '/simaksi/index.php';
+                $success_redirect_url = '../index.php';
             }
             // HENTIKAN pengalihan PHP di sini, dan biarkan SweetAlert2 & JS yang melakukannya
             
@@ -159,11 +159,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
+<?php
+// Define base paths for flexible URL handling
+$base_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname(dirname($_SERVER['SCRIPT_NAME']));
+$base_url = rtrim($base_url, '/');
+$asset_url = $base_url . '/assets';
+?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-SIMAKSI - Login</title>
-    <link rel="stylesheet" href="../assets/css/auth.css">
+    <link rel="stylesheet" href="<?php echo $asset_url; ?>/css/auth.css">
     <!-- Sertakan SweetAlert2 CSS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -177,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="right-section">
             <div class="login-box">
                 <div class="logo">
-                    <img src="../assets/images/logo1.png" alt="E-SIMAKSI Logo">
+                    <img src="<?php echo $asset_url; ?>/images/logo1.png" alt="E-SIMAKSI Logo">
                 </div>
                 <h2>LOGIN</h2>
                 <p>Yuk login sekarang, biar cerita pendakianmu di Butak resmi dimulai</p>
@@ -203,18 +209,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="remember-forgot">
                         <label><input type="checkbox" name="remember"> Ingat saya</label>
-                        <a href="forgot_password.php">Lupa password?</a>
+                        <?php $forgot_password_url = dirname($_SERVER['SCRIPT_NAME']) . '/forgot_password.php'; ?>
+                        <a href="<?php echo $forgot_password_url; ?>">Lupa password?</a>
                     </div>
 
                     <button type="submit" class="login-btn">Login</button>
                 </form>
 
-                <p class="register-link">Belum punya akun? <a href="../auth/register.php">Register</a></p>
+                <?php $register_url = dirname($_SERVER['SCRIPT_NAME']) . '/register.php'; ?>
+                <p class="register-link">Belum punya akun? <a href="<?php echo $register_url; ?>">Register</a></p>
             </div>
         </div>
     </div>
 
-<script src="../assets/js/auth.js"></script> 
+<script src="<?php echo $asset_url; ?>/js/auth.js"></script> 
 
 <?php if (!empty($error_message)): ?>
     <script>

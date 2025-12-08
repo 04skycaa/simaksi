@@ -4,8 +4,14 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start(); 
 }
 include __DIR__ . '/../../config/supabase.php';
- 
-$pemasukan_data = supabase_request('GET', 'pemasukan?select=*,tanggal_pemasukan,keterangan,jumlah'); 
+
+// Determine if this page is being included as content or accessed directly
+$is_included = (strpos($_SERVER['SCRIPT_NAME'], '/admin/index.php') !== false && isset($_GET['page']) && $_GET['page'] === 'pembukuan');
+
+// Define asset path based on context
+$asset_path = $is_included ? '../assets' : '../../assets';
+
+$pemasukan_data = supabase_request('GET', 'pemasukan?select=*,tanggal_pemasukan,keterangan,jumlah');
 $pengeluaran_data = supabase_request(
     'GET', 
     'pengeluaran?select=id_pengeluaran,id_kategori,keterangan,jumlah,tanggal_pengeluaran,deleted_at,kategori_pengeluaran(nama_kategori)&deleted_at=is.null'
@@ -90,7 +96,7 @@ $kategori_options = $kategori_data && !isset($kategori_data['error']) ? $kategor
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Keuangan</title>
-    <link rel="stylesheet" href="/simaksi/assets/css/style.css"> 
+    <link rel="stylesheet" href="<?php echo $asset_path; ?>/css/style.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -415,7 +421,7 @@ $kategori_options = $kategori_data && !isset($kategori_data['error']) ? $kategor
     </div>
 </div>
 
-<script src="/simaksi/assets/js/pembukuan.js"></script>
+<script src="<?php echo $asset_path; ?>/js/pembukuan.js"></script>
  
 <script>
 document.addEventListener('DOMContentLoaded', function() { 

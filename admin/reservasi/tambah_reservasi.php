@@ -1,5 +1,6 @@
 <?php
-$base_url = '/simaksi/admin'; 
+// Tentukan base URL berdasarkan konteks - untuk akses API dari halaman ini
+$base_url = '.';
 ?>
 <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
 

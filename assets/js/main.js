@@ -119,7 +119,7 @@
             await window.supabaseClient.auth.signOut();
             
             // Clear the server-side PHP session in the background
-            await fetch('/simaksi/auth/logout.php', { method: 'POST' });
+            await fetch('auth/logout.php', { method: 'POST' });
 
         } catch (error) {
             console.error('Error during logout process:', error);
@@ -171,7 +171,7 @@
             }
         } else {
             authDisplay.innerHTML = `
-                <a href="/simaksi/auth/login.php" class="login-button border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default" data-translate-key="login_button">
+                <a href="auth/login.php" class="login-button border border-white px-4 py-2 rounded-full text-sm hover-bg-white text-white transition-default" data-translate-key="login_button">
                     Login
                 </a>`;
         }

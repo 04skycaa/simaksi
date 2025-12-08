@@ -267,10 +267,10 @@ body {
 /* tampilan hero */
 
 .hero-background {
-    background: 
-        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), 
-        url('/simaksi/assets/images/gunung2.jpg') no-repeat center center/cover;
-    background-attachment: fixed; 
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)),
+        url('../images/gunung2.jpg') no-repeat center center/cover;
+    background-attachment: fixed;
     position: relative;
 }
 

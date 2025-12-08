@@ -1,6 +1,12 @@
 <?php
 include __DIR__ . '/../../config/supabase.php';
 
+// Determine if this page is being included as content or accessed directly
+$is_included = (strpos($_SERVER['SCRIPT_NAME'], '/admin/index.php') !== false && isset($_GET['page']) && $_GET['page'] === 'pengumuman');
+
+// Define asset path based on context
+$asset_path = $is_included ? '../assets' : '../../assets';
+
 $endpoint = 'pengumuman?order=dibuat_pada.desc';
 $data = supabase_request('GET', $endpoint);
 
@@ -15,7 +21,7 @@ if (!$data || isset($data['error'])) {
     <meta charset="UTF-8">
     <title>Manajemen Pengumuman</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="/simaksi/assets/css/style.css"> 
+    <link rel="stylesheet" href="<?php echo $asset_path; ?>/css/style.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -117,7 +123,7 @@ if (!$data || isset($data['error'])) {
     </div>
 </div>
 
-<script src="/simaksi/assets/js/pengumuman.js"></script>
+<script src="<?php echo $asset_path; ?>/js/pengumuman.js"></script>
 
 </body>
 </html>

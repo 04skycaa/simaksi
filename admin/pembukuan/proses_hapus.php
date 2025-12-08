@@ -3,7 +3,7 @@ session_start();
 
 include __DIR__ . '/../../config/supabase.php'; 
  
-$redirect_url = 'http://localhost/simaksi/admin/index.php?page=pembukuan';
+$redirect_url = '../index.php?page=pembukuan';
  
 function redirectWithStatus($status, $message, $url) { 
     $final_url = $url . '&status=' . urlencode($status) . '&message=' . urlencode($message);

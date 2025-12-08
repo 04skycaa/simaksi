@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //untuk tambah
     document.getElementById('tambahKuota').addEventListener('click', () => {
         const formContent = `
-            <form id="formKuota" action="/simaksi/admin/kuota_pendakian/proses_kuota.php" method="POST">
+            <form id="formKuota" action="kuota_pendakian/proses_kuota.php" method="POST">
                 <input type="hidden" name="action" value="tambah">
                 <div class="form-group">
                     <label for="tanggal_kuota">Tanggal Kuota</label>
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (result.success && result.data) {
                     const data = result.data;
                     const formContent = `
-                       <form id="formKuota" action="/simaksi/admin/kuota_pendakian/proses_kuota.php" method="POST">
+                       <form id="formKuota" action="kuota_pendakian/proses_kuota.php" method="POST">
                             <input type="hidden" name="action" value="edit">
                             <input type="hidden" name="id_kuota" value="${data.id_kuota}">
                             <div class="form-group">
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     formData.append('action', 'hapus');
                     formData.append('id_kuota', id);
 
-                    fetch('/simaksi/admin/kuota_pendakian/proses_kuota.php', {
+                    fetch('kuota_pendakian/proses_kuota.php', {
                         method: 'POST',
                         body: formData
                     })
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData(form);
 
         try {
-            const response = await fetch(form.getAttribute('action'), {
+            const response = await fetch('kuota_pendakian/proses_kuota.php', {
                 method: 'POST',
                 body: formData
             });

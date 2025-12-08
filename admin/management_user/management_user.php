@@ -14,6 +14,12 @@ if (basename($_SERVER['SCRIPT_FILENAME']) === basename(__FILE__)) {
 
 include __DIR__ . '/../../config/supabase.php';
 
+// Determine if this page is being included as content or accessed directly
+$is_included = (strpos($_SERVER['SCRIPT_NAME'], '/admin/index.php') !== false && isset($_GET['page']) && $_GET['page'] === 'user');
+
+// Define asset path based on context
+$asset_path = $is_included ? '../assets' : '../../assets';
+
 $filterNama = trim($_GET['filter_nama'] ?? '');
 $filterPeran = trim($_GET['filter_peran'] ?? '');
 $queryParams = [];
@@ -72,7 +78,7 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
   <meta charset="UTF-8">
   <title>Manajemen User</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="/simaksi/assets/css/style.css"> 
+  <link rel="stylesheet" href="<?php echo $asset_path; ?>/css/style.css"> 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -212,6 +218,6 @@ if ($semuaPengguna && !isset($semuaPengguna['error'])) {
 </div>
 
 <!-- Link ke file JavaScript -->
-<script src="/simaksi/assets/js/management_user.js"></script>
+<script src="<?php echo $asset_path; ?>/js/management_user.js"></script>
 </body>
 </html>

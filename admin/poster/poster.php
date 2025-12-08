@@ -1608,7 +1608,7 @@ if (isset($_GET['msg'])) {
 
         try {
             // Fetch data from unified AJAX endpoint with item type parameter
-            const fetchUrl = '/simaksi/admin/poster/poster_ajax.php?action=fetch_json&type=' + itemType + '&id=' + id + '&_cache=' + new Date().getTime();
+            const fetchUrl = 'poster/poster_ajax.php?action=fetch_json&type=' + itemType + '&id=' + id + '&_cache=' + new Date().getTime();
             console.log("OPEN EDIT: Mengambil data dari URL:", fetchUrl);
 
             const response = await fetch(fetchUrl);

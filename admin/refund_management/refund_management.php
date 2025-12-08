@@ -5,6 +5,12 @@ ini_set('display_errors', 1);
 
 include __DIR__ . '/../api/config.php';
 
+// Determine if this page is being included as content or accessed directly
+$is_included = (strpos($_SERVER['SCRIPT_NAME'], '/admin/index.php') !== false && isset($_GET['page']) && $_GET['page'] === 'refund_management');
+
+// Define asset path based on context
+$asset_path = $is_included ? '../assets' : '../../assets';
+
 if (!function_exists('makeSupabaseRequest')) {
     die("Error: Gagal memuat konfigurasi Supabase atau fungsi makeSupabaseRequest tidak ditemukan.");
 }
@@ -46,7 +52,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <title>Manajemen Refund</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="<?php echo $asset_path; ?>/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>

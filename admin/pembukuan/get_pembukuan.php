@@ -88,7 +88,7 @@ $kategori_options = $kategori_data && !isset($kategori_data['error']) ? $kategor
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Keuangan</title>
-    <link rel="stylesheet" href="/simaksi/assets/css/style.css"> 
+    <link rel="stylesheet" href="../../assets/css/style.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -360,7 +360,7 @@ $kategori_options = $kategori_data && !isset($kategori_data['error']) ? $kategor
     </div>
 </div>
 
-<script src="/simaksi/assets/js/pembukuan.js"></script>
+<script src="../../assets/js/pembukuan.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
